@@ -14,7 +14,14 @@
     "koshiba-dapp-backend": {
       "candid": "src/koshiba-dapp-backend/koshiba-dapp-backend.did",
       "package": "koshiba-dapp-backend",
-      "type": "rust"
+      "type": "custom",
+      "wasm": "target/wasm32-unknown-unknown/release/koshiba_dapp_backend.wasm",
+      "build": "bash build.sh",
+      "metadata": [
+        {
+          "name": "candid:service"
+        }
+      ]
     },
     "koshiba-dapp-frontend": {
       "dependencies": [
