@@ -1,0 +1,5 @@
+[workspace]
+members = [
+    "src/koshiba-dapp-backend"
+]
+resolver = "2"
