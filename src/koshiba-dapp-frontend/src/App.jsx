@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { koshiba_dapp_backend } from 'declarations/koshiba-dapp-backend';
+import { front_test_backend } from 'declarations/front-test-backend';
 
 function App() {
   const [greeting, setGreeting] = useState('');
@@ -7,7 +7,7 @@ function App() {
   function handleSubmit(event) {
     event.preventDefault();
     const name = event.target.elements.name.value;
-    koshiba_dapp_backend.greet(name).then((greeting) => {
+    front_test_backend.greet(name).then((greeting) => {
       setGreeting(greeting);
     });
     return false;
