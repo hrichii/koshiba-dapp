@@ -4,5 +4,5 @@
 cd koshiba-dapp/
 npm install
 dfx start
-dfx deploy
+dfx deploy --yes
 ```
