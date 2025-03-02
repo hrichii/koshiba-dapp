@@ -1,57 +1,16 @@
+/* App.css */
+
+/* アプリ全体のレイアウト */
 .app-container {
     display: flex;
     min-height: 100vh;
     font-family: sans-serif;
 }
-  /* サイドバー */
-.sidebar {
-    width: 200px;
-    background-color: #2e7d32; /* 緑色イメージ */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    color: #fff;
-    padding-top: 20px;
-}
-  /* ロゴ */
-.logo {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-}
 
-  /* リンク一覧 */
-.nav-links {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    text-align: center;
-}
-
-.nav-links li {
-    margin: 10px 0;
-}
-
-.nav-links a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-  /* アカウント情報リンク */
-.account-section {
-    margin-top: auto;
-    margin-bottom: 20px;
-}
-
-.account-section a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-  /* メインコンテンツ */
+/* メインコンテンツ */
 .main-content {
-    flex: 1;
-    background-color: #f5f5f5;
+margin-left: 200px; /* サイドバーの幅分だけ左に余白 */
+flex: 1;
+background-color: #f5f5f5;
+padding: 20px;
 }

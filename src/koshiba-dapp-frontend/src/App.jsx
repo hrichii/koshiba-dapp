@@ -1,30 +1,42 @@
-import { useState } from 'react';
-import { front_test_backend } from 'declarations/front-test-backend';
+// App.jsx
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import LoginPage from "./LoginPage";
+import MainPage from "./MainPage";
+import SearchTemplePage from "./SearchTemplePage";
+import ParticipatePage from "./ParticipatePage";
+import NotificationPage from "./NotificationPage";
+import AccountInfoPage from "./AccountInfoPage";
+import "./App.css"; // 全体レイアウト用
+import Sidebar from "./Sidebar"; // ★ Sidebarをインポート
 
 function App() {
-  const [greeting, setGreeting] = useState('');
-
-  function handleSubmit(event) {
-    event.preventDefault();
-    const name = event.target.elements.name.value;
-    front_test_backend.greet(name).then((greeting) => {
-      setGreeting(greeting);
-    });
-    return false;
-  }
-
   return (
-    <main>
-      <img src="/logo2.svg" alt="DFINITY logo" />
-      <br />
-      <br />
-      <form action="#" onSubmit={handleSubmit}>
-        <label htmlFor="name">Enter your name: &nbsp;</label>
-        <input id="name" alt="Name" type="text" />
-        <button type="submit">Click Me!</button>
-      </form>
-      <section id="greeting">{greeting}</section>
-    </main>
+    <Router>
+      <Routes>
+        {/* ログインページ（サイドバーなし） */}
+        <Route path="/" element={<LoginPage />} />
+
+        {/* その他のページ（サイドバーあり） */}
+        <Route
+          path="/*"
+          element={
+            <div className="app-container">
+              <Sidebar />
+              <div className="main-content">
+                <Routes>
+                  <Route path="home" element={<MainPage />} />
+                  <Route path="search" element={<SearchTemplePage />} />
+                  <Route path="participate" element={<ParticipatePage />} />
+                  <Route path="notifications" element={<NotificationPage />} />
+                  <Route path="account" element={<AccountInfoPage />} />
+                </Routes>
+              </div>
+            </div>
+          }
+        />
+      </Routes>
+    </Router>
   );
 }
 

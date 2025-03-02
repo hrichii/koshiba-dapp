@@ -1,0 +1,111 @@
+/* サイドバー全体 */
+.sidebar {
+position: fixed;     /* ページの長さに関係なく固定 */
+top: 0;
+left: 0;
+width: 200px;
+height: 100vh;       /* 画面高さいっぱい */
+background-color: #00B900; 
+display: flex;
+flex-direction: column;
+align-items: center;
+color: #fff;
+padding-top: 20px;
+box-sizing: border-box;
+z-index: 999;
+}
+
+/* ロゴを丸くくり抜いて中心表示 */
+.logo {
+width: 100px;
+height: 100px;
+border-radius: 50%;
+overflow: hidden;
+margin-bottom: 1rem;
+}
+
+.logo img {
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+
+/* ナビゲーションリンク */
+.nav-links {
+list-style: none;
+padding: 0;
+margin: 0;
+width: 100%;
+text-align: center;
+}
+
+.nav-links li {
+margin: 10px 0;
+}
+
+.nav-links a {
+color: #fff;
+text-decoration: none;
+font-weight: bold;
+display: block;
+padding: 8px 0;
+}
+
+.nav-links a:hover {
+background-color: #008e00; /* 濃い緑に */
+}
+
+/* アカウント情報の背景を少し薄く */
+.account-section {
+margin-top: auto; /* 下部に寄せる */
+width: 100%;
+background-color: rgba(255, 255, 255, 0.1); /* 薄い背景色 */
+padding: 10px;
+box-sizing: border-box;
+}
+
+/* 画像と小柴太郎を横並びに */
+.account-info-row {
+display: flex;
+align-items: center;
+gap: 8px;
+justify-content: center; /* 中央寄せ(必要に応じて変更) */
+margin-bottom: 8px;
+}
+
+.account-info-row img {
+width: 40px;
+height: 40px;
+border-radius: 50%;
+object-fit: cover;
+}
+
+.account-info-row a {
+color: #fff;
+text-decoration: none;
+font-weight: bold;
+}
+
+/* ログアウト・アカウント削除 */
+.account-menu {
+list-style: none;
+padding: 0;
+margin: 0;
+text-align: center;
+}
+
+.account-menu li {
+margin: 4px 0;
+}
+
+.account-menu li a {
+color: #fff;
+text-decoration: none;
+font-weight: normal;
+display: block;
+padding: 4px 0;
+}
+
+.account-menu li a:hover {
+background-color: rgba(255, 255, 255, 0.2);
+}

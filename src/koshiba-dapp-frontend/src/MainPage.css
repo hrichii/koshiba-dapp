@@ -1,0 +1,156 @@
+.container {
+    padding: 20px;
+    font-family: sans-serif;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+/* ユーザー情報 */
+.user-info-container {
+display: flex;
+flex-direction: column;
+gap: 20px; /* 余裕を持たせるため gapを大きめに */
+margin-bottom: 30px; /* 下にもスペース */
+padding: 20px;       /* 周囲にパディングを追加してゆとりを持たせる */
+background-color: #fafafa; /* 薄い背景色を追加して区切りを明確に */
+border-radius: 8px;  /* 角を丸める */
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 軽い影 */
+}
+
+.user-name {
+font-size: 2rem;
+margin: 0;
+color: #00b900;
+font-weight: bold;
+}
+
+.user-details {
+display: flex;
+gap: 40px; /* アイテム間のスペースを広げる */
+align-items: flex-start;
+color: #333;
+}
+
+.status {
+color: #00b900;
+font-weight: bold;
+}
+
+.detail-item {
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+gap: 8px; /* 縦方向のスペースを広げる */
+margin-right: 20px;
+}
+
+/* アイコン */
+.icon {
+width: 24px;   /* アイコンを少し大きく */
+height: 24px;
+object-fit: contain;
+}
+
+.icon-row {
+display: flex;
+align-items: center;
+gap: 8px; /* アイコンとテキストにゆとり */
+}
+
+/* 運営方針の見出し */
+.policy-title {
+text-decoration: underline;
+color: #00b900;
+font-weight: bold;
+}
+
+/* 「浅草寺の運営方針」より下の文字色を #00b900 に */
+.policy-container {
+background-color: #f0f0f0;
+padding: 20px;
+margin-top: 10px;
+border-radius: 4px;
+color: #00b900;
+}
+
+.policy-item {
+margin-bottom: 20px;
+}
+
+/* ステータスバー */
+.status-bar-container {
+display: flex;
+flex-direction: column;
+margin: 10px 0;
+}
+
+.status-bar {
+display: flex;
+width: 100%;
+height: 50px;
+background-color: #ccc;
+border-radius: 4px;
+overflow: hidden;
+margin-bottom: 6px;
+}
+
+/* 賛成, 反対, 未投票 は初期幅 0%。
+    @keyframes で var(--final-width) まで伸びる */
+.agree,
+.disagree,
+.none {
+width: 0%;
+}
+
+.agree {
+background-color: #003eb9; /* 青 */
+}
+.disagree {
+background-color: #f48fb1; /* ピンク */
+}
+.none {
+background-color: #9e9e9e; /* グレー */
+}
+
+/* 共通アニメーション: growBar */
+@keyframes growBar {
+0% {
+    width: 0%;
+}
+100% {
+    width: var(--final-width);
+}
+}
+
+/* 投票ボタン (共通) */
+.vote-button {
+margin-right: 10px;
+padding: 8px 12px;
+border-radius: 4px;
+cursor: pointer;
+font-weight: bold;
+border: none;
+}
+
+/* 賛成ボタン: 青 */
+.agree-btn {
+background-color: #003eb9;
+color: #fff;
+}
+.agree-btn:hover {
+background-color: #002a8c;
+}
+
+/* 反対ボタン: ピンク */
+.disagree-btn {
+background-color: #f48fb1;
+color: #fff;
+}
+.disagree-btn:hover {
+background-color: #ec699b;
+}
+
+/* 賛成・反対・未投票の数値をまとめるエリア */
+.ratio-text {
+font-size: 1rem;
+}

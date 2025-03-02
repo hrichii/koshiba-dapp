@@ -1,0 +1,217 @@
+/* 全体 */
+.login-page {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    font-family: sans-serif;
+}
+
+/* 背景動画のラッパ要素 */
+.video-wrapper {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: -2;
+}
+
+/* 背景動画 */
+.background-video {
+width: 100%;
+height: 100%;
+object-fit: cover;
+}
+
+/* 黒いオーバーレイ */
+.video-overlay {
+position: absolute;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.4);
+z-index: 1;
+}
+
+/* ログインフォーム */
+.login-form {
+position: relative;
+z-index: 2;
+max-width: 400px;
+width: 90%;
+margin: 0 auto;
+margin-top: 10%;
+background-color: rgba(255, 255, 255, 0.85);
+padding: 2rem;
+border-radius: 8px;
+text-align: center;
+box-sizing: border-box;
+}
+
+/* ロゴを丸く中央に表示 */
+.logo {
+display: block;
+margin: 0 auto 1rem auto;
+width: 100px;
+height: 100px;
+border-radius: 50%;
+object-fit: cover;
+overflow: hidden;
+}
+
+/* 見出し */
+.login-form h1 {
+margin: 0;
+font-size: 1.5rem;
+font-weight: bold;
+}
+
+/* サブ見出し */
+.subheading {
+margin: 0.5rem 0 1.5rem 0;
+font-size: 1rem;
+color: #555;
+}
+
+/* 入力欄 */
+.login-input {
+width: 100%;
+box-sizing: border-box;
+font-size: 1rem;
+border: 1px solid #ccc;
+border-radius: 4px;
+outline: none;
+text-align: center;
+padding: 0.5rem 1rem;
+transition: box-shadow 0.3s;
+}
+.login-input:hover {
+box-shadow: 0 0 0 2px #00B900;
+}
+
+/* エラーメッセージ */
+.error-message {
+color: red;
+margin-top: 0.5rem;
+}
+
+/* ログインボタン（薄緑色） */
+.login-button {
+width: 100%;
+margin-top: 1rem;
+padding: 0.5rem 1rem;
+background-color: #00B900;
+color: #fff;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+font-size: 1rem;
+}
+.login-button:hover {
+background-color: #74ce74;
+color: #fff;
+}
+
+/* 「新規登録はこちら」 */
+.more-options {
+margin-top: 1rem;
+color: #6f42c1;
+cursor: pointer;
+text-decoration: underline;
+font-size: 0.95rem;
+}
+
+/* モーダルオーバーレイ */
+.modal-overlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: rgba(0, 0, 0, 0.5);
+z-index: 3;
+display: flex;
+justify-content: center;
+align-items: center;
+}
+
+.modal-content {
+background: #fff;
+padding: 2rem;
+border-radius: 8px;
+width: 90%;
+max-width: 480px;
+position: relative;
+text-align: center;
+}
+
+/* 「新規登録」を中央揃え */
+.modal-title {
+text-align: center;
+margin: 0 0 1rem;
+font-size: 1.3rem;
+font-weight: bold;
+}
+
+/* モーダル内の入力フィールド */
+.input-field {
+margin-bottom: 1rem;
+}
+
+.input-field input,
+.input-field select {
+width: 100%;
+padding: 0.5rem;
+border: 1px solid #ccc;
+border-radius: 4px;
+box-sizing: border-box;
+margin-top: 0.3rem;
+}
+
+/* 檀家グレード用チップ */
+.choice-chips {
+display: flex;
+flex-wrap: wrap;
+gap: 0.5rem;
+margin-top: 0.5rem;
+justify-content: center; 
+}
+
+.chip {
+padding: 0.5rem 1rem;
+border: 1px solid #ccc;
+background-color: #f0f0f0;
+border-radius: 16px;
+cursor: pointer;
+transition: background-color 0.3s, color 0.3s;
+}
+.chip:hover {
+background-color: #e0e0e0;
+}
+.chip.selected {
+background-color: #00B900;
+color: #fff;
+border-color: #00B900;
+}
+
+/* モーダル内ボタン配置 */
+.button-group {
+display: flex;
+justify-content: center; /* ボタンを中央寄せ */
+margin-top: 1rem;
+}
+
+.button-group button {
+padding: 0.5rem 1rem;
+background-color: #00B900;
+border: none;
+color: #fff;
+border-radius: 4px;
+cursor: pointer;
+font-size: 1rem;
+}
+.button-group button:hover {
+background-color: #74ce74;
+}
