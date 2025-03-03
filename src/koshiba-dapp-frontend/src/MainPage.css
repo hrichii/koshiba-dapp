@@ -1,8 +1,8 @@
 .container {
-    padding: 20px;
-    font-family: sans-serif;
-    color: #333;
-    font-size: 1.2rem;
+padding: 20px;
+font-family: sans-serif;
+color: #333;
+font-size: 1.2rem;
 }
 
 /* ユーザー情報 */
@@ -11,9 +11,9 @@ display: flex;
 flex-direction: column;
 gap: 20px; /* 余裕を持たせるため gapを大きめに */
 margin-bottom: 30px; /* 下にもスペース */
-padding: 20px;       /* 周囲にパディングを追加してゆとりを持たせる */
+padding: 20px; /* 周囲にパディングを追加してゆとりを持たせる */
 background-color: #fafafa; /* 薄い背景色を追加して区切りを明確に */
-border-radius: 8px;  /* 角を丸める */
+border-radius: 8px; /* 角を丸める */
 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 軽い影 */
 }
 
@@ -46,7 +46,7 @@ margin-right: 20px;
 
 /* アイコン */
 .icon {
-width: 24px;   /* アイコンを少し大きく */
+width: 24px; /* アイコンを少し大きく */
 height: 24px;
 object-fit: contain;
 }
@@ -94,14 +94,13 @@ overflow: hidden;
 margin-bottom: 6px;
 }
 
-/* 賛成, 反対, 未投票 は初期幅 0%。
-    @keyframes で var(--final-width) まで伸びる */
-.agree,
-.disagree,
-.none {
+/* bar は共通アニメーションを適用するクラス */
+.bar {
 width: 0%;
+animation: growBar 1.5s forwards;
 }
 
+/* 賛成, 反対, 未投票 それぞれの背景色 */
 .agree {
 background-color: #003eb9; /* 青 */
 }
@@ -112,7 +111,7 @@ background-color: #f48fb1; /* ピンク */
 background-color: #9e9e9e; /* グレー */
 }
 
-/* 共通アニメーション: growBar */
+/* アニメーション定義 */
 @keyframes growBar {
 0% {
     width: 0%;
@@ -120,6 +119,24 @@ background-color: #9e9e9e; /* グレー */
 100% {
     width: var(--final-width);
 }
+}
+
+/* 賛成・反対・未投票の数値をまとめるエリア */
+.ratio-text {
+font-size: 1rem;
+display: flex;
+gap: 4px;
+}
+
+/* 文字色をクラスで管理 */
+.ratio-agree {
+color: #003eb9;
+}
+.ratio-disagree {
+color: #f48fb1;
+}
+.ratio-none {
+color: #9e9e9e;
 }
 
 /* 投票ボタン (共通) */
@@ -148,9 +165,4 @@ color: #fff;
 }
 .disagree-btn:hover {
 background-color: #ec699b;
-}
-
-/* 賛成・反対・未投票の数値をまとめるエリア */
-.ratio-text {
-font-size: 1rem;
 }

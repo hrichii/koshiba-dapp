@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+// 例: バックエンドCanisterを呼び出すためのimport
+import { koshiba_dapp_backend } from "../../declarations/koshiba-dapp-backend";
+
 import "./LoginPage.css";
 import bgVideo from "./img/LoginPage _background.mp4";
 import Image_logo from "./img/logo.jpg";
@@ -14,9 +17,33 @@ function LoginPage() {
     const [registerLoginId, setRegisterLoginId] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
+    // temple は「選択された寺院のID」を保持する
     const [temple, setTemple] = useState("");
+    const [temples, setTemples] = useState([]); // get_temples で取得した一覧を管理
     const [dankaGrade, setDankaGrade] = useState("");
     const [registerError, setRegisterError] = useState("");
+
+    // 檀家グレードと対応する投票数（Rustの Grade::vote_count() に合わせる）
+    const gradeVoteCounts = {
+        S: 25,
+        A: 15,
+        B: 10,
+        C: 5,
+        D: 3,
+    };
+
+    // 最初にコンポーネントがマウントされたタイミングで寺院一覧を取得
+    useEffect(() => {
+        const fetchTemples = async () => {
+        try {
+            const templeList = await koshiba_dapp_backend.get_temples();
+            setTemples(templeList);
+        } catch (error) {
+            console.error("get_temples error:", error);
+        }
+        };
+        fetchTemples();
+    }, []);
 
     const handleLogin = () => {
         const regex = /^[0-9]{7}$/;
@@ -43,35 +70,56 @@ function LoginPage() {
         }
     };
 
-    const handleRegister = () => {
+    // 新規登録ボタン押下時の処理
+    const handleRegister = async () => {
+        // 必須チェック
         if (!registerLoginId || !firstName || !lastName) {
-        setRegisterError("Internet Identity、First name、Last nameは必須入力です。");
-        return;
+            setRegisterError("Internet Identity、First name、Last nameは必須入力です。");
+            return;
+            }
+            // 7桁の数字チェック
+            const regex = /^[0-9]{7}$/;
+            if (!regex.test(registerLoginId)) {
+            setRegisterError("Internet Identityは7桁の数字で入力してください。");
+            return;
+            }
+            // 檀家グレードの選択必須チェック
+            if (!dankaGrade) {
+            setRegisterError("檀家グレードを選択してください。");
+            return;
+            }
+            // 寺院の選択必須チェック
+            if (!temple) {
+            setRegisterError("所属寺院を選択してください。");
+            return;
         }
-        const regex = /^[0-9]{7}$/;
-        if (!regex.test(registerLoginId)) {
-        setRegisterError("Internet Identityは7桁の数字で入力してください。");
-        return;
-        }
-        navigate("/home");
-    };
 
+        try {
+            // 文字列からenumオブジェクトへの変換
+            const gradeMapping = {
+                S: { S: null },
+                A: { A: null },
+                B: { B: null },
+                C: { C: null },
+                D: { D: null },
+        };
+        const gradeEnum = gradeMapping[dankaGrade];
+        // 寺院IDの変換
+        const templeId = parseInt(temple, 10);
+        // 変換後の値をバックエンドのcreate_userに渡す
+        await koshiba_dapp_backend.create_user(lastName, firstName, gradeEnum, templeId);
+        
+            // 登録が完了したらホーム画面へ遷移
+        navigate("/home");
+        } catch (error) {
+            console.error("create_user error:", error);
+            setRegisterError("新規登録に失敗しました。");
+        }
+    };
+    // 檀家グレード選択ボタン
     const selectDankaGrade = (grade) => {
         setDankaGrade(grade);
     };
-
-    const templeOptions = [
-        { value: "増上寺", label: "増上寺（東京都港区）" },
-        { value: "傳通院", label: "傳通院（東京都文京区）" },
-        { value: "靈巖寺", label: "靈巖寺（東京都江東区）" },
-        { value: "靈山寺", label: "靈山寺（東京都墨田区）" },
-        { value: "幡隨院", label: "幡隨院（東京都小金井市）" },
-        { value: "蓮馨寺", label: "蓮馨寺（埼玉県川越市）" },
-        { value: "勝願寺", label: "勝願寺（埼玉県鴻巢市）" },
-        { value: "大善寺", label: "大善寺（東京都八王子市）" },
-        { value: "淨國寺", label: "淨國寺（埼玉県埼玉市岩槻区）" },
-        { value: "光明寺", label: "光明寺（神奈川県鎌倉市）" },
-    ];
 
     return (
         <div className="login-page">
@@ -138,51 +186,36 @@ function LoginPage() {
                     placeholder="姓（Last name）"
                 />
                 </div>
+
+                {/* 寺院一覧を取得して表示する */}
                 <div className="input-field">
                 <select value={temple} onChange={(e) => setTemple(e.target.value)}>
                     <option value="">所属寺院(選択してください)</option>
-                    {templeOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                        {option.label}
+                    {temples.map((t) => (
+                    <option key={t.id} value={t.id}>
+                        {t.name}
                     </option>
                     ))}
                 </select>
                 </div>
+
+                {/* 檀家グレード S,A,B,C,D の表示と選択 */}
                 <div className="input-field">
                 <label>檀家グレード</label>
                 <div className="choice-chips">
+                    {Object.entries(gradeVoteCounts).map(([grade, count]) => (
                     <button
-                    type="button"
-                    className={dankaGrade === "S" ? "chip selected" : "chip"}
-                    onClick={() => selectDankaGrade("S")}
+                        key={grade}
+                        type="button"
+                        className={dankaGrade === grade ? "chip selected" : "chip"}
+                        onClick={() => selectDankaGrade(grade)}
                     >
-                    S (投票数: 10)
+                        {grade} (投票数: {count})
                     </button>
-                    <button
-                    type="button"
-                    className={dankaGrade === "A" ? "chip selected" : "chip"}
-                    onClick={() => selectDankaGrade("A")}
-                    >
-                    A (投票数: 5)
-                    </button>
-                    <button
-                    type="button"
-                    className={dankaGrade === "B" ? "chip selected" : "chip"}
-                    onClick={() => selectDankaGrade("B")}
-                    >
-                    B (投票数: 3)
-                    </button>
-                    <button
-                    type="button"
-                    className={dankaGrade === "C" ? "chip selected" : "chip"}
-                    onClick={() => selectDankaGrade("C")}
-                    >
-                    C (投票数: 1)
-                    </button>
+                    ))}
                 </div>
                 </div>
                 {registerError && <p className="error-message">{registerError}</p>}
-
                 <div className="button-group">
                 <button onClick={handleRegister}>新規登録</button>
                 </div>

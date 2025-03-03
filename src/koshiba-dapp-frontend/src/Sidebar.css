@@ -1,18 +1,18 @@
 /* サイドバー全体 */
 .sidebar {
-position: fixed;     /* ページの長さに関係なく固定 */
-top: 0;
-left: 0;
-width: 200px;
-height: 100vh;       /* 画面高さいっぱい */
-background-color: #00B900; 
-display: flex;
-flex-direction: column;
-align-items: center;
-color: #fff;
-padding-top: 20px;
-box-sizing: border-box;
-z-index: 999;
+    position: fixed;     /* ページの長さに関係なく固定 */
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 100vh;       /* 画面高さいっぱい */
+    background-color: #00B900; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #fff;
+    padding-top: 20px;
+    box-sizing: border-box;
+    z-index: 999;
 }
 
 /* ロゴを丸くくり抜いて中心表示 */
@@ -108,4 +108,48 @@ padding: 4px 0;
 
 .account-menu li a:hover {
 background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* モーダル用のスタイル */
+.modal-overlay {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.5);
+display: flex;
+align-items: center;
+justify-content: center;
+z-index: 1000;
+}
+
+.modal {
+background: #fff;
+padding: 20px;
+border-radius: 4px;
+text-align: center;
+/* モーダル内の文字色を黒に指定して、背景とのコントラストを確保 */
+color: #000;
+}
+
+.modal-buttons {
+margin-top: 20px;
+display: flex;
+justify-content: space-around;
+}
+
+.modal-buttons button {
+padding: 10px 20px;
+cursor: pointer;
+}
+
+/* ボタンの見た目調整（必要に応じて） */
+.delete-account-button {
+background: none;
+border: none;
+color: #fff;
+font-size: inherit;
+cursor: pointer;
+padding: 4px 0;
 }

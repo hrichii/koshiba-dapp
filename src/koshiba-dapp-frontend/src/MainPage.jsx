@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./MainPage.css";
+// バックエンドのモジュールをインポート
+import { koshiba_dapp_backend } from "../../declarations/koshiba-dapp-backend";
 
 import templeIcon from "./img/templeIcon.jpg";
 import rankIcon from "./img/rankIcon.jpg";
@@ -9,7 +11,7 @@ import voteIcon from "./img/voteIcon.jpg";
  * 数字を 0 から value までアニメーションしながら表示するコンポーネント
  * @param {number} value - 最終的な数値
  * @param {number} duration - アニメーション時間 (ms)
- * @param {string} suffix - 単位（例: "%"）
+ * @param {string} suffix - 単位（例: "票"）
  */
 function AnimatedNumber({ value, duration = 1500, suffix = "" }) {
   const [currentValue, setCurrentValue] = useState(0);
@@ -23,9 +25,7 @@ function AnimatedNumber({ value, duration = 1500, suffix = "" }) {
         startTime = timestamp;
       }
       const elapsed = timestamp - startTime;
-      // 進捗率（0～1）
       const progress = Math.min(elapsed / duration, 1);
-      // 現在値 = 最終値 * 進捗率
       const newValue = progress * value;
       setCurrentValue(newValue);
 
@@ -38,7 +38,6 @@ function AnimatedNumber({ value, duration = 1500, suffix = "" }) {
     return () => cancelAnimationFrame(animationFrameId);
   }, [value, duration]);
 
-  // 小数を四捨五入 or 切り捨て
   const displayValue = Math.floor(currentValue);
 
   return (
@@ -50,18 +49,47 @@ function AnimatedNumber({ value, duration = 1500, suffix = "" }) {
 }
 
 function MainPage() {
-  // 例: 賛成, 反対 の割合 (未投票は自動計算)
-  const policy1 = { agree: 40, disagree: 30 };
-  const policy2 = { agree: 50, disagree: 20 };
+  // canister から取得したユーザー情報
+  const [user, setUser] = useState(null);
+  // canister から取得したイベント一覧
+  const [events, setEvents] = useState([]);
 
-  const none1 = 100 - (policy1.agree + policy1.disagree);
-  const none2 = 100 - (policy2.agree + policy2.disagree);
+  // ユーザー情報を取得
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const fetchedUser = await koshiba_dapp_backend.get_user();
+        setUser(fetchedUser);
+      } catch (err) {
+        console.error("Failed to fetch user:", err);
+      }
+    };
+    fetchUser();
+  }, []);
+
+  // イベント一覧を取得
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const fetchedEvents = await koshiba_dapp_backend.get_user_events();
+        setEvents(fetchedEvents);
+      } catch (err) {
+        console.error("Failed to fetch events:", err);
+      }
+    };
+    fetchEvents();
+  }, []);
 
   return (
     <div className="container">
       {/* ユーザー情報コンテナ */}
       <div className="user-info-container">
-        <h2 className="user-name">小柴太郎</h2>
+        {/* ユーザー名 */}
+        <h2 className="user-name">
+          {user
+            ? `${user.last_name} ${user.first_name}`
+            : "ユーザー名を読み込み中..."}
+        </h2>
 
         <div className="user-details">
           {/* 所属寺院 */}
@@ -70,23 +98,31 @@ function MainPage() {
               <img src={templeIcon} alt="寺院アイコン" className="icon" />
               <span>所属寺院</span>
             </div>
-            <span className="status">浅草寺</span>
+            <span className="status">
+              {user ? user.temple.name : "読み込み中..."}
+            </span>
           </div>
+
           {/* 檀家グレード */}
           <div className="detail-item">
             <div className="icon-row">
               <img src={rankIcon} alt="檀家グレードアイコン" className="icon" />
               <span>檀家グレード</span>
             </div>
-            <span className="status">Rank S</span>
+            <span className="status">
+              {user ? `Rank ${Object.keys(user.grade)[0]}` : "読み込み中..."}
+            </span>
           </div>
+
           {/* 所持投票数 */}
           <div className="detail-item">
             <div className="icon-row">
               <img src={voteIcon} alt="投票アイコン" className="icon" />
               <span>所持投票数</span>
             </div>
-            <span className="status">10票</span>
+            <span className="status">
+              {user ? `${user.vote_count}票` : "読み込み中..."}
+            </span>
           </div>
         </div>
       </div>
@@ -94,121 +130,70 @@ function MainPage() {
       <hr />
 
       {/* 見出し */}
-      <h3 className="policy-title">浅草寺の運営方針</h3>
+      <h3 className="policy-title">
+        {user ? `${user.temple.name}の運営方針` : "読み込み中..."}
+      </h3>
 
-      {/* 薄いグレー背景にまとめる */}
+      {/* イベントをまとめるコンテナ */}
       <div className="policy-container">
-        {/* 方針1 */}
-        <div className="policy-item">
-          <h3>本殿の改修</h3>
-          <p>
-            本殿は歴史的価値を継承する重要文化財です。耐震補強をはじめ、
-            外壁・屋根の補修、断熱改修、木材の防腐処理やバリアフリー化を実施し、
-            伝統工法と最新技術を融合した保存修復を行います。工事は段階的に実施し、
-            工事中も安全管理を徹底して参拝者の不便を最小限に抑えます。
-          </p>
+        {events.map((event) => {
+          const unvoted = event.vote.total - (event.vote.agree + event.vote.disagree);
+          // ステータスバーの幅(%)を計算
+          const agreeWidth =
+            event.vote.total > 0 ? (event.vote.agree / event.vote.total) * 100 : 0;
+          const disagreeWidth =
+            event.vote.total > 0 ? (event.vote.disagree / event.vote.total) * 100 : 0;
+          const noneWidth =
+            event.vote.total > 0 ? (unvoted / event.vote.total) * 100 : 0;
 
-          {/* ステータスバー */}
-          <div className="status-bar-container">
-            <div className="status-bar">
-              <div
-                className="agree"
-                style={{
-                  animation: "growBar 1.5s forwards",
-                  "--final-width": `${policy1.agree}%`,
-                }}
-              />
-              <div
-                className="disagree"
-                style={{
-                  animation: "growBar 1.5s forwards",
-                  "--final-width": `${policy1.disagree}%`,
-                }}
-              />
-              <div
-                className="none"
-                style={{
-                  animation: "growBar 1.5s forwards",
-                  "--final-width": `${none1}%`,
-                }}
-              />
+          return (
+            <div className="policy-item" key={event.event_id}>
+              <h3>{event.title}</h3>
+              <p>{event.content}</p>
+
+              {/* ステータスバー */}
+              <div className="status-bar-container">
+                <div className="status-bar">
+                  <div
+                    className="agree bar" 
+                    style={{ "--final-width": `${agreeWidth}%` }}
+                  />
+                  <div
+                    className="disagree bar"
+                    style={{ "--final-width": `${disagreeWidth}%` }}
+                  />
+                  <div
+                    className="none bar"
+                    style={{ "--final-width": `${noneWidth}%` }}
+                  />
+                </div>
+
+                {/* 賛成・反対・未投票の「票数」を表示 */}
+                <div className="ratio-text">
+                  <span className="ratio-agree">
+                    賛成: <AnimatedNumber value={event.vote.agree} suffix="票" />
+                  </span>
+                  {" / "}
+                  <span className="ratio-disagree">
+                    反対: <AnimatedNumber value={event.vote.disagree} suffix="票" />
+                  </span>
+                  {" / "}
+                  <span className="ratio-none">
+                    未投票: <AnimatedNumber value={unvoted} suffix="票" />
+                  </span>
+                </div>
+              </div>
+
+              {/* 投票ボタン */}
+              <button className="vote-button agree-btn">
+                {user ? `${user.vote_count}票 賛成に入れる` : "読み込み中..."}
+              </button>
+              <button className="vote-button disagree-btn">
+                {user ? `${user.vote_count}票 反対に入れる` : "読み込み中..."}
+              </button>
             </div>
-
-            {/* 賛成・反対・未投票の数値をカウントアップ表示 */}
-            <div className="ratio-text">
-              <span style={{ color: "#003eb9" }}>
-                賛成: <AnimatedNumber value={policy1.agree} suffix="%" />
-              </span>{" "}
-              /{" "}
-              <span style={{ color: "#f48fb1" }}>
-                反対: <AnimatedNumber value={policy1.disagree} suffix="%" />
-              </span>{" "}
-              /{" "}
-              <span style={{ color: "#9e9e9e" }}>
-                未投票: <AnimatedNumber value={none1} suffix="%" />
-              </span>
-            </div>
-          </div>
-
-          <button className="vote-button agree-btn">10票 賛成に入れる</button>
-          <button className="vote-button disagree-btn">10票 反対に入れる</button>
-        </div>
-
-        {/* 方針2 */}
-        <div className="policy-item">
-          <h3>ひな祭りイベントの開催</h3>
-          <p>
-            例年、2月下旬にひな祭りを開催し、ひな人形の展示、伝統衣装の体験、
-            和菓子・茶の試食、子ども向け工作教室など多彩な催しを実施します。
-            地域住民との交流を深め、伝統文化の魅力を次世代へ継承するため、
-            地域内外の檀家と連携し、伝統と現代性を融合した催しで、
-            皆様の心に残るひとときをお約束します。
-          </p>
-
-          <div className="status-bar-container">
-            <div className="status-bar">
-              <div
-                className="agree"
-                style={{
-                  animation: "growBar 1.5s forwards",
-                  "--final-width": `${policy2.agree}%`,
-                }}
-              />
-              <div
-                className="disagree"
-                style={{
-                  animation: "growBar 1.5s forwards",
-                  "--final-width": `${policy2.disagree}%`,
-                }}
-              />
-              <div
-                className="none"
-                style={{
-                  animation: "growBar 1.5s forwards",
-                  "--final-width": `${none2}%`,
-                }}
-              />
-            </div>
-
-            {/* 賛成・反対・未投票の数値をカウントアップ表示 */}
-            <div className="ratio-text">
-              <span style={{ color: "#003eb9" }}>
-                賛成: <AnimatedNumber value={policy2.agree} suffix="%" />
-              </span>{" "}
-              /{" "}
-              <span style={{ color: "#f48fb1" }}>
-                反対: <AnimatedNumber value={policy2.disagree} suffix="%" />
-              </span>{" "}
-              /{" "}
-              <span style={{ color: "#9e9e9e" }}>
-                未投票: <AnimatedNumber value={none2} suffix="%" />
-              </span>
-            </div>
-          </div>
-
-          <button className="vote-button agree-btn">10票 賛成に入れる</button>
-          <button className="vote-button disagree-btn">10票 反対に入れる</button>
-        </div>
+          );
+        })}
       </div>
     </div>
   );
