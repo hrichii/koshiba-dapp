@@ -1,111 +1,67 @@
-use candid::{CandidType, Deserialize};
-use ic_cdk::query;
+mod entities;
+mod models;
+use crate::models::{
+    event::Event, grade::Grade, temple::Temple, user::User, vote::Vote, vote_status::VoteStatus,
+};
+mod services;
+use crate::services::user_service::UserService;
+mod repositories;
+use crate::repositories::user_repository::StableUserRepository;
+mod dtos;
+use crate::dtos::user_dto::UserDto;
+use candid::Principal;
 use ic_cdk::update;
-use serde::Serialize;
-
-#[derive(Serialize, Deserialize, CandidType)]
-struct User {
-    id: u32,
-    last_name: String,
-    first_name: String,
-    grade: Grade,
-    temple: Temple,
-    vote_count: u32,
-    payment: u64,
-}
-
-#[derive(Serialize, Deserialize, CandidType)]
-struct Temple {
-    id: u32,
-    name: String,
-}
-
-#[derive(Serialize, Deserialize, CandidType)]
-struct Event {
-    event_id: u32,
-    title: String,
-    content: String,
-    vote: Vote,
-    your_vote: VoteStatus,
-    deadline_at: String,
-    created_at: String,
-}
-
-#[derive(Serialize, Deserialize, CandidType)]
-struct Vote {
-    agree: u32,
-    disagree: u32,
-    total: u32,
-}
-
-#[derive(Serialize, Deserialize, CandidType)]
-pub enum VoteStatus {
-    NotVoted,
-    Agree,
-    Disagree,
-}
-
-#[derive(Serialize, Deserialize, CandidType)]
-pub enum Grade {
-    S,
-    A,
-    B,
-    C,
-    D,
-}
-
-impl Grade {
-    pub fn payment(&self) -> u64 {
-        match self {
-            Grade::S => 5_000_000,
-            Grade::A => 3_000_000,
-            Grade::B => 1_000_000,
-            Grade::C => 500_000,
-            Grade::D => 300_000,
-        }
-    }
-
-    pub fn vote_count(&self) -> u32 {
-        match self {
-            Grade::S => 25,
-            Grade::A => 15,
-            Grade::B => 10,
-            Grade::C => 5,
-            Grade::D => 3,
-        }
-    }
-}
+use ic_cdk::{caller, query};
 
 #[query]
-fn get_user() -> User {
-    User {
-        id: 1,
-        last_name: "山田".to_string(),
-        first_name: "太郎".to_string(),
-        grade: Grade::A,
-        temple: Temple { id: 1, name: "浅草寺".to_string() },
-        vote_count: Grade::A.vote_count(),
-        payment: Grade::A.payment(),
+fn get_user() -> Option<UserDto> {
+    // TODO FrontがIIに対応したらコメントアウトを外す
+    // let principal: Principal = caller();
+    // if principal == Principal::anonymous() {
+    //     return None;
+    // }
+    // let id = principal.to_text();
+    let id = "1".to_string();
+    let service: UserService = UserService::new(Box::new(StableUserRepository));
+    let nullable_user: Option<User> = service.fetch(id);
+    if let Some(user) = nullable_user {
+        Some(UserDto::from_user(user))
+    } else {
+        None
     }
 }
 
 #[update]
-fn create_user(last_name: String, first_name: String, grade: Grade, temple_id: u32) -> User {
-    User {
-        id: 1,
-        last_name: last_name,
-        first_name: first_name,
-        grade: Grade::A,
-        temple: Temple { id: temple_id, name: "寺名".to_string() },
-        vote_count: Grade::A.vote_count(),
-        payment: Grade::A.payment(),
-    }
+fn create_user(
+    last_name: String,
+    first_name: String,
+    grade: Grade,
+    temple_id: u32,
+) -> Option<UserDto> {
+    // TODO FrontがIIに対応したらコメントアウトを外す
+    // let principal: Principal = caller();
+    // if principal == Principal::anonymous() {
+    //     return None;
+    // }
+    // let id = principal.to_text();
+    let id = "1".to_string();
+    let service: UserService = UserService::new(Box::new(StableUserRepository));
+
+    let user: User = service.save(id, last_name, first_name, grade, temple_id);
+    Some(UserDto::from_user(user))
 }
 
 #[update]
 fn delete_user() {
-    // ここでユーザーを削除する処理を実装
-    // 現在、特に返すものはない
+    // let principal: Principal = caller();
+    // if principal == Principal::anonymous() {
+    //     return None;
+    // }
+    // let id = principal.to_text();
+    let id = "1".to_string();
+    let service: UserService = UserService::new(Box::new(StableUserRepository));
+
+    service.delete(id);
 }
 
 #[query]
