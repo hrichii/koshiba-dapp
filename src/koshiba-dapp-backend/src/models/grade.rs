@@ -1,7 +1,7 @@
 use candid::{CandidType, Deserialize};
 use serde::Serialize;
 
-#[derive(Serialize, Deserialize, CandidType)]
+#[derive(Clone, Serialize, Deserialize, CandidType)]
 pub enum Grade {
     S,
     A,

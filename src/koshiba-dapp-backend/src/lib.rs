@@ -1,3 +1,4 @@
+mod entities;
 mod models;
 use crate::models::{
     event::Event, grade::Grade, temple::Temple, user::User, vote::Vote, vote_status::VoteStatus,
@@ -6,37 +7,61 @@ mod services;
 use crate::services::user_service::UserService;
 mod repositories;
 use crate::repositories::user_repository::StableUserRepository;
-use ic_cdk::query;
+mod dtos;
+use crate::dtos::user_dto::UserDto;
+use candid::Principal;
 use ic_cdk::update;
+use ic_cdk::{caller, query};
 
 #[query]
-fn get_user() -> Option<User> {
-    let service = UserService::new(Box::new(StableUserRepository));
-    service.fetch(1)
+fn get_user() -> Option<UserDto> {
+    // TODO FrontがIIに対応したらコメントアウトを外す
+    // let principal: Principal = caller();
+    // if principal == Principal::anonymous() {
+    //     return None;
+    // }
+    // let id = principal.to_text();
+    let id = "1".to_string();
+    let service: UserService = UserService::new(Box::new(StableUserRepository));
+    let nullable_user: Option<User> = service.fetch(id);
+    if let Some(user) = nullable_user {
+        Some(UserDto::from_user(user))
+    } else {
+        None
+    }
 }
 
 #[update]
-fn create_user(last_name: String, first_name: String, grade: Grade, temple_id: u32) -> User {
-    let service = UserService::new(Box::new(StableUserRepository));
+fn create_user(
+    last_name: String,
+    first_name: String,
+    grade: Grade,
+    temple_id: u32,
+) -> Option<UserDto> {
+    // TODO FrontがIIに対応したらコメントアウトを外す
+    // let principal: Principal = caller();
+    // if principal == Principal::anonymous() {
+    //     return None;
+    // }
+    // let id = principal.to_text();
+    let id = "1".to_string();
+    let service: UserService = UserService::new(Box::new(StableUserRepository));
 
-    // 新規ユーザーの保存
-    let new_user = User {
-        id: 1,
-        last_name: "山田".to_string(),
-        first_name: "太郎".to_string(),
-        grade: Grade::A,
-        vote_count: 10,
-        temple: Temple { id: 1, name: "浅草寺".to_string() },
-        payment: 1_000_000,
-    };
-
-    service.save(new_user)
+    let user: User = service.save(id, last_name, first_name, grade, temple_id);
+    Some(UserDto::from_user(user))
 }
 
 #[update]
 fn delete_user() {
-    // ここでユーザーを削除する処理を実装
-    // 現在、特に返すものはない
+    // let principal: Principal = caller();
+    // if principal == Principal::anonymous() {
+    //     return None;
+    // }
+    // let id = principal.to_text();
+    let id = "1".to_string();
+    let service: UserService = UserService::new(Box::new(StableUserRepository));
+
+    service.delete(id);
 }
 
 #[query]
