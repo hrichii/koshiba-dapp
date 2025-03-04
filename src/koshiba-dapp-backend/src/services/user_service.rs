@@ -1,30 +1,27 @@
-use candid::Principal;
-
 use crate::{
     entities::user_entity::UserEntity,
     models::{grade::Grade, temple::Temple, user::User},
-    repositories::user_repository::UserRepository,
+    repositories::{temple_repository::TempleRepository, user_repository::UserRepository},
 };
 
 pub struct UserService {
-    repository: Box<dyn UserRepository>,
+    user_repository: Box<dyn UserRepository>,
+    temple_repository: Box<dyn TempleRepository>,
 }
 
 impl UserService {
-    pub fn new(repository: Box<dyn UserRepository>) -> Self {
-        UserService { repository }
+    pub fn new(
+        user_repository: Box<dyn UserRepository>,
+        temple_repository: Box<dyn TempleRepository>,
+    ) -> Self {
+        UserService { user_repository, temple_repository }
     }
 
     pub fn fetch(&self, id: String) -> Option<User> {
-        let nullable_user_entity = self.repository.fetch(id);
-        if let Some(user_entity) = nullable_user_entity {
-            return Some(User::from_entity(
-                user_entity.clone(),
-                // TODO temple_id から Temple を取得する
-                Temple { id: user_entity.temple_id.clone(), name: "浅草寺".to_string() },
-            ));
-        }
-        None
+        let user_entity = self.user_repository.fetch(id)?;
+        let nullable_temple_entity = self.temple_repository.fetch(user_entity.temple_id.clone());
+
+        Some(User::from_entity(user_entity, nullable_temple_entity.map(Temple::from_entity)))
     }
 
     pub fn save(
@@ -35,18 +32,18 @@ impl UserService {
         grade: Grade,
         temple_id: u32,
     ) -> User {
-        let user_entity: UserEntity = self.repository.save(
+        let user_entity: UserEntity = self.user_repository.save(
             id.clone(),
             last_name.clone(),
             first_name.clone(),
             grade.clone(),
             temple_id.clone(),
         );
-        // TODO temple_id から Temple を取得する
-        User::from_entity(user_entity, Temple { id: temple_id, name: "浅草寺".to_string() })
+        let nullable_temple_entity = self.temple_repository.fetch(user_entity.temple_id.clone());
+        User::from_entity(user_entity, nullable_temple_entity.map(Temple::from_entity))
     }
 
     pub fn delete(&self, id: String) {
-        self.repository.delete(id);
+        self.user_repository.delete(id);
     }
 }
