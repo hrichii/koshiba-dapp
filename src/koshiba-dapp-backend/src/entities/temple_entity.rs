@@ -4,7 +4,7 @@ use serde::Serialize;
 
 use std::borrow::Cow;
 
-#[derive(Serialize, Deserialize, CandidType)]
+#[derive(Clone, Serialize, Deserialize, CandidType)]
 pub struct TempleEntity {
     pub id: u32,
     pub name: String,
