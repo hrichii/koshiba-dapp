@@ -9,9 +9,8 @@ mod repositories;
 use crate::repositories::user_repository::StableUserRepository;
 mod dtos;
 use crate::dtos::user_dto::UserDto;
-use candid::Principal;
-use ic_cdk::{caller, query};
-use ic_cdk::{id, update};
+use ic_cdk::query;
+use ic_cdk::update;
 use repositories::temple_repository::StableTempleRepository;
 use services::temple_service::TempleService;
 
@@ -24,7 +23,8 @@ fn get_user() -> Option<UserDto> {
     // }
     // let id = principal.to_text();
     let id = "1".to_string();
-    let service: UserService = UserService::new(Box::new(StableUserRepository));
+    let service: UserService =
+        UserService::new(Box::new(StableUserRepository), Box::new(StableTempleRepository));
     let nullable_user: Option<User> = service.fetch(id);
     if let Some(user) = nullable_user {
         Some(UserDto::from_user(user))
@@ -47,7 +47,8 @@ fn create_user(
     // }
     // let id = principal.to_text();
     let id = "1".to_string();
-    let service: UserService = UserService::new(Box::new(StableUserRepository));
+    let service: UserService =
+        UserService::new(Box::new(StableUserRepository), Box::new(StableTempleRepository));
 
     let user: User = service.save(id, last_name, first_name, grade, temple_id);
     Some(UserDto::from_user(user))
@@ -61,7 +62,8 @@ fn delete_user() {
     // }
     // let id = principal.to_text();
     let id = "1".to_string();
-    let service: UserService = UserService::new(Box::new(StableUserRepository));
+    let service: UserService =
+        UserService::new(Box::new(StableUserRepository), Box::new(StableTempleRepository));
 
     service.delete(id);
 }

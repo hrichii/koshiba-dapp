@@ -9,10 +9,10 @@ pub struct User {
     pub last_name: String,
     pub first_name: String,
     pub grade: Grade,
-    pub temple: Temple,
+    pub temple: Option<Temple>,
 }
 impl User {
-    pub fn from_entity(user_entity: UserEntity, temple: Temple) -> Self {
+    pub fn from_entity(user_entity: UserEntity, temple: Option<Temple>) -> Self {
         User {
             id: user_entity.id,
             last_name: user_entity.last_name,

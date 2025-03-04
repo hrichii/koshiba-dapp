@@ -8,7 +8,7 @@ pub struct UserDto {
     pub last_name: String,
     pub first_name: String,
     pub grade: Grade,
-    pub temple: Temple,
+    pub temple: Option<Temple>,
     pub vote_count: u32,
     pub payment: u64,
 }
