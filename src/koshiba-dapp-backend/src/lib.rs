@@ -10,8 +10,10 @@ use crate::repositories::user_repository::StableUserRepository;
 mod dtos;
 use crate::dtos::user_dto::UserDto;
 use candid::Principal;
-use ic_cdk::update;
 use ic_cdk::{caller, query};
+use ic_cdk::{id, update};
+use repositories::temple_repository::StableTempleRepository;
+use services::temple_service::TempleService;
 
 #[query]
 fn get_user() -> Option<UserDto> {
@@ -103,11 +105,26 @@ fn update_vote(_event_id: u32, your_vote: VoteStatus) -> Event {
 
 #[query]
 fn get_temples() -> Vec<Temple> {
-    vec![
-        Temple { id: 1, name: "浅草寺".to_string() },
-        Temple { id: 2, name: "京都寺院".to_string() },
-        Temple { id: 3, name: "奈良寺院".to_string() },
-    ]
+    let service: TempleService = TempleService::new(Box::new(StableTempleRepository));
+    service.fetch_all()
+}
+
+#[query]
+fn get_temple(id: u32) -> Option<Temple> {
+    let service: TempleService = TempleService::new(Box::new(StableTempleRepository));
+    service.fetch(id)
+}
+
+#[update]
+fn create_temple(id: u32, name: String) -> Temple {
+    let service: TempleService = TempleService::new(Box::new(StableTempleRepository));
+    service.save(id, name)
+}
+
+#[update]
+fn delete_temple(id: u32) {
+    let service: TempleService = TempleService::new(Box::new(StableTempleRepository));
+    service.delete(id)
 }
 
 ic_cdk_macros::export_candid!();
