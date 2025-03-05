@@ -1,0 +1,557 @@
+/* 変数定義 */
+:root {
+  --main-color: #00B900;
+  --main-color-dark: #009900;
+  --main-color-light: #00D800;
+  --text-dark: #333333;
+  --text-medium: #666666;
+  --text-light: #999999;
+  --bg-light: #f8f9fa;
+  --bg-white: #ffffff;
+  --danger-color: #e74c3c;
+  --shadow-small: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 5px 20px rgba(0, 0, 0, 0.12);
+  --shadow-large: 0 10px 30px rgba(0, 0, 0, 0.2);
+  --radius-small: 8px;
+  --radius-medium: 12px;
+  --radius-large: 16px;
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
+/* 全体レイアウト */
+.register-page {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  font-family: 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Noto Sans JP', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 背景動画のラッパ要素 */
+.video-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+}
+
+/* 背景動画 */
+.background-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 黒いオーバーレイ */
+.video-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, 
+    rgba(0, 0, 0, 0.6) 0%, 
+    rgba(0, 0, 0, 0.4) 100%);
+  z-index: 1;
+}
+
+/* ローディング表示 */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.95);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
+
+.loading-container p {
+  font-size: 1.1rem;
+  color: var(--main-color);
+  position: relative;
+  padding-left: 35px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.loading-container p::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  margin-top: -11px;
+  border: 3px solid var(--main-color);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 登録コンテナ */
+.register-container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+/* 登録カード */
+.register-card {
+  background-color: rgba(255, 255, 255, 0.97);
+  border-radius: var(--radius-medium);
+  box-shadow: var(--shadow-large);
+  padding: 30px 20px;
+  width: 100%;
+  max-width: 1000px;
+  animation: fadeIn 0.8s ease, slideUp 0.8s ease;
+}
+
+@media (min-width: 768px) {
+  .register-card {
+    padding: 40px 30px;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); }
+  to { transform: translateY(0); }
+}
+
+/* ヘッダー部分 */
+.register-header {
+  text-align: center;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+
+/* ロゴ */
+.logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 16px;
+  display: block;
+  border: 3px solid var(--main-color);
+  animation: pulse 2s infinite ease-in-out;
+  box-shadow: var(--shadow-medium);
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+/* 見出し */
+.register-header h1 {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-dark);
+  margin-bottom: 8px;
+  position: relative;
+  display: inline-block;
+}
+
+.register-header h1::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 3px;
+  background-color: var(--main-color);
+  border-radius: 3px;
+}
+
+/* サブタイトル */
+.register-subtitle {
+  color: var(--text-medium);
+  font-size: 16px;
+  margin-bottom: 5px;
+  margin-top: 14px;
+}
+
+/* 各ページのコンテンツ */
+.register-page-content {
+  width: 100%;
+}
+
+/* ページタイトル */
+.page-title {
+  font-size: 20px;
+  color: var(--text-dark);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* フォーム */
+.register-form {
+  margin-bottom: 20px;
+}
+
+/* 姓名を横並びにする */
+.name-fields {
+  display: flex;
+  gap: 15px;
+}
+
+.half-width {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 入力フィールド */
+.input-field {
+  margin-bottom: 20px;
+}
+
+.input-field label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: var(--text-dark);
+}
+
+.input-field input,
+.input-field select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* 読み取り専用フィールド */
+.readonly-field {
+  background-color: #f9f9f9;
+  color: #666;
+  cursor: not-allowed;
+}
+
+/* フィールド補足説明 */
+.field-note {
+  font-size: 12px;
+  color: #888;
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+/* グレードカード */
+.grade-cards {
+  display: flex;
+  gap: 15px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.grade-card {
+  flex: 1;
+  min-width: 180px;
+  max-width: 250px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.grade-card:hover {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transform: translateY(-3px);
+}
+
+.grade-card.selected {
+  border: 2px solid var(--main-color);
+  box-shadow: 0 5px 15px rgba(0, 185, 0, 0.2);
+}
+
+/* グレードカードのヘッダー */
+.grade-header {
+  text-align: center;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.grade-title-eng {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.grade-title {
+  font-size: 28px;
+  font-weight: bold;
+  color: var(--main-color);
+  margin-bottom: 10px;
+}
+
+.grade-description {
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+  height: auto;
+  min-height: 60px;
+}
+
+/* グレード価格 */
+.grade-price {
+  text-align: center;
+  margin-bottom: 15px;
+}
+
+.price {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+}
+
+.price-description {
+  font-size: 13px;
+  color: #666;
+}
+
+/* グレードボタン */
+.grade-button {
+  background-color: var(--main-color);
+  color: white;
+  padding: 10px;
+  text-align: center;
+  border-radius: 6px;
+  font-weight: bold;
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+/* グレード機能リスト */
+.grade-features {
+  margin-top: 15px;
+  font-size: 12px;
+}
+
+.feature {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: #555;
+  line-height: 1.3;
+}
+
+.feature strong {
+  color: #333;
+  display: block;
+  margin-bottom: 5px;
+  font-size: 13px;
+}
+
+.user-icon::before {
+  content: "👤";
+}
+
+.storage-icon::before {
+  content: "💾";
+}
+
+/* ボタングループ */
+.button-group {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  padding: 10px 0;
+  background-color: transparent;
+  position: sticky;
+  bottom: 0;
+  justify-content: space-between;
+}
+
+.next-button,
+.back-button,
+.register-button,
+.cancel-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  min-width: 120px;
+}
+
+.next-button,
+.register-button {
+  background-color: var(--main-color);
+  color: white;
+  margin-left: auto;
+  box-shadow: 0 4px 15px rgba(0, 185, 0, 0.3);
+}
+
+.back-button,
+.cancel-button {
+  background-color: rgba(240, 240, 240, 0.9);
+  color: #333;
+  margin-right: auto;
+}
+
+.next-button:hover,
+.register-button:hover {
+  background-color: var(--main-color-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 185, 0, 0.4);
+}
+
+.register-button:disabled {
+  background-color: #99d699;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.back-button:hover,
+.cancel-button:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+}
+
+.cancel-button:disabled {
+  color: #999;
+  cursor: not-allowed;
+}
+
+/* フッター */
+.register-footer {
+  text-align: center;
+  margin-top: 20px;
+  flex-shrink: 0;
+}
+
+.small-text {
+  font-size: 14px;
+  color: #999;
+}
+
+/* エラーメッセージ */
+.error-message {
+  color: var(--danger-color);
+  background-color: rgba(253, 234, 234, 0.9);
+  padding: 12px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  border-left: 3px solid var(--danger-color);
+}
+
+/* グレード選択の注釈 */
+.grade-note {
+  text-align: center;
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 992px) {
+  .grade-cards {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  
+  .grade-card {
+    min-width: 45%;
+  }
+}
+
+@media (max-width: 768px) {
+  .register-container {
+    padding: 15px;
+  }
+  
+  .register-card {
+    padding: 20px;
+  }
+  
+  .grade-cards {
+    flex-direction: column;
+  }
+  
+  .name-fields {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .half-width {
+    width: 100%;
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+  
+  .grade-card {
+    width: 100%;
+    max-width: 100%;
+  }
+  
+  .next-button,
+  .back-button,
+  .register-button,
+  .cancel-button {
+    width: 100%;
+    margin: 5px 0;
+  }
+  
+  .next-button,
+  .register-button {
+    margin-left: 0;
+    order: 1;
+  }
+  
+  .back-button,
+  .cancel-button {
+    margin-right: 0;
+    order: 2;
+  }
+}
+
+/* モバイルデバイスで背景ビデオの代替（オプション） */
+@media (max-width: 767px) {
+  .video-wrapper {
+    background: linear-gradient(135deg, #007344 0%, var(--main-color) 100%);
+  }
+  
+  .background-video {
+    display: none;
+  }
+} 

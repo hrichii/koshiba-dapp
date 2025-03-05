@@ -3,6 +3,7 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./LoginPage";
 import MainPage from "./MainPage";
+import RegisterPage from "./RegisterPage";
 import SearchTemplePage from "./SearchTemplePage";
 import ParticipatePage from "./ParticipatePage";
 import NotificationPage from "./NotificationPage";
@@ -16,6 +17,8 @@ function App() {
       <Routes>
         {/* ログインページ（サイドバーなし） */}
         <Route path="/" element={<LoginPage />} />
+        {/* 登録ページ（サイドバーなし） */}
+        <Route path="/register" element={<RegisterPage />} />
 
         {/* その他のページ（サイドバーあり） */}
         <Route
