@@ -371,7 +371,7 @@ hr {
 
 /* ステータスバー */
 .status-bar {
-  height: 14px;
+  height: 30px;
   border-radius: var(--radius-small);
   background-color: #eaeaea;
   display: flex;
@@ -382,7 +382,7 @@ hr {
 
 @media (min-width: 768px) {
   .status-bar {
-    height: 16px;
+    height: 42px;
   }
 }
 
