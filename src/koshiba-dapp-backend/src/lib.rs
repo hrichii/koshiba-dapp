@@ -9,20 +9,19 @@ mod repositories;
 use crate::repositories::user_repository::StableUserRepository;
 mod dtos;
 use crate::dtos::user_dto::UserDto;
-use ic_cdk::query;
+use candid::Principal;
 use ic_cdk::update;
+use ic_cdk::{caller, query};
 use repositories::temple_repository::StableTempleRepository;
 use services::temple_service::TempleService;
 
 #[query]
 fn get_user() -> Option<UserDto> {
-    // TODO FrontがIIに対応したらコメントアウトを外す
-    // let principal: Principal = caller();
-    // if principal == Principal::anonymous() {
-    //     return None;
-    // }
-    // let id = principal.to_text();
-    let id = "1".to_string();
+    let principal: Principal = caller();
+    if principal == Principal::anonymous() {
+        return None;
+    }
+    let id = principal.to_text();
     let service: UserService =
         UserService::new(Box::new(StableUserRepository), Box::new(StableTempleRepository));
     let nullable_user: Option<User> = service.fetch(id);
@@ -40,13 +39,11 @@ fn create_user(
     grade: Grade,
     temple_id: u32,
 ) -> Option<UserDto> {
-    // TODO FrontがIIに対応したらコメントアウトを外す
-    // let principal: Principal = caller();
-    // if principal == Principal::anonymous() {
-    //     return None;
-    // }
-    // let id = principal.to_text();
-    let id = "1".to_string();
+    let principal: Principal = caller();
+    if principal == Principal::anonymous() {
+        return None;
+    }
+    let id = principal.to_text();
     let service: UserService =
         UserService::new(Box::new(StableUserRepository), Box::new(StableTempleRepository));
 
@@ -56,12 +53,11 @@ fn create_user(
 
 #[update]
 fn delete_user() {
-    // let principal: Principal = caller();
-    // if principal == Principal::anonymous() {
-    //     return None;
-    // }
-    // let id = principal.to_text();
-    let id = "1".to_string();
+    let principal: Principal = caller();
+    if principal == Principal::anonymous() {
+        return;
+    }
+    let id = principal.to_text();
     let service: UserService =
         UserService::new(Box::new(StableUserRepository), Box::new(StableTempleRepository));
 
