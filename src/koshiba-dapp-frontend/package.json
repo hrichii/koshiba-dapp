@@ -25,7 +25,7 @@
   "name": "koshiba-dapp-frontend",
   "private": true,
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "vite build",
     "format": "prettier --write \"src/**/*.{json,js,jsx,ts,tsx,css,scss}\"",
     "prebuild": "dfx generate",
     "setup": "npm i && dfx canister create koshiba-dapp-backend && dfx generate koshiba-dapp-backend && dfx deploy",

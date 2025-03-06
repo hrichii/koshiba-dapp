@@ -1,217 +1,416 @@
+/* 変数定義 - すべてのページで統一 */
+:root {
+  --main-color: #00B900;
+  --main-color-dark: #008900;
+  --main-color-light: #2BDB2B;
+  --accent-color: #FF6B00;
+  --text-dark: #333333;
+  --text-medium: #666666;
+  --text-light: #999999;
+  --bg-light: #f8f9fa;
+  --bg-white: #ffffff;
+  --danger-color: #e74c3c;
+  --shadow-small: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 5px 20px rgba(0, 0, 0, 0.12);
+  --shadow-large: 0 10px 30px rgba(0, 0, 0, 0.2);
+  --radius-small: 8px;
+  --radius-medium: 12px;
+  --radius-large: 16px;
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+}
+
 /* 全体 */
 .login-page {
-    position: relative;
-    width: 100%;
-    height: 100vh;
-    overflow: hidden;
-    font-family: sans-serif;
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  font-family: 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Noto Sans JP', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* 背景動画のラッパ要素 */
 .video-wrapper {
-position: absolute;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-z-index: -2;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
 }
 
 /* 背景動画 */
 .background-video {
-width: 100%;
-height: 100%;
-object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* 黒いオーバーレイ */
 .video-overlay {
-position: absolute;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background-color: rgba(0, 0, 0, 0.4);
-z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, 
+    rgba(0, 0, 0, 0.5) 0%, 
+    rgba(0, 0, 0, 0.3) 100%);
+  z-index: 1;
 }
 
-/* ログインフォーム */
-.login-form {
-position: relative;
-z-index: 2;
-max-width: 400px;
-width: 90%;
-margin: 0 auto;
-margin-top: 10%;
-background-color: rgba(255, 255, 255, 0.85);
-padding: 2rem;
-border-radius: 8px;
-text-align: center;
-box-sizing: border-box;
+/* ログインコンテナ */
+.login-container {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 20px;
 }
 
-/* ロゴを丸く中央に表示 */
+/* ログインカード */
+.login-card {
+  max-width: 420px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.97);
+  border-radius: var(--radius-large);
+  box-shadow: var(--shadow-large);
+  padding: 35px 25px;
+  text-align: center;
+  animation: fadeIn 0.8s ease, slideUp 0.8s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+  position: relative;
+}
+
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(90deg, var(--main-color-light), var(--main-color), var(--main-color-dark));
+  z-index: 1;
+}
+
+@media (min-width: 768px) {
+  .login-card {
+    padding: 40px 35px;
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); }
+  to { transform: translateY(0); }
+}
+
+/* ログインヘッダー */
+.login-header {
+  margin-bottom: 30px;
+}
+
+/* ロゴ */
 .logo {
-display: block;
-margin: 0 auto 1rem auto;
-width: 100px;
-height: 100px;
-border-radius: 50%;
-object-fit: cover;
-overflow: hidden;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 20px;
+  display: block;
+  border: 3px solid var(--main-color);
+  animation: pulse 2s infinite ease-in-out;
+  box-shadow: var(--shadow-medium);
+  transition: transform var(--transition-normal);
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 185, 0, 0.4); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(0, 185, 0, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(0, 185, 0, 0); }
 }
 
 /* 見出し */
-.login-form h1 {
-margin: 0;
-font-size: 1.5rem;
-font-weight: bold;
+.login-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-dark);
+  margin-bottom: 12px;
+  position: relative;
+  display: inline-block;
+  letter-spacing: 0.5px;
 }
 
-/* サブ見出し */
-.subheading {
-margin: 0.5rem 0 1.5rem 0;
-font-size: 1rem;
-color: #555;
+.login-header h1::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--main-color-light), var(--main-color));
+  border-radius: 3px;
 }
 
-/* 入力欄 */
-.login-input {
-width: 100%;
-box-sizing: border-box;
-font-size: 1rem;
-border: 1px solid #ccc;
-border-radius: 4px;
-outline: none;
-text-align: center;
-padding: 0.5rem 1rem;
-transition: box-shadow 0.3s;
+/* サブタイトル */
+.login-subtitle {
+  color: var(--text-medium);
+  font-size: 17px;
+  margin-bottom: 5px;
+  margin-top: 18px;
 }
-.login-input:hover {
-box-shadow: 0 0 0 2px #00B900;
+
+/* ログインオプション */
+.login-options {
+  margin-top: 35px;
+  margin-bottom: 30px;
+}
+
+/* ログインボタン */
+.login-button {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(45deg, var(--main-color-dark), var(--main-color));
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  box-shadow: 0 4px 15px rgba(0, 185, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.login-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: transform 0.6s ease;
+}
+
+.login-button:hover {
+  background: linear-gradient(45deg, var(--main-color), var(--main-color-dark));
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 185, 0, 0.4);
+}
+
+.login-button:hover::before {
+  transform: translateX(200%);
+}
+
+.login-button:active {
+  transform: translateY(0);
+}
+
+.login-button:disabled {
+  background: linear-gradient(45deg, #a8e6a8, #99d699);
+  cursor: not-allowed;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+/* ボタンの内容 */
+.button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* ボタンのアイコン */
+.button-icon {
+  margin-right: 12px;
+  font-size: 22px;
+}
+
+/* ボタンのテキスト */
+.button-text {
+  font-size: 16px;
+  letter-spacing: 0.5px;
+}
+
+/* ログインステータス */
+.login-status {
+  margin-top: 18px;
+  color: var(--text-medium);
+  font-size: 15px;
+  line-height: 1.5;
+  padding: 0 5px;
+}
+
+/* ログインフッター */
+.login-footer {
+  color: var(--text-light);
+  font-size: 14px;
+  line-height: 1.5;
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* 小さいテキスト */
+.small-text {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-top: 8px;
+  letter-spacing: 0.3px;
+}
+
+/* デバッグ情報 */
+.debug-info {
+  background-color: rgba(0, 0, 0, 0.05);
+  padding: 8px;
+  border-radius: var(--radius-small);
+  word-break: break-all;
+  font-family: monospace;
+  font-size: 12px;
+  margin-top: 10px;
+  color: var(--text-medium);
 }
 
 /* エラーメッセージ */
 .error-message {
-color: red;
-margin-top: 0.5rem;
+  color: var(--danger-color);
+  background-color: rgba(253, 234, 234, 0.9);
+  padding: 14px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  font-size: 15px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(231, 76, 60, 0.1);
+  border-left: 4px solid var(--danger-color);
+  animation: shake 0.6s ease;
 }
 
-/* ログインボタン（薄緑色） */
-.login-button {
-width: 100%;
-margin-top: 1rem;
-padding: 0.5rem 1rem;
-background-color: #00B900;
-color: #fff;
-border: none;
-border-radius: 4px;
-cursor: pointer;
-font-size: 1rem;
-}
-.login-button:hover {
-background-color: #74ce74;
-color: #fff;
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
 }
 
-/* 「新規登録はこちら」 */
-.more-options {
-margin-top: 1rem;
-color: #6f42c1;
-cursor: pointer;
-text-decoration: underline;
-font-size: 0.95rem;
+/* ローディング表示 */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.95);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
 }
 
-/* モーダルオーバーレイ */
-.modal-overlay {
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background-color: rgba(0, 0, 0, 0.5);
-z-index: 3;
-display: flex;
-justify-content: center;
-align-items: center;
+.loading-container p {
+  font-size: 1.1rem;
+  color: var(--main-color);
+  position: relative;
+  padding-left: 35px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
-.modal-content {
-background: #fff;
-padding: 2rem;
-border-radius: 8px;
-width: 90%;
-max-width: 480px;
-position: relative;
-text-align: center;
+.loading-container p::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  margin-top: -11px;
+  border: 3px solid var(--main-color);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
-/* 「新規登録」を中央揃え */
-.modal-title {
-text-align: center;
-margin: 0 0 1rem;
-font-size: 1.3rem;
-font-weight: bold;
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
-/* モーダル内の入力フィールド */
-.input-field {
-margin-bottom: 1rem;
+/* ログアウトボタン */
+.logout-button {
+  background-color: var(--bg-light);
+  border: 1px solid #e0e0e0;
+  color: var(--text-dark);
+  padding: 14px 20px;
+  border-radius: 30px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
+  width: 100%;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-small);
 }
 
-.input-field input,
-.input-field select {
-width: 100%;
-padding: 0.5rem;
-border: 1px solid #ccc;
-border-radius: 4px;
-box-sizing: border-box;
-margin-top: 0.3rem;
+.logout-button:hover {
+  background-color: #e8e8e8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* 檀家グレード用チップ */
-.choice-chips {
-display: flex;
-flex-wrap: wrap;
-gap: 0.5rem;
-margin-top: 0.5rem;
-justify-content: center; 
+.logout-button:active {
+  background-color: #dae0e5;
+  transform: translateY(0);
 }
 
-.chip {
-padding: 0.5rem 1rem;
-border: 1px solid #ccc;
-background-color: #f0f0f0;
-border-radius: 16px;
-cursor: pointer;
-transition: background-color 0.3s, color 0.3s;
-}
-.chip:hover {
-background-color: #e0e0e0;
-}
-.chip.selected {
-background-color: #00B900;
-color: #fff;
-border-color: #00B900;
-}
-
-/* モーダル内ボタン配置 */
-.button-group {
-display: flex;
-justify-content: center; /* ボタンを中央寄せ */
-margin-top: 1rem;
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .login-card {
+    padding: 25px 20px;
+  }
+  
+  .login-header h1 {
+    font-size: 28px;
+  }
+  
+  .logo {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 15px;
+  }
+  
+  .login-button {
+    padding: 14px;
+  }
 }
 
-.button-group button {
-padding: 0.5rem 1rem;
-background-color: #00B900;
-border: none;
-color: #fff;
-border-radius: 4px;
-cursor: pointer;
-font-size: 1rem;
-}
-.button-group button:hover {
-background-color: #74ce74;
+/* モバイルデバイスで背景ビデオの代替（オプション） */
+@media (max-width: 767px) {
+  .video-wrapper {
+    background: linear-gradient(135deg, #007344 0%, var(--main-color) 100%);
+  }
+  
+  .background-video {
+    display: none;
+  }
 }
