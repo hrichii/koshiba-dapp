@@ -1,19 +1,26 @@
+mod dtos;
 mod entities;
 mod models;
-use crate::models::{
-    event::Event, grade::Grade, temple::Temple, user::User, vote::Vote, vote_status::VoteStatus,
-};
-mod services;
-use crate::services::user_service::UserService;
 mod repositories;
-use crate::repositories::user_repository::StableUserRepository;
-mod dtos;
+mod services;
+mod utils;
+
 use crate::dtos::user_dto::UserDto;
+use crate::models::{
+    grade::Grade, temple::Temple, user::User, vote::Vote, vote_status::VoteStatus,
+};
+use crate::repositories::user_repository::StableUserRepository;
+use crate::services::user_service::UserService;
+
 use candid::Principal;
-use ic_cdk::update;
-use ic_cdk::{caller, query};
+use dtos::event_dto::EventDto;
+use ic_cdk::{caller, query, update};
+use repositories::event_repository::StableEventRepository;
 use repositories::temple_repository::StableTempleRepository;
+use services::event_service::EventService;
 use services::temple_service::TempleService;
+use time::{format_description::well_known::Rfc3339, OffsetDateTime};
+use utils::offset_date_time_ext::OffsetDateTimeExt;
 
 #[query]
 fn get_user() -> Option<UserDto> {
@@ -65,32 +72,39 @@ fn delete_user() {
 }
 
 #[query]
-fn get_user_events() -> Vec<Event> {
-    vec![
-        Event {
-            event_id: 1,
-            title: "本殿の改修".to_string(),
-            content: "hogehoge...".to_string(),
-            vote: Vote { agree: 55, disagree: 23, total: 600 },
-            your_vote: VoteStatus::Agree,
-            deadline_at: "2025-03-27T23:59:59.999Z".to_string(),
-            created_at: "2025-02-27T23:59:59.999Z".to_string(),
-        },
-        Event {
-            event_id: 2,
-            title: "ひな祭りイベントの開催".to_string(),
-            content: "hogehoge...".to_string(),
-            vote: Vote { agree: 55, disagree: 23, total: 600 },
-            your_vote: VoteStatus::NotVoted,
-            deadline_at: "2025-03-27T23:59:59.999Z".to_string(),
-            created_at: "2025-02-28T23:59:59.999Z".to_string(),
-        },
-    ]
+fn get_user_events() -> Vec<EventDto> {
+    let service: EventService = EventService::new(Box::new(StableEventRepository));
+    service.fetch_all().into_iter().map(EventDto::from_event).collect()
+}
+
+#[query]
+fn get_user_event(id: u32) -> Option<EventDto> {
+    let service: EventService = EventService::new(Box::new(StableEventRepository));
+    let event = service.fetch(id)?;
+    Some(EventDto::from_event(event))
 }
 
 #[update]
-fn update_vote(_event_id: u32, your_vote: VoteStatus) -> Event {
-    Event {
+fn create_event(id: u32, title: String, content: String, deadline_at: String) -> EventDto {
+    let service: EventService = EventService::new(Box::new(StableEventRepository));
+
+    let parsed_deadline =
+        OffsetDateTime::parse(&deadline_at, &Rfc3339).unwrap_or_else(|_| OffsetDateTime::ic_now());
+
+    let event = service.save(id, title, content, parsed_deadline);
+
+    EventDto::from_event(event)
+}
+
+#[update]
+fn delete_event(id: u32) {
+    let service: EventService = EventService::new(Box::new(StableEventRepository));
+    service.delete(id)
+}
+
+#[update]
+fn update_vote(_event_id: u32, your_vote: VoteStatus) -> EventDto {
+    EventDto {
         event_id: 1,
         title: "本殿の改修".to_string(),
         content: "hogehoge...".to_string(),
