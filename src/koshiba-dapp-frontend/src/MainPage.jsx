@@ -296,7 +296,7 @@ function MainPage() {
       )}
 
       {/* メインコンテンツ (ユーザーデータの有無にかかわらず表示) */}
-      <div className="user-info-container">
+      <div className={`user-info-container ${user && user.grade ? `user-info-container-${Object.keys(user.grade)[0] || ""}` : ""}`}>
         {/* ユーザー名 */}
         <h2 className="user-name">
           {user && user.last_name && user.first_name ? 
@@ -324,7 +324,7 @@ function MainPage() {
               <img src={rankIcon} alt="檀家グレードアイコン" className="icon" />
               <span>檀家グレード</span>
             </div>
-            <span className="status">
+            <span className={`status ${user && user.grade ? `grade-status-${Object.keys(user.grade)[0] || ""}` : ""}`}>
               {user && user.grade ? 
                 `Rank ${Object.keys(user.grade)[0] || "不明"}` : 
                 "グレード情報なし"}

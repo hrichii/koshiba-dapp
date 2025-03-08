@@ -21,25 +21,29 @@
   --transition-slow: 0.5s ease;
 }
 
-/* 全体レイアウト */
+/* 全体のページスタイル */
 .register-page {
   position: relative;
-  width: 100%;
   min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-family: 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Noto Sans JP', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
 }
 
-/* 背景動画のラッパ要素 */
+/* 背景動画コンテナ */
 .video-wrapper {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: -2;
+  z-index: -1;
+  overflow: hidden;
 }
 
 /* 背景動画 */
@@ -49,17 +53,15 @@
   object-fit: cover;
 }
 
-/* 黒いオーバーレイ */
+/* 動画オーバーレイ */
 .video-overlay {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, 
-    rgba(0, 0, 0, 0.7) 0%, 
-    rgba(0, 0, 0, 0.5) 100%);
-  z-index: 1;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 0;
 }
 
 /* ローディング表示 */
@@ -115,6 +117,7 @@
   padding: 20px;
   position: relative;
   z-index: 10;
+  box-sizing: border-box;
 }
 
 /* 登録カード */
@@ -123,13 +126,15 @@
   border-radius: var(--radius-large);
   box-shadow: var(--shadow-large);
   padding: 30px;
-  width: 100%;
-  max-width: 800px;
+  width: 95%;
   position: relative;
   overflow: hidden;
   animation: fadeIn 0.5s ease, slideUp 0.5s ease;
   border: 1px solid var(--border-color);
   margin: 0 auto;
+  left: 0 !important;
+  transform: none !important;
+  box-sizing: border-box;
 }
 
 .register-card::before {
@@ -229,25 +234,6 @@
   padding-right: 5px;
 }
 
-/* スクロールバーのスタイル */
-.register-page-content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.register-page-content::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 3px;
-}
-
-.register-page-content::-webkit-scrollbar-thumb {
-  background: var(--main-color-light);
-  border-radius: 3px;
-}
-
-.register-page-content::-webkit-scrollbar-thumb:hover {
-  background: var(--main-color);
-}
-
 /* ページタイトル */
 .page-title {
   font-size: 22px;
@@ -336,17 +322,20 @@
 .grade-cards {
   display: flex;
   gap: 15px;
-  margin: 25px 0;
+  padding-top: 10px;
+  margin: 15px 0;
   flex-wrap: wrap;
   justify-content: center;
   width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .grade-card {
   flex: 1 1 18%;
   min-width: 160px;
   max-width: 200px;
-  border: 1px solid #e0e0e0;
+  border: 2px solid transparent; /* 選択時と同じ太さのボーダーを透明に設定 */
   border-radius: 14px;
   padding: 15px;
   cursor: pointer;
@@ -354,62 +343,110 @@
   position: relative;
   background-color: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-sizing: border-box;
 }
 
-.grade-card:hover {
+/* グレードごとの背景色 */
+.grade-card.selected .grade-title {
+  color: var(--main-color);
+}
+
+/* グレードD - メインカラーの緑 */
+.grade-card-D {
+  background-color: rgba(0, 185, 0, 0.1); /* メインカラーの緑を薄く */
+  border-color: transparent;
+}
+
+/* グレードC - 青のまま */
+.grade-card-C {
+  background-color: #e6f2ff; /* より明るい青 */
+  border-color: transparent;
+}
+
+/* グレードB - ブロンズ */
+.grade-card-B {
+  background-color: rgba(205, 127, 50, 0.1); /* ブロンズを薄く */
+  border-color: transparent;
+}
+
+/* グレードA - シルバー */
+.grade-card-A {
+  background-color: rgba(192, 192, 192, 0.15); /* シルバーを薄く */
+  border-color: transparent;
+}
+
+/* グレードS - ゴールド */
+.grade-card-S {
+  background-color: rgba(255, 215, 0, 0.1); /* ゴールドを薄く */
+  border-color: transparent;
+}
+
+.grade-card-S:hover {
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  transform: translateY(-5px);
 }
 
-.grade-card.selected {
-  border: 2px solid var(--main-color);
+.grade-card-S.selected {
+  border-color: var(--main-color);
   box-shadow: 0 8px 25px rgba(0, 185, 0, 0.25);
 }
 
-.grade-card.selected::before {
-  content: "✓";
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 24px;
-  height: 24px;
-  background-color: var(--main-color);
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  z-index: 2;
+/* グレードごとの文字色 */
+.grade-card-D .grade-title {
+  color: #00B900; /* メインカラーの緑 */
 }
 
-/* グレードカードのヘッダー */
-.grade-header {
-  text-align: center;
-  margin-bottom: 18px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid #eee;
+.grade-card-C .grade-title {
+  color: #1E90FF; /* ドジャーブルー */
 }
 
-.grade-title-eng {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 5px;
+.grade-card-B .grade-title {
+  color: #CD7F32; /* ブロンズ */
 }
 
-.grade-title {
-  font-size: 32px;
-  font-weight: bold;
-  color: var(--main-color);
-  margin-bottom: 12px;
+.grade-card-A .grade-title {
+  color: #A9A9A9; /* シルバーグレー */
+}
+
+.grade-card-S .grade-title {
+  color: #DAA520; /* ゴールデンロッド */
+}
+
+/* グレードごとの文字色を選択時も維持 */
+.grade-card-D.selected .grade-title {
+  color: #00B900; /* メインカラーの緑 */
+  -webkit-text-fill-color: #00B900;
+}
+
+.grade-card-C.selected .grade-title {
+  color: #1E90FF; /* ドジャーブルー */
+  -webkit-text-fill-color: #1E90FF;
+}
+
+.grade-card-B.selected .grade-title {
+  color: #CD7F32; /* ブロンズ */
+  -webkit-text-fill-color: #CD7F32;
+}
+
+.grade-card-A.selected .grade-title {
+  color: #A9A9A9; /* シルバーグレー */
+  -webkit-text-fill-color: #A9A9A9;
+}
+
+/* グレードSの選択時も同様に */
+.grade-card-S.selected .grade-title {
+  color: #DAA520; /* ゴールデンロッド */
+  -webkit-text-fill-color: #DAA520;
 }
 
 .grade-description {
   font-size: 14px;
   color: #666;
   line-height: 1.5;
-  height: auto;
-  min-height: 60px;
+  height: 60px; /* 説明文の高さを固定 */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
 }
 
 /* グレード価格 */
@@ -600,12 +637,16 @@
     flex-wrap: wrap;
     justify-content: center;
     gap: 15px;
+    max-width: 100%;
+    padding: 0 5px;
   }
   
   .grade-card {
     flex: 1 1 45%;
     min-width: 150px;
     max-width: none;
+    width: calc(50% - 15px);
+    box-sizing: border-box;
   }
 }
 
@@ -619,7 +660,11 @@
   .register-card {
     padding: 25px 15px;
     max-width: 100%;
+    width: 95%;
     margin: 0 auto;
+    left: 0 !important;
+    right: 0 !important;
+    transform: none !important;
   }
   
   .register-header h1 {
@@ -650,12 +695,15 @@
   .grade-cards {
     flex-direction: column;
     align-items: center;
+    max-width: 100%;
+    padding: 0;
   }
   
   .grade-card {
     flex: none;
     width: 100%;
     max-width: 100%;
+    box-sizing: border-box;
   }
   
   .name-fields {
@@ -691,4 +739,61 @@
   .background-video {
     display: none;
   }
+}
+
+.grade-card:hover {
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+}
+
+.grade-card.selected {
+  border: 2px solid var(--main-color);
+  box-shadow: 0 8px 25px rgba(0, 185, 0, 0.25);
+}
+
+.grade-card.selected::before {
+  content: "✓";
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  background-color: var(--main-color);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  z-index: 2;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* グレードカードのヘッダー */
+.grade-header {
+  text-align: center;
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #eee;
+  height: 140px; /* ヘッダーの高さを固定 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.grade-title-eng {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.grade-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: var(--main-color);
+  margin-bottom: 12px;
+  height: 40px; /* タイトルの高さを固定 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 } 

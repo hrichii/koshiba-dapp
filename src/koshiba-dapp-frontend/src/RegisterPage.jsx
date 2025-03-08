@@ -148,7 +148,6 @@ function RegisterPage() {
     switch(grade) {
       case 'S':
         return [
-          "檀家特別サービス",
           ...getGradeFeatures('A'),
           "寺院行事の優先予約",
           "特別な仏具の提供",
@@ -156,7 +155,6 @@ function RegisterPage() {
         ];
       case 'A':
         return [
-          "檀家上級サービス",
           ...getGradeFeatures('B'),
           "専用駐車場の利用",
           "重要法要への優先招待",
@@ -164,7 +162,6 @@ function RegisterPage() {
         ];
       case 'B':
         return [
-          "檀家中級サービス",
           ...getGradeFeatures('C'),
           "仏具の割引購入",
           "特別法要への招待",
@@ -172,7 +169,6 @@ function RegisterPage() {
         ];
       case 'C':
         return [
-          "檀家基本サービス",
           ...getGradeFeatures('D'),
           "お焚き上げサービス",
           "年中行事への参加",
@@ -180,7 +176,6 @@ function RegisterPage() {
         ];
       case 'D':
         return [
-          "檀家入門サービス",
           ...baseFeatures
         ];
       default:
@@ -430,11 +425,10 @@ function RegisterPage() {
                 {gradeList.map((gradeInfo) => (
                   <div 
                     key={gradeInfo.grade} 
-                    className={`grade-card ${grade === gradeInfo.grade ? 'selected' : ''}`}
+                    className={`grade-card grade-card-${gradeInfo.grade} ${grade === gradeInfo.grade ? 'selected' : ''}`}
                     onClick={() => handleGradeSelect(gradeInfo.grade)}
                   >
                     <div className="grade-header">
-                      <div className="grade-title-eng">檀家グレード</div>
                       <div className="grade-title">{gradeInfo.grade}</div>
                       <div className="grade-description">
                         {gradeInfo.description}
@@ -449,12 +443,12 @@ function RegisterPage() {
                     <div className="grade-features">
                       <div className="feature">
                         <i className="feature-icon user-icon"></i>
-                        <span>投票可能回数: {gradeInfo.voteCount}票</span>
+                        <span><strong>投票可能回数: {gradeInfo.voteCount}票</strong></span>
                       </div>
                       
                       {gradeInfo.features.map((feature, idx) => (
                         <div key={idx} className="feature">
-                          {idx === 0 && <strong>{feature}</strong>}
+                          {idx === 0 && <span>{feature}</span>}
                           {idx !== 0 && <span>{feature}</span>}
                         </div>
                       ))}
