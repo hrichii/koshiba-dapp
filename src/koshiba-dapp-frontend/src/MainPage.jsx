@@ -120,73 +120,100 @@ function MainPage() {
   // データ取得処理
   const fetchData = async () => {
     setIsLoading(true);
+    setError(null);
+    
     try {
-      console.log("Fetching user data...");
-      
       // ユーザー情報を取得
-      const userData = await koshiba_dapp_backend.get_user();
-      console.log("Raw user data:", userData);
+      let userData = await koshiba_dapp_backend.get_user();
+      console.log("User data:", userData);
       
-      // バックエンドからの応答が配列や期待しない形式の場合の処理
-      let processedUserData = userData;
+      // ユーザーデータが配列の場合、最初の要素を取得
       if (Array.isArray(userData)) {
-        console.log("User data is an array - attempting to extract properties");
-        if (userData.length === 0) {
-          console.log("Empty array returned - user not found");
-          processedUserData = null;
+        if (userData.length > 0) {
+          userData = userData[0];
         } else {
-          // 配列内の最初の要素を使用するか、必要に応じてマッピング
-          processedUserData = userData[0];
+          userData = null;
         }
-      } else if (typeof userData === 'object' && userData !== null && Object.keys(userData).length === 0) {
-        console.log("Empty object returned - user not found");
-        processedUserData = null;
       }
       
-      // 処理したユーザーデータをログ出力
-      console.log("Processed user data:", {
-        value: processedUserData,
-        type: typeof processedUserData,
-        isNull: processedUserData === null,
-        details: processedUserData ? {
-          last_name: processedUserData.last_name,
-          first_name: processedUserData.first_name,
-          grade: processedUserData.grade,
-          temple: processedUserData.temple,
-          vote_count: processedUserData.vote_count
-        } : 'No user data'
-      });
-      
-      if (!processedUserData) {
-        console.log("No valid user data found - continuing with null user data (temporary for testing)");
-        // テスト目的のため、ユーザーデータがnullでも続行
+      if (userData) {
+        let temple_name = "所属寺院なし";
+        
+        // templeプロパティが配列として存在する場合
+        if (Array.isArray(userData.temple) && userData.temple.length > 0) {
+          // temple_idが0の場合は「所属寺院なし」のままにする
+          if (userData.temple[0].id !== 0) {
+            temple_name = userData.temple[0].name || "不明";
+            console.log("Temple data from user object:", userData.temple[0]);
+          }
+        }
+        // temple_idが存在する場合は、従来通り寺院情報を取得
+        else if (userData.temple_id !== undefined && userData.temple_id !== 0) {
+          try {
+            const templeData = await koshiba_dapp_backend.get_temple(userData.temple_id);
+            console.log("Temple data from API:", templeData);
+            temple_name = templeData ? templeData.name : "不明";
+          } catch (templeError) {
+            console.error("Failed to fetch temple data:", templeError);
+          }
+        }
+        
+        // 檀家グレードに応じた投票権を設定
+        let vote_count = userData.vote_count || 0;
+        
+        // グレードが存在する場合、グレードに応じた投票権を設定
+        if (userData.grade) {
+          const grade = Object.keys(userData.grade)[0];
+          switch (grade) {
+            case 'S':
+              vote_count = 25;
+              break;
+            case 'A':
+              vote_count = 15;
+              break;
+            case 'B':
+              vote_count = 10;
+              break;
+            case 'C':
+              vote_count = 5;
+              break;
+            case 'D':
+              vote_count = 3;
+              break;
+            default:
+              vote_count = 1;
+          }
+        }
+        
+        // ユーザー情報をセット
+        setUser({
+          ...userData,
+          temple_name: temple_name,
+          vote_count: vote_count
+        });
+      } else {
         setUser(null);
-        
-        // イベント一覧を取得 (ユーザーデータがなくても)
-        console.log("Fetching events data without user data...");
-        const eventsData = await koshiba_dapp_backend.get_user_events();
-        console.log("Events data:", eventsData);
-        setEvents(eventsData);
-        
-        setIsLoading(false);
-        return;
+        setShowRegistrationModal(true);
       }
       
-      setUser(processedUserData);
-      
-      // イベント一覧を取得
-      console.log("Fetching events data...");
+      // イベント情報を取得
       const eventsData = await koshiba_dapp_backend.get_user_events();
       console.log("Events data:", eventsData);
-      setEvents(eventsData);
       
-    } catch (err) {
-      console.error("Data fetch error details:", {
-        message: err.message,
-        stack: err.stack,
-        error: err
-      });
-      setError("データの取得中にエラーが発生しました");
+      // イベントデータがある場合は各イベントの投票状態をクリアする
+      const processedEvents = eventsData 
+        ? eventsData.map(event => ({
+            ...event,
+            your_vote: undefined // 初期状態では投票済みフラグをクリア
+          })) 
+        : [];
+      
+      setEvents(processedEvents);
+      
+    } catch (error) {
+      console.error("Data fetch error:", error);
+      setError("データの取得に失敗しました");
+      setUser(null);
     } finally {
       setIsLoading(false);
     }
@@ -195,15 +222,50 @@ function MainPage() {
   // 投票処理
   const handleVote = async (eventId, voteStatus) => {
     try {
+      console.log(`投票処理: イベントID=${eventId}, 投票=${JSON.stringify(voteStatus)}`);
+      
+      // バックエンドの投票処理を呼び出す
       const updatedEvent = await koshiba_dapp_backend.update_vote(
         eventId,
         voteStatus
       );
       
-      // イベント一覧を更新
-      setEvents(events.map(event => 
-        event.event_id === eventId ? updatedEvent : event
-      ));
+      console.log("投票結果:", updatedEvent);
+      
+      // バックエンドからの応答がない場合は、フロントエンドでモックデータを使用
+      if (!updatedEvent) {
+        // 現在のイベントを取得
+        const currentEvent = events.find(e => e.event_id === eventId);
+        if (!currentEvent) return;
+        
+        // 投票状態に応じてカウントを更新
+        const updatedVote = { ...currentEvent.vote };
+        
+        if (voteStatus.Agree !== undefined) {
+          updatedVote.agree += user.vote_count || 1;
+        } else if (voteStatus.Disagree !== undefined) {
+          updatedVote.disagree += user.vote_count || 1;
+        }
+        
+        // イベント一覧を更新（該当するイベントにのみ投票済みフラグを設定）
+        setEvents(events.map(event => 
+          event.event_id === eventId 
+            ? {
+                ...event,
+                vote: updatedVote,
+                your_vote: voteStatus
+              } 
+            : event
+        ));
+      } else {
+        // バックエンドからの応答がある場合はそれを使用（該当するイベントにのみ投票済みフラグを設定）
+        setEvents(events.map(event => 
+          event.event_id === eventId ? updatedEvent : event
+        ));
+      }
+      
+      // 投票後もユーザーの投票権を維持する（減らさない）
+      // 檀家グレードに応じた投票権は固定値として保持
     } catch (err) {
       console.error("Vote failed:", err);
       setError("投票処理中にエラーが発生しました");
@@ -250,8 +312,8 @@ function MainPage() {
               <span>所属寺院</span>
             </div>
             <span className="status">
-              {user && user.temple && user.temple.name ? 
-                user.temple.name : 
+              {user && user.temple_name ? 
+                user.temple_name : 
                 "所属寺院なし"}
             </span>
           </div>
@@ -288,8 +350,8 @@ function MainPage() {
 
       {/* 見出し */}
       <h3 className="policy-title">
-        {user && user.temple ? 
-          `${user.temple.name}の運営方針` : 
+        {user && user.temple_name ? 
+          `${user.temple_name}の運営方針` : 
           "お寺の運営方針"}
       </h3>
 
@@ -348,16 +410,28 @@ function MainPage() {
                 <button 
                   className="vote-button agree-btn"
                   onClick={() => handleVote(event.event_id, { Agree: null })}
-                  disabled={!user || user.vote_count === 0 || (event.your_vote && Object.keys(event.your_vote)[0] === "Agree")}
+                  disabled={!user || user.vote_count <= 0 || event.your_vote !== undefined}
                 >
-                  {user ? (user.vote_count > 0 ? `${user.vote_count}票 賛成に入れる` : "投票権がありません") : "ログイン後に投票できます"}
+                  {event.your_vote !== undefined 
+                    ? "投票済み" 
+                    : user 
+                      ? (user.vote_count > 0 
+                        ? `${user.vote_count}票 賛成に入れる` 
+                        : "投票権がありません") 
+                      : "ログイン後に投票できます"}
                 </button>
                 <button 
                   className="vote-button disagree-btn"
                   onClick={() => handleVote(event.event_id, { Disagree: null })}
-                  disabled={!user || user.vote_count === 0 || (event.your_vote && Object.keys(event.your_vote)[0] === "Disagree")}
+                  disabled={!user || user.vote_count <= 0 || event.your_vote !== undefined}
                 >
-                  {user ? (user.vote_count > 0 ? `${user.vote_count}票 反対に入れる` : "投票権がありません") : "ログイン後に投票できます"}
+                  {event.your_vote !== undefined 
+                    ? "投票済み" 
+                    : user 
+                      ? (user.vote_count > 0 
+                        ? `${user.vote_count}票 反対に入れる` 
+                        : "投票権がありません") 
+                      : "ログイン後に投票できます"}
                 </button>
               </div>
             );

@@ -238,8 +238,9 @@ function RegisterPage() {
       const gradeEnum = { [grade]: null };
       console.log("Grade enum being sent:", gradeEnum);
       
-      // templeIdを数値型として送信（選択されていない場合は1を送信）
-      const templeIdNum = templeId ? Number(templeId) : 1;
+      // templeIdを数値型として送信（選択されていない場合は0を送信）
+      // 0は「所属寺院なし」を表す特別な値として扱う
+      const templeIdNum = templeId ? Number(templeId) : 0;
       
       const newUser = await koshiba_dapp_backend.create_user(
         lastName,

@@ -102,7 +102,37 @@ body {
 
 @media (min-width: 992px) {
   .container {
-    padding: 30px 30px 60px 260px; /* サイドバーのスペースを確保 */
+    padding: 30px 30px 60px 30px; /* サイドバーのスペースを削除し、左右対称に */
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* スマホ表示の修正 */
+@media (max-width: 991px) {
+  .container {
+    padding: 20px 15px 60px 15px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    width: 100%;
+    max-width: 100%;
+    left: 0 !important;
+    position: relative;
+    transform: none !important;
+  }
+  
+  body {
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  }
+  
+  #root {
+    width: 100%;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
   }
 }
 
@@ -658,9 +688,22 @@ hr {
   }
 }
 
-/* 下部余白を追加（モバイルナビゲーション用） */
 @media (max-width: 991px) {
   body {
-    padding-bottom: 60px;
+    padding-bottom: 60px; /* モバイルナビの高さ分の余白 */
+  }
+  
+  .container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  /* コンテンツを中央に配置 */
+  .user-info-container, 
+  .policy-title,
+  .policy-container,
+  .error-message {
+    margin-left: 15px;
+    margin-right: 15px;
   }
 }
