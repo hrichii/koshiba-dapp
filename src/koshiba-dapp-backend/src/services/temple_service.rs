@@ -12,14 +12,6 @@ impl TempleService {
         TempleService { repository }
     }
 
-    pub fn fetch(&self, id: u32) -> Option<Temple> {
-        let nullable_user_entity = self.repository.fetch(id);
-        if let Some(user_entity) = nullable_user_entity {
-            return Some(Temple::from_entity(user_entity.clone()));
-        }
-        None
-    }
-
     pub fn fetch_all(&self) -> Vec<Temple> {
         self.repository.fetch_all().into_iter().map(Temple::from_entity).collect()
     }

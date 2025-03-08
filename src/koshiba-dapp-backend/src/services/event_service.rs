@@ -5,8 +5,8 @@ use crate::{
         vote_status_with_not_voted::VoteStatusWithNotVoted,
     },
     repositories::{
-        event_repository::EventRepository, user_repository::UserRepository,
-        vote_repository::VoteRepository,
+        event_repository::EventRepository, temple_repository::TempleRepository,
+        user_repository::UserRepository, vote_repository::VoteRepository,
     },
 };
 use time::OffsetDateTime;
@@ -15,6 +15,7 @@ pub struct EventService {
     event_repository: Box<dyn EventRepository>,
     vote_repository: Box<dyn VoteRepository>,
     user_repository: Box<dyn UserRepository>,
+    temple_repository: Box<dyn TempleRepository>,
 }
 
 impl EventService {
@@ -22,8 +23,9 @@ impl EventService {
         event_repository: Box<dyn EventRepository>,
         vote_repository: Box<dyn VoteRepository>,
         user_repository: Box<dyn UserRepository>,
+        temple_repository: Box<dyn TempleRepository>,
     ) -> Self {
-        EventService { event_repository, vote_repository, user_repository }
+        EventService { event_repository, vote_repository, user_repository, temple_repository }
     }
 
     /// 指定されたイベント ID に対する情報を取得する。
@@ -80,8 +82,11 @@ impl EventService {
         let vote_statistics =
             VoteStatistics { agree: agree_count, disagree: disagree_count, total: total_count };
 
+        // お寺の情報を取得
+        let temple_entity = self.temple_repository.fetch(event_entity.temple_id);
+
         // `EventEntity` から `Event` を生成
-        Event::from_entity(event_entity, vote_statistics, your_vote)
+        Event::from_entity(event_entity, temple_entity, vote_statistics, your_vote)
     }
 
     /// ユーザー ID に紐づくイベント一覧を取得する。

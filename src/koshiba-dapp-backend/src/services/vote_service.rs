@@ -1,6 +1,6 @@
 use crate::{
     entities::vote_entity::VoteEntity,
-    models::{user, vote_status::VoteStatus},
+    models::vote_status::VoteStatus,
     repositories::{
         event_repository::EventRepository, user_repository::UserRepository,
         vote_repository::VoteRepository,
