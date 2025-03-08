@@ -1,27 +1,41 @@
 use crate::{
-    entities::temple_entity::TempleEntity, models::temple::Temple,
-    repositories::temple_repository::TempleRepository,
+    entities::temple_entity::TempleEntity,
+    models::temple::Temple,
+    repositories::{
+        event_repository::EventRepository, temple_repository::TempleRepository,
+        vote_repository::VoteRepository,
+    },
 };
 
 pub struct TempleService {
-    repository: Box<dyn TempleRepository>,
+    temple_repository: Box<dyn TempleRepository>,
+    vote_repository: Box<dyn VoteRepository>,
+    event_repository: Box<dyn EventRepository>,
 }
 
 impl TempleService {
-    pub fn new(repository: Box<dyn TempleRepository>) -> Self {
-        TempleService { repository }
+    pub fn new(
+        temple_repository: Box<dyn TempleRepository>,
+        vote_repository: Box<dyn VoteRepository>,
+        event_repository: Box<dyn EventRepository>,
+    ) -> Self {
+        TempleService { temple_repository, vote_repository, event_repository }
     }
 
     pub fn fetch_all(&self) -> Vec<Temple> {
-        self.repository.fetch_all().into_iter().map(Temple::from_entity).collect()
+        self.temple_repository.fetch_all().into_iter().map(Temple::from_entity).collect()
     }
 
     pub fn save(&self, id: u32, name: String) -> Temple {
-        let temple_entity: TempleEntity = self.repository.save(id.clone(), name.clone());
+        let temple_entity: TempleEntity = self.temple_repository.save(id.clone(), name.clone());
         Temple::from_entity(temple_entity)
     }
 
     pub fn delete(&self, id: u32) {
-        self.repository.delete(id);
+        self.event_repository.fetch_all_by_temple_id(id).iter().for_each(|event| {
+            self.event_repository.delete(event.id);
+            self.vote_repository.delete_by_event_id(event.id);
+        });
+        self.temple_repository.delete(id);
     }
 }

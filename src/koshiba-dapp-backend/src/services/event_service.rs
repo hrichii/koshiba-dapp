@@ -152,5 +152,6 @@ impl EventService {
     /// 指定された ID のイベントを削除する。
     pub fn delete(&self, id: u32) {
         self.event_repository.delete(id);
+        self.vote_repository.delete_by_event_id(id);
     }
 }

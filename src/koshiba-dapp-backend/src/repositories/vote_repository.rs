@@ -4,6 +4,7 @@ use std::cell::RefCell;
 
 use crate::entities::user_entity::UserEntity;
 use crate::entities::vote_entity::VoteEntity;
+
 use crate::models::vote_status::VoteStatus;
 
 type Memory = VirtualMemory<DefaultMemoryImpl>;
@@ -13,6 +14,7 @@ pub trait VoteRepository {
     fn fetch_all(&self) -> Vec<VoteEntity>;
     fn delete(&self, event_id: u32, user_id: String);
     fn delete_by_user_id(&self, user_id: String);
+    fn delete_by_event_id(&self, event_id: u32);
 }
 
 pub struct StableVoteRepository;
@@ -87,6 +89,19 @@ impl VoteRepository for StableVoteRepository {
             let keys_to_remove: Vec<u32> = votes
                 .iter()
                 .filter(|(_, vote)| vote.user_id == user_id)
+                .map(|(id, _)| id)
+                .collect();
+            for id in keys_to_remove {
+                votes.remove(&id);
+            }
+        });
+    }
+    fn delete_by_event_id(&self, event_id: u32) {
+        VOTE.with(|votes| {
+            let mut votes = votes.borrow_mut();
+            let keys_to_remove: Vec<u32> = votes
+                .iter()
+                .filter(|(_, vote)| vote.event_id == event_id)
                 .map(|(id, _)| id)
                 .collect();
             for id in keys_to_remove {
