@@ -73,11 +73,11 @@ getTempleList
 ## プリンシパル
 ### プリンシパルを取得
 ```sh
-verifyPrincipal
+getPrincipal
 ```
 
 ## イベント
-###　イベントの一覧取得
+### イベントの一覧取得
 ```sh
 getEventList
 ```
@@ -121,7 +121,7 @@ deleteVote '(1, "1",)'
 # 寺
 ### 寺一覧を取得
 ```sh
-getAllTemple
+getTempleList
 ```
 
 ### 寺を更新
