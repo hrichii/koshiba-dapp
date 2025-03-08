@@ -12,6 +12,7 @@ pub trait EventRepository {
     fn save(
         &self,
         id: u32,
+        temple_id: u32,
         title: String,
         content: String,
         deadline_at: OffsetDateTime,
@@ -20,6 +21,7 @@ pub trait EventRepository {
     fn fetch(&self, id: u32) -> Option<EventEntity>;
 
     fn fetch_all(&self) -> Vec<EventEntity>;
+    fn fetch_all_by_temple_id(&self, temple_id: u32) -> Vec<EventEntity>;
 
     fn delete(&self, id: u32);
 }
@@ -41,6 +43,7 @@ impl EventRepository for StableEventRepository {
     fn save(
         &self,
         id: u32,
+        temple_id: u32,
         title: String,
         content: String,
         deadline_at: OffsetDateTime,
@@ -53,6 +56,7 @@ impl EventRepository for StableEventRepository {
         }
         let new_entity: EventEntity = EventEntity {
             id,
+            temple_id,
             title,
             content,
             deadline_at_millisec: deadline_at.unix_timestamp_nanos() / 1_000_000,
@@ -68,6 +72,12 @@ impl EventRepository for StableEventRepository {
 
     fn fetch_all(&self) -> Vec<EventEntity> {
         EVENT.with(|events| events.borrow().values().collect())
+    }
+
+    fn fetch_all_by_temple_id(&self, temple_id: u32) -> Vec<EventEntity> {
+        EVENT.with(|events| {
+            events.borrow().values().filter(|event| event.temple_id == temple_id).collect()
+        })
     }
 
     fn delete(&self, id: u32) {

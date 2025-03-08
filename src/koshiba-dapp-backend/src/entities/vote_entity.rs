@@ -4,17 +4,18 @@ use serde::Serialize;
 
 use std::borrow::Cow;
 
+use crate::models::{grade::Grade, vote_status::VoteStatus};
+
 #[derive(Clone, Serialize, Deserialize, CandidType)]
-pub struct EventEntity {
+pub struct VoteEntity {
     pub id: u32,
-    pub temple_id: u32,
-    pub title: String,
-    pub content: String,
-    pub deadline_at_millisec: i128,
-    pub created_at_millisec: i128,
+    pub event_id: u32,
+    pub user_id: String,
+    pub vote_status: VoteStatus,
+    pub grade: Grade,
 }
 
-impl Storable for EventEntity {
+impl Storable for VoteEntity {
     fn to_bytes(&self) -> Cow<[u8]> {
         Cow::Owned(Encode!(self).unwrap())
     }
