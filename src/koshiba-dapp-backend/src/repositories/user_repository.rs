@@ -16,7 +16,7 @@ pub trait UserRepository {
         temple_id: u32,
     ) -> UserEntity;
     fn fetch(&self, id: String) -> Option<UserEntity>;
-
+    fn fetch_all(&self) -> Vec<UserEntity>;
     fn delete(&self, id: String);
 }
 
@@ -51,6 +51,10 @@ impl UserRepository for StableUserRepository {
 
     fn fetch(&self, id: String) -> Option<UserEntity> {
         USERS.with(|users| users.borrow().get(&id))
+    }
+
+    fn fetch_all(&self) -> Vec<UserEntity> {
+        USERS.with(|users| users.borrow().values().collect())
     }
 
     fn delete(&self, id: String) {

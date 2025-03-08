@@ -33,12 +33,12 @@ impl TempleRepository for StableTempleRepository {
     fn save(&self, id: u32, name: String) -> TempleEntity {
         let temple_entity: TempleEntity = TempleEntity { id, name };
 
-        TEMPLES.with(|users| users.borrow_mut().insert(id.clone(), temple_entity.clone()));
+        TEMPLES.with(|templtes| templtes.borrow_mut().insert(id.clone(), temple_entity.clone()));
         temple_entity
     }
 
     fn fetch(&self, id: u32) -> Option<TempleEntity> {
-        TEMPLES.with(|users| users.borrow().get(&id))
+        TEMPLES.with(|templtes| templtes.borrow().get(&id))
     }
 
     fn fetch_all(&self) -> Vec<TempleEntity> {
