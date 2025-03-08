@@ -169,8 +169,8 @@ fn get_temple_list() -> Vec<Temple> {
 }
 
 // [デバッグ]iiの結果を取得
-#[query(name = "verifyPrincipalDebug")]
-fn verify_principal() -> String {
+#[query(name = "getPrincipalDebug")]
+fn get_principal() -> String {
     return caller().to_text();
 }
 
