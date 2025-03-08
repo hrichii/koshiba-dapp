@@ -44,7 +44,11 @@ fn event_service() -> EventService {
 }
 
 fn temple_service() -> TempleService {
-    TempleService::new(Box::new(StableTempleRepository))
+    TempleService::new(
+        Box::new(StableTempleRepository),
+        Box::new(StableVoteRepository),
+        Box::new(StableEventRepository),
+    )
 }
 
 fn vote_service() -> VoteService {
