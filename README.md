@@ -100,7 +100,7 @@ dfx canister call koshiba-dapp-backend deleteUserDebug '("1")' --output json
 # 投票
 ### 票の一覧を取得
 ```sh
-dfx canister call koshiba-dapp-backend getAllVoteDebug --output json
+dfx canister call koshiba-dapp-backend getVoteListDebug --output json
 ```
 ### 票を更新
 ```sh

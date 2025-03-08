@@ -220,7 +220,7 @@ fn delete_user_debug(user_id: String) {
 }
 
 // [デバッグ]票の取得更新削除
-#[query(name = "getAllVoteDebug")]
+#[query(name = "getVoteListDebug")]
 fn get_vote_list_debug() -> Vec<VoteEntity> {
     vote_service().fetch_all()
 }
