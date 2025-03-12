@@ -4,12 +4,17 @@ import { koshiba_dapp_backend } from "../../declarations/koshiba-dapp-backend";
 import "./Sidebar.css"; // ★ サイドバー専用のCSSを読み込む
 import Image_koshiba from "./img/koshiba.jpg";
 import Image_logo from "./img/logo.jpg";
+// ボトムバー用アイコン画像
+import IconHome from "./img/home.png";
+import IconSearch from "./img/search.png";
+import IconParticipate from "./img/group_add.png";
+import IconNotification from "./img/information.png";
+import IconAccount from "./img/account.png";
 
-function Sidebar() {
+function Sidebar({ isOpen }) {
     const [showModal, setShowModal] = useState(false);
     const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [sidebarOpen, setSidebarOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -18,7 +23,7 @@ function Sidebar() {
         async function fetchUser() {
             setIsLoading(true);
             try {
-                const userData = await koshiba_dapp_backend.get_user();
+                const userData = await koshiba_dapp_backend.getMe();
                 console.log("Sidebar - Raw user data:", userData);
                 
                 // バックエンドからの応答が配列や期待しない形式の場合の処理
@@ -56,7 +61,7 @@ function Sidebar() {
 
     const handleDeleteUser = async () => {
         try {
-            await koshiba_dapp_backend.delete_user();
+            await koshiba_dapp_backend.deleteMe();
             // ユーザー削除後、ログイン画面（"/"）へ遷移
             navigate("/");
         } catch (error) {
@@ -67,20 +72,6 @@ function Sidebar() {
     // ユーザー登録画面へ遷移
     const handleGoToRegister = () => {
         navigate("/register");
-        setSidebarOpen(false); // モバイルではサイドバーを閉じる
-    };
-
-    // サイドバーの開閉を切り替え
-    const toggleSidebar = () => {
-        setSidebarOpen(!sidebarOpen);
-    };
-
-    // ナビゲーションリンクをクリックしたときの処理
-    const handleNavLinkClick = () => {
-        // モバイルではナビゲーションリンククリック時にサイドバーを閉じる
-        if (window.innerWidth < 992) {
-            setSidebarOpen(false);
-        }
     };
 
     // ユーザー名を表示する関数
@@ -101,23 +92,8 @@ function Sidebar() {
 
     return (
         <>
-            {/* ハンバーガーメニューボタン（モバイル用） */}
-            <button 
-                className="menu-toggle"
-                onClick={toggleSidebar}
-                aria-label="メニューを開く"
-            >
-                ☰
-            </button>
-            
-            {/* サイドバーオーバーレイ（モバイル用） */}
-            <div 
-                className={`sidebar-overlay ${sidebarOpen ? 'active' : ''}`}
-                onClick={() => setSidebarOpen(false)}
-            ></div>
-            
-            {/* サイドバー */}
-            <div className={`sidebar ${sidebarOpen ? 'active' : ''}`}>
+            {/* サイドバー - PCのみ表示 */}
+            <div className={`sidebar ${isOpen ? 'active' : ''}`}>
                 {/* ロゴ部分 */}
                 <div className="logo">
                     <img src={Image_logo} alt="ロゴ" />
@@ -129,7 +105,6 @@ function Sidebar() {
                         <Link 
                             to="/home" 
                             className={isActive("/home") ? "active" : ""}
-                            onClick={handleNavLinkClick}
                         >
                             ホーム
                         </Link>
@@ -138,7 +113,6 @@ function Sidebar() {
                         <Link 
                             to="/search" 
                             className={isActive("/search") ? "active" : ""}
-                            onClick={handleNavLinkClick}
                         >
                             お寺を探す
                         </Link>
@@ -147,16 +121,14 @@ function Sidebar() {
                         <Link 
                             to="/participate" 
                             className={isActive("/participate") ? "active" : ""}
-                            onClick={handleNavLinkClick}
                         >
                             寺運営に参加
                         </Link>
                     </li>
                     <li>
                         <Link 
-                            to="/notifications" 
-                            className={isActive("/notifications") ? "active" : ""}
-                            onClick={handleNavLinkClick}
+                            to="/notification" 
+                            className={isActive("/notification") ? "active" : ""}
                         >
                             お知らせ
                         </Link>
@@ -176,7 +148,7 @@ function Sidebar() {
                     {user ? (
                         // ログイン済みの場合：ログアウトとアカウント削除を表示
                         <ul className="account-menu">
-                            <li><Link to="/" onClick={handleNavLinkClick}>ログアウト</Link></li>
+                            <li><Link to="/">ログアウト</Link></li>
                             <li>
                                 <button 
                                     className="delete-account-button" 
@@ -232,35 +204,62 @@ function Sidebar() {
                 )}
             </div>
             
-            {/* モバイル用ボトムナビゲーション */}
+            {/* モバイル用ボトムナビゲーション - 常に表示 */}
             <div className="mobile-nav">
                 <Link 
                     to="/home" 
                     className={`mobile-nav-item ${isActive("/home") ? "active" : ""}`}
                 >
-                    <span className="mobile-nav-icon">🏠</span>
+                    <img 
+                        src={IconHome} 
+                        alt="ホーム" 
+                        className="mobile-nav-icon"
+                    />
                     <span>ホーム</span>
                 </Link>
                 <Link 
                     to="/search" 
                     className={`mobile-nav-item ${isActive("/search") ? "active" : ""}`}
                 >
-                    <span className="mobile-nav-icon">🔍</span>
+                    <img 
+                        src={IconSearch} 
+                        alt="お寺を探す" 
+                        className="mobile-nav-icon"
+                    />
                     <span>お寺を探す</span>
                 </Link>
                 <Link 
                     to="/participate" 
                     className={`mobile-nav-item ${isActive("/participate") ? "active" : ""}`}
                 >
-                    <span className="mobile-nav-icon">👥</span>
+                    <img 
+                        src={IconParticipate} 
+                        alt="参加" 
+                        className="mobile-nav-icon"
+                    />
                     <span>参加</span>
                 </Link>
                 <Link 
-                    to="/notifications" 
-                    className={`mobile-nav-item ${isActive("/notifications") ? "active" : ""}`}
+                    to="/notification" 
+                    className={`mobile-nav-item ${isActive("/notification") ? "active" : ""}`}
                 >
-                    <span className="mobile-nav-icon">🔔</span>
+                    <img 
+                        src={IconNotification} 
+                        alt="お知らせ" 
+                        className="mobile-nav-icon"
+                    />
                     <span>お知らせ</span>
+                </Link>
+                <Link 
+                    to={user ? "/account" : "/"}
+                    className={`mobile-nav-item ${isActive("/account") || isActive("/") ? "active" : ""}`}
+                >
+                    <img 
+                        src={IconAccount} 
+                        alt="マイページ" 
+                        className="mobile-nav-icon"
+                    />
+                    <span>{user ? "マイページ" : "ログイン"}</span>
                 </Link>
             </div>
         </>

@@ -99,7 +99,7 @@ function LoginPage() {
                         console.log("Login successful, checking user data...");
                         
                         // ユーザー情報を取得
-                        const userData = await koshiba_dapp_backend.get_user();
+                        const userData = await koshiba_dapp_backend.getMe();
                         console.log("Raw user data after login:", userData);
                         
                         // バックエンドからの応答が配列や期待しない形式の場合の処理
@@ -164,7 +164,7 @@ function LoginPage() {
             console.log("Already authenticated, checking user data...");
             
             // ユーザー情報を取得
-            const userData = await koshiba_dapp_backend.get_user();
+            const userData = await koshiba_dapp_backend.getMe();
             console.log("Raw user data:", userData);
             
             // バックエンドからの応答が配列や期待しない形式の場合の処理

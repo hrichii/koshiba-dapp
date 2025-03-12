@@ -1,0 +1,411 @@
+/* NotificationDetail.css */
+:root {
+  --main-color: #00B900;
+  --main-color-dark: #008900;
+  --main-color-light: #2BDB2B;
+  --accent-color: #FF6B00;
+  --text-dark: #333333;
+  --text-medium: #666666;
+  --text-light: #999999;
+  --bg-light: #f8f9fa;
+  --bg-white: #ffffff;
+  --border-color: #e0e0e0;
+  --radius-small: 8px;
+  --radius-medium: 12px;
+  --radius-large: 16px;
+  
+  /* カテゴリーカラー */
+  --notice-color: #4A90E2; /* お知らせ - 青 */
+  --event-color: #F5A623; /* イベント - オレンジ */
+  --service-color: #7ED321; /* サービス - 緑 */
+  --benefit-color: #BD10E0; /* 特典 - 紫 */
+  
+  /* グレードカラー */
+  --grade-D-color: #00B900; /* メインカラーの緑 */
+  --grade-C-color: #1E90FF; /* ドジャーブルー */
+  --grade-B-color: #CD7F32; /* ブロンズ */
+  --grade-A-color: #A9A9A9; /* シルバーグレー */
+  --grade-S-color: #DAA520; /* ゴールデンロッド */
+  
+  /* グレード背景色 */
+  --grade-D-bg: rgba(0, 185, 0, 0.1);
+  --grade-C-bg: rgba(30, 144, 255, 0.1);
+  --grade-B-bg: rgba(205, 127, 50, 0.1);
+  --grade-A-bg: rgba(169, 169, 169, 0.1);
+  --grade-S-bg: rgba(218, 165, 32, 0.1);
+}
+
+.notification-detail-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 10px;
+  background-color: var(--bg-white);
+}
+
+@media (min-width: 768px) {
+  .notification-detail-page {
+    padding: 20px;
+    border-radius: var(--radius-medium);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-top: 15px;
+  }
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  color: var(--text-medium);
+  font-size: 0.85rem;
+}
+
+.breadcrumb-item {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-item:hover {
+  color: var(--main-color);
+  text-decoration: underline;
+}
+
+.breadcrumb-separator {
+  margin: 0 6px;
+  color: var(--text-light);
+}
+
+.notification-meta {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.category-tag {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-right: 10px;
+  color: white;
+}
+
+.category-notice {
+  background-color: var(--notice-color);
+}
+
+.category-event {
+  background-color: var(--event-color);
+}
+
+.category-service {
+  background-color: var(--service-color);
+}
+
+.category-benefit {
+  background-color: var(--benefit-color);
+}
+
+.category-default {
+  background-color: var(--text-light);
+}
+
+.notification-date {
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.header-image {
+  margin: 15px 0;
+  border-radius: var(--radius-small);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.header-image img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  max-height: 300px;
+}
+
+.detail-title {
+  font-size: 1.5rem;
+  margin: 0 0 15px 0;
+  color: var(--text-dark);
+  line-height: 1.3;
+  font-weight: 600;
+}
+
+@media (min-width: 768px) {
+  .detail-title {
+    font-size: 1.8rem;
+  }
+}
+
+.grade-requirement {
+  margin-bottom: 15px;
+}
+
+.grade-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.grade-D {
+  background-color: var(--grade-D-bg);
+  color: var(--grade-D-color);
+}
+
+.grade-C {
+  background-color: var(--grade-C-bg);
+  color: var(--grade-C-color);
+}
+
+.grade-B {
+  background-color: var(--grade-B-bg);
+  color: var(--grade-B-color);
+}
+
+.grade-A {
+  background-color: var(--grade-A-bg);
+  color: var(--grade-A-color);
+}
+
+.grade-S {
+  background-color: var(--grade-S-bg);
+  color: var(--grade-S-color);
+}
+
+/* 全てのグレードで表示可能なお知らせのスタイル */
+.all-grades {
+  background-color: #E8F5E9;
+  color: #00B900;
+  font-weight: 600;
+}
+
+/* 詳細コンテンツ */
+.detail-content {
+  margin-top: 20px;
+  line-height: 1.7;
+  color: var(--text-dark);
+  font-size: 0.95rem;
+}
+
+.detail-content h2 {
+  font-size: 1.3rem;
+  margin: 25px 0 15px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-dark);
+}
+
+.detail-content h3 {
+  font-size: 1.2rem;
+  margin: 20px 0 12px;
+  color: var(--text-dark);
+}
+
+.detail-content p {
+  margin-bottom: 15px;
+}
+
+.detail-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-small);
+  margin: 15px 0;
+}
+
+.detail-content ul, .detail-content ol {
+  margin: 15px 0;
+  padding-left: 20px;
+}
+
+.detail-content li {
+  margin-bottom: 8px;
+}
+
+.detail-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+}
+
+.detail-content th, .detail-content td {
+  border: 1px solid var(--border-color);
+  padding: 10px;
+  text-align: left;
+}
+
+.detail-content th {
+  background-color: var(--bg-light);
+  font-weight: 600;
+}
+
+.detail-content tr:nth-child(even) {
+  background-color: var(--bg-light);
+}
+
+.action-buttons {
+  margin-top: 25px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.back-button {
+  padding: 10px 20px;
+  background-color: var(--bg-light);
+  color: var(--text-medium);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-small);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.back-button:hover {
+  background-color: var(--border-color);
+  color: var(--text-dark);
+}
+
+/* アクセス拒否画面 */
+.access-denied {
+  text-align: center;
+  padding: 30px 20px;
+  background-color: var(--bg-light);
+  border-radius: var(--radius-medium);
+  margin-top: 20px;
+}
+
+.access-denied h2 {
+  font-size: 1.4rem;
+  color: var(--text-dark);
+  margin-bottom: 15px;
+}
+
+.access-denied p {
+  color: var(--text-medium);
+  margin-bottom: 10px;
+  font-size: 0.95rem;
+}
+
+.upgrade-button {
+  margin-top: 20px;
+  padding: 12px 25px;
+  background-color: var(--main-color);
+  color: white;
+  border: none;
+  border-radius: var(--radius-small);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.upgrade-button:hover {
+  background-color: var(--main-color-dark);
+}
+
+/* ローディング表示 */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  width: 100%;
+}
+
+.loading-container p {
+  font-size: 1.1rem;
+  color: var(--main-color);
+  position: relative;
+  padding-left: 35px;
+}
+
+.loading-container p::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  margin-top: -11px;
+  border: 3px solid var(--main-color);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* エラーメッセージ */
+.error-message {
+  color: #e74c3c;
+  background-color: #fdf0ed;
+  padding: 12px 15px;
+  border-radius: var(--radius-small);
+  margin-bottom: 20px;
+  font-size: 0.95rem;
+  border-left: 3px solid #e74c3c;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .notification-detail-page {
+    padding: 10px;
+    border-radius: 0;
+    box-shadow: none;
+    margin-top: 0;
+  }
+  
+  .detail-title {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+  }
+  
+  .detail-content {
+    font-size: 0.85rem;
+  }
+  
+  .detail-content h2 {
+    font-size: 1.2rem;
+    margin: 18px 0 12px;
+  }
+  
+  .detail-content h3 {
+    font-size: 1.1rem;
+    margin: 15px 0 10px;
+  }
+  
+  .detail-content p {
+    margin-bottom: 12px;
+  }
+  
+  .detail-content ul, .detail-content ol {
+    margin: 12px 0;
+    padding-left: 16px;
+  }
+  
+  .detail-content li {
+    margin-bottom: 6px;
+  }
+  
+  .detail-content table {
+    margin: 15px 0;
+  }
+  
+  .detail-content th, .detail-content td {
+    padding: 8px;
+  }
+  
+  .image-container img {
+    border-radius: 4px;
+  }
+} 

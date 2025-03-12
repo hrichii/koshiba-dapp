@@ -1,0 +1,305 @@
+/* NotificationPage.css */
+:root {
+  --main-color: #00B900;
+  --main-color-dark: #008900;
+  --main-color-light: #2BDB2B;
+  --accent-color: #FF6B00;
+  --text-dark: #333333;
+  --text-medium: #666666;
+  --text-light: #999999;
+  --bg-light: #f8f9fa;
+  --bg-white: #ffffff;
+  --border-color: #e0e0e0;
+  --radius-small: 8px;
+  --radius-medium: 12px;
+  --radius-large: 16px;
+  
+  /* カテゴリーカラー */
+  --notice-color: #4A90E2; /* お知らせ - 青 */
+  --event-color: #F5A623; /* イベント - オレンジ */
+  --service-color: #7ED321; /* サービス - 緑 */
+  --benefit-color: #BD10E0; /* 特典 - 紫 */
+  
+  /* グレードカラー */
+  --grade-D-color: #00B900; /* メインカラーの緑 */
+  --grade-C-color: #1E90FF; /* ドジャーブルー */
+  --grade-B-color: #CD7F32; /* ブロンズ */
+  --grade-A-color: #A9A9A9; /* シルバーグレー */
+  --grade-S-color: #DAA520; /* ゴールデンロッド */
+  
+  /* グレード背景色 */
+  --grade-D-bg: rgba(0, 185, 0, 0.1);
+  --grade-C-bg: rgba(30, 144, 255, 0.1);
+  --grade-B-bg: rgba(205, 127, 50, 0.1);
+  --grade-A-bg: rgba(169, 169, 169, 0.1);
+  --grade-S-bg: rgba(218, 165, 32, 0.1);
+}
+
+/* 全体のレイアウト */
+.notification-page {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* ヘッダー */
+.page-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+  padding: 12px 10px; /* パディングを縮小 */
+  color: var(--text-dark);
+  background-color: var(--bg-white);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* お知らせリスト */
+.notification-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  background-color: transparent;
+}
+
+/* お知らせアイテム */
+.notification-item {
+  display: block;
+  padding: 12px 10px; /* パディングを縮小 */
+  text-decoration: none;
+  color: var(--text-dark);
+  background-color: var(--bg-white);
+  border-bottom: 1px solid var(--border-color);
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+.notification-item:active {
+  background-color: #f9f9f9;
+}
+
+/* カテゴリとデータの行 */
+.notification-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px; /* マージンを縮小 */
+}
+
+.category-tag {
+  display: inline-block;
+  padding: 2px 6px; /* パディングを縮小 */
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #fff;
+  border-radius: 4px;
+}
+
+.category-notice {
+  background-color: var(--notice-color);
+}
+
+.category-event {
+  background-color: var(--event-color);
+}
+
+.category-service {
+  background-color: var(--service-color);
+}
+
+.category-benefit {
+  background-color: var(--benefit-color);
+}
+
+.category-default {
+  background-color: var(--text-medium);
+}
+
+.notification-date {
+  font-size: 0.7rem;
+  color: var(--text-light);
+}
+
+/* お知らせタイトル */
+.notification-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: 0 0 4px 0; /* マージンを縮小 */
+  color: var(--text-dark);
+  padding-right: 16px; /* 右矢印のスペースを縮小 */
+}
+
+/* お知らせ概要 */
+.notification-summary {
+  font-size: 0.8rem;
+  color: var(--text-medium);
+  margin: 0;
+  line-height: 1.4;
+  padding-right: 16px; /* 右矢印のスペースを縮小 */
+}
+
+/* 右矢印 */
+.notification-arrow {
+  position: absolute;
+  right: 10px; /* 位置を調整 */
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ccc;
+  font-size: 1.2rem;
+}
+
+/* お知らせがない場合 */
+.no-notifications {
+  padding: 30px 10px; /* パディングを縮小 */
+  text-align: center;
+  background-color: var(--bg-white);
+}
+
+.no-notifications p {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ローディング表示 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  background-color: var(--bg-white);
+  width: 100%;
+}
+
+.loader {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #eee;
+  border-radius: 50%;
+  border-top-color: var(--main-color);
+  animation: spin 1s linear infinite;
+  margin-bottom: 12px;
+}
+
+.loading-container p {
+  color: var(--text-medium);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* エラーメッセージ */
+.error-message {
+  color: #e74c3c;
+  background-color: #fdf0ed;
+  padding: 12px 16px;
+  margin: 0;
+  font-size: 0.85rem;
+  border-left: 3px solid #e74c3c;
+}
+
+/* カテゴリフィルターコンテナ */
+.category-filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px 0;
+  padding: 10px;
+  background-color: var(--bg-white);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* カテゴリフィルターボタン */
+.category-filter-btn {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-medium);
+  background-color: #f0f0f0;
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-filter-btn:hover {
+  background-color: #e8e8e8;
+}
+
+/* 選択されたカテゴリボタン */
+.category-filter-btn.active {
+  color: white;
+}
+
+/* カテゴリボタンのアクティブ状態のスタイル */
+.category-filter-btn.active.all {
+  background-color: var(--main-color);
+  border-color: var(--main-color);
+}
+
+.category-filter-btn.active.notice {
+  background-color: var(--notice-color);
+  border-color: var(--notice-color);
+}
+
+.category-filter-btn.active.event {
+  background-color: var(--event-color);
+  border-color: var(--event-color);
+}
+
+.category-filter-btn.active.service {
+  background-color: var(--service-color);
+  border-color: var(--service-color);
+}
+
+.category-filter-btn.active.benefit {
+  background-color: var(--benefit-color);
+  border-color: var(--benefit-color);
+}
+
+/* メディアクエリ */
+@media (min-width: 768px) {
+  .notification-page {
+    background-color: #f5f5f5;
+    padding: 24px;
+  }
+  
+  .page-title {
+    font-size: 1.4rem;
+    position: static;
+    padding: 0 0 16px 0;
+    background-color: transparent;
+    border-bottom: none;
+  }
+  
+  .notification-list {
+    border-radius: var(--radius-small);
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+  
+  .notification-item {
+    padding: 16px 24px;
+  }
+  
+  .notification-arrow {
+    right: 24px;
+  }
+  
+  .category-filter-container {
+    margin: 0 0 16px 0;
+    padding: 0;
+    background-color: transparent;
+    border-bottom: none;
+  }
+} 

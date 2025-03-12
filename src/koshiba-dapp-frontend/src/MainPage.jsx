@@ -124,7 +124,7 @@ function MainPage() {
     
     try {
       // ユーザー情報を取得
-      let userData = await koshiba_dapp_backend.get_user();
+      let userData = await koshiba_dapp_backend.getMe();
       console.log("User data:", userData);
       
       // ユーザーデータが配列の場合、最初の要素を取得
@@ -197,7 +197,7 @@ function MainPage() {
       }
       
       // イベント情報を取得
-      const eventsData = await koshiba_dapp_backend.get_user_events();
+      const eventsData = await koshiba_dapp_backend.getMyEventList();
       console.log("Events data:", eventsData);
       
       // イベントデータがある場合は各イベントの投票状態をクリアする
@@ -225,7 +225,7 @@ function MainPage() {
       console.log(`投票処理: イベントID=${eventId}, 投票=${JSON.stringify(voteStatus)}`);
       
       // バックエンドの投票処理を呼び出す
-      const updatedEvent = await koshiba_dapp_backend.update_vote(
+      const updatedEvent = await koshiba_dapp_backend.updateMyVote(
         eventId,
         voteStatus
       );
@@ -395,11 +395,11 @@ function MainPage() {
                     <span className="ratio-agree">
                       賛成: <AnimatedNumber value={event.vote.agree} suffix="票" />
                     </span>
-                    {" / "}
+                    <span className="separator">/</span>
                     <span className="ratio-disagree">
                       反対: <AnimatedNumber value={event.vote.disagree} suffix="票" />
                     </span>
-                    {" / "}
+                    <span className="separator">/</span>
                     <span className="ratio-none">
                       未投票: <AnimatedNumber value={unvoted} suffix="票" />
                     </span>

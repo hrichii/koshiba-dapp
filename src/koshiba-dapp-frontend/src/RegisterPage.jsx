@@ -47,7 +47,7 @@ function RegisterPage() {
         setIdentityInfo(principalId);
         
         // ユーザー情報の確認
-        //const userData = await koshiba_dapp_backend.get_user();
+        //const userData = await koshiba_dapp_backend.getMe();
         const userData = null;
         // すでにユーザー登録がある場合はメインページへリダイレクト
         if (userData) {
@@ -57,7 +57,7 @@ function RegisterPage() {
         }
         
         // 寺院一覧を取得
-        const templesData = await koshiba_dapp_backend.get_temples();
+        const templesData = await koshiba_dapp_backend.getTempleList();
         console.log("Temples data:", templesData);
         setTemples(templesData);
         
@@ -237,7 +237,7 @@ function RegisterPage() {
       // 0は「所属寺院なし」を表す特別な値として扱う
       const templeIdNum = templeId ? Number(templeId) : 0;
       
-      const newUser = await koshiba_dapp_backend.create_user(
+      const newUser = await koshiba_dapp_backend.updateMe(
         lastName,
         firstName,
         gradeEnum,
