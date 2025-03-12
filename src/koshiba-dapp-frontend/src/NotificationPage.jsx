@@ -301,20 +301,8 @@ function NotificationPage() {
     // カテゴリカウントを取得
     const categoryCounts = getCategoryCounts();
 
-    // ローディング中の表示
-    if (isLoading) {
-        return (
-            <div className="loading-container">
-                <div className="loader"></div>
-                <p>データを読み込み中...</p>
-            </div>
-        );
-    }
-
     return (
         <div className="notification-page">
-            <h1 className="page-title">お知らせ</h1>
-            
             {error && <p className="error-message">{error}</p>}
             
             {/* カテゴリフィルターボタン */}

@@ -1,0 +1,649 @@
+/* 御布施ページのスタイル */
+.offering-page {
+  position: relative;
+  min-height: calc(100vh - 60px);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  color: #333;
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+}
+
+/* 背景のスタイル */
+.offering-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.background-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.3;
+}
+
+.background-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(255, 250, 240, 0.9), rgba(255, 250, 240, 0.7));
+  z-index: 1;
+}
+
+/* メインコンテナ */
+.offering-container {
+  width: 100%;
+  max-width: 550px;
+  background-color: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  position: relative;
+  overflow: hidden;
+  animation: fadeIn 0.5s ease;
+  border: 1px solid rgba(200, 180, 120, 0.3);
+  box-sizing: border-box;
+}
+
+.offering-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  background: linear-gradient(90deg, #8B4513, #D2B48C);
+}
+
+/* ヘッダー部分 */
+.offering-header {
+  text-align: center;
+  margin-bottom: 30px;
+  position: relative;
+}
+
+.buddha-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 15px;
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.buddha-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.icon-circle {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 2px solid #D2B48C;
+  animation: pulse 3s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.3; }
+  50% { transform: scale(1.1); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 0.3; }
+}
+
+.offering-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #4B3621;
+  margin-bottom: 5px;
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  font-size: 16px;
+  color: #8B4513;
+  margin-top: 0;
+  font-style: italic;
+}
+
+/* フォーム部分 */
+.offering-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 金額入力部分 */
+.amount-input-container {
+  margin-bottom: 5px;
+  width: 100%;
+}
+
+.amount-input-container label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #4B3621;
+  font-size: 16px;
+}
+
+.amount-input-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  border: 2px solid #D2B48C;
+  border-radius: 10px;
+  background-color: #fff;
+  padding: 0 15px;
+  height: 55px;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.amount-input-wrapper:focus-within {
+  border-color: #8B4513;
+  box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+}
+
+.currency-symbol {
+  font-size: 22px;
+  font-weight: bold;
+  color: #8B4513;
+  margin-right: 10px;
+}
+
+.amount-input-wrapper input {
+  flex: 1;
+  border: none;
+  font-size: 24px;
+  font-weight: 600;
+  color: #4B3621;
+  padding: 10px 0;
+  background: transparent;
+  outline: none;
+  text-align: right;
+  width: calc(100% - 70px);
+  box-sizing: border-box;
+}
+
+/* 金額入力時のアニメーション削除 */
+
+.amount-suffix {
+  margin-left: 10px;
+  color: #8B4513;
+  font-size: 18px;
+}
+
+/* 金額加算ボタン */
+.amount-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.amount-button {
+  flex: 1;
+  min-width: 100px;
+  padding: 12px 15px;
+  background: linear-gradient(to bottom, #F5DEB3, #DEB887);
+  border: none;
+  border-radius: 30px;
+  color: #5D4037;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+.amount-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: transform 0.6s ease;
+}
+
+.amount-button:hover {
+  background: linear-gradient(to bottom, #DEB887, #CD853F);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.amount-button:hover::before {
+  transform: translateX(200%);
+}
+
+.amount-button:active {
+  transform: translateY(0);
+}
+
+/* メッセージ入力 */
+.message-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.message-input label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: 600;
+  color: #4B3621;
+  font-size: 16px;
+}
+
+.message-input textarea {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid #D2B48C;
+  border-radius: 10px;
+  resize: vertical;
+  min-height: 80px;
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  font-size: 16px;
+  color: #4B3621;
+  background-color: #fff;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.message-input textarea:focus {
+  border-color: #8B4513;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.1);
+}
+
+/* 送信ボタン */
+.submit-button {
+  padding: 16px 20px;
+  background: linear-gradient(45deg, #8B4513, #A0522D);
+  color: white;
+  border: none;
+  border-radius: 30px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  box-shadow: 0 4px 15px rgba(139, 69, 19, 0.3);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.submit-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: transform 0.6s ease;
+}
+
+.submit-button:hover {
+  background: linear-gradient(45deg, #A0522D, #8B4513);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(139, 69, 19, 0.4);
+}
+
+.submit-button:hover::before {
+  transform: translateX(200%);
+}
+
+.submit-button:active {
+  transform: translateY(-1px);
+}
+
+/* 情報表示部分 */
+.offering-info {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: rgba(210, 180, 140, 0.1);
+  border-left: 3px solid #D2B48C;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.offering-info p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #6D4C41;
+  text-align: justify;
+}
+
+/* エラーメッセージ */
+.error-message {
+  color: #B71C1C;
+  background-color: rgba(244, 67, 54, 0.1);
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  border-left: 3px solid #B71C1C;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* 感謝画面 - 送信成功時オーバーレイ */
+.thanks-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 250, 240, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  animation: fadeIn 0.3s ease;
+}
+
+.thanks-content {
+  text-align: center;
+  padding: 30px;
+}
+
+.thanks-icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+  40% { transform: translateY(-20px); }
+  60% { transform: translateY(-10px); }
+}
+
+.thanks-content h2 {
+  font-size: 24px;
+  color: #4B3621;
+  margin-bottom: 10px;
+}
+
+.thanks-content p {
+  font-size: 16px;
+  color: #8B4513;
+}
+
+/* ローディング表示 */
+.offering-loading {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 60px);
+  width: 100%;
+}
+
+.loading-circle {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(210, 180, 140, 0.3);
+  border-top: 5px solid #8B4513;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .offering-container {
+    padding: 20px 15px;
+    border-radius: 12px;
+  }
+  
+  .offering-header h1 {
+    font-size: 28px;
+  }
+  
+  .amount-buttons {
+    flex-wrap: wrap;
+  }
+  
+  .amount-button {
+    flex: 1 1 calc(50% - 10px);
+    font-size: 14px;
+  }
+  
+  .currency-symbol,
+  .amount-suffix {
+    font-size: 18px;
+  }
+  
+  .amount-input-wrapper input {
+    font-size: 20px;
+  }
+  
+  .submit-button {
+    font-size: 16px;
+    padding: 14px 20px;
+  }
+}
+
+/* 確認モーダル */
+.confirm-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.3s ease;
+}
+
+.confirm-modal {
+  background: rgba(255, 250, 240, 0.98);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(200, 180, 120, 0.5);
+  position: relative;
+}
+
+.confirm-modal::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255,255,255,0.05) 25%, transparent 25%, 
+              transparent 50%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.05) 75%, 
+              transparent 75%, transparent);
+  background-size: 10px 10px;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.confirm-modal-header {
+  padding: 20px;
+  background: linear-gradient(90deg, #8B4513, #D2B48C);
+  color: white;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.confirm-modal-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  letter-spacing: 1px;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-modal-content {
+  padding: 25px;
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+}
+
+.temple-name {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #4B3621;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  position: relative;
+}
+
+.temple-name::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #D2B48C, transparent);
+}
+
+.confirm-amount {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 15px;
+  background: rgba(210, 180, 140, 0.1);
+  border-radius: 8px;
+  border-left: 3px solid #D2B48C;
+}
+
+.amount-label {
+  font-weight: 600;
+  color: #4B3621;
+}
+
+.amount-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #8B4513;
+}
+
+.confirm-message {
+  margin-bottom: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+  border-left: 3px solid #D2B48C;
+}
+
+.message-label {
+  font-weight: 600;
+  color: #4B3621;
+  margin-bottom: 8px;
+  margin-top: 0;
+}
+
+.message-content {
+  color: #5D4037;
+  white-space: pre-wrap;
+  margin: 0;
+  font-style: italic;
+  line-height: 1.5;
+}
+
+.confirm-instruction {
+  font-size: 14px;
+  color: #6D4C41;
+  text-align: center;
+  margin-top: 25px;
+  margin-bottom: 5px;
+}
+
+.confirm-modal-buttons {
+  display: flex;
+  border-top: 1px solid rgba(200, 180, 140, 0.3);
+}
+
+.confirm-modal-buttons button {
+  flex: 1;
+  padding: 15px 20px;
+  border: none;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancel-button {
+  background: rgba(255, 255, 255, 0.7);
+  color: #555;
+  border-right: 1px solid rgba(200, 180, 140, 0.3);
+}
+
+.cancel-button:hover {
+  background: rgba(240, 240, 240, 0.8);
+}
+
+.confirm-button {
+  background: linear-gradient(45deg, #8B4513, #D2B48C);
+  color: white;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+}
+
+.confirm-button:hover {
+  background: linear-gradient(45deg, #A0522D, #CD853F);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.confirm-button:active {
+  transform: translateY(1px);
+} 

@@ -277,15 +277,6 @@ function MainPage() {
     navigate("/register");
   };
 
-  // 認証チェック中またはデータロード中の表示
-  if (isCheckingAuth || (isLoading && !showRegistrationModal)) {
-    return (
-      <div className="loading-container">
-        <p>データを読み込み中...</p>
-      </div>
-    );
-  }
-
   return (
     <div className="container">
       {error && <p className="error-message">{error}</p>}

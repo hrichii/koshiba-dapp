@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthClient } from "@dfinity/auth-client";
 import { koshiba_dapp_backend } from "../../declarations/koshiba-dapp-backend";
@@ -12,6 +12,11 @@ function RegisterPage() {
   const [temples, setTemples] = useState([]);
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
+  const [lastNameKana, setLastNameKana] = useState("");
+  const [firstNameKana, setFirstNameKana] = useState("");
+  const [birthDate, setBirthDate] = useState("");
+  const [postalCode, setPostalCode] = useState("");
+  const [address, setAddress] = useState("");
   const [templeId, setTempleId] = useState("");
   const [grade, setGrade] = useState(null);
   const [gradeList, setGradeList] = useState([]);
@@ -19,6 +24,81 @@ function RegisterPage() {
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [identityInfo, setIdentityInfo] = useState("");
+  
+  // 入力フィールドへの参照
+  const postalCodeRef = useRef(null);
+  const addressRef = useRef(null);
+
+  // 姓が変更されたときにふりがなを同期（変換なし）
+  useEffect(() => {
+    setLastNameKana(lastName);
+  }, [lastName]);
+
+  // 名が変更されたときにふりがなを同期（変換なし）
+  useEffect(() => {
+    setFirstNameKana(firstName);
+  }, [firstName]);
+
+  // 生年月日の入力を処理する関数
+  const handleBirthDateChange = (e) => {
+    const value = e.target.value.replace(/[^\d]/g, ''); // 数字以外を削除
+    
+    // 自動フォーマット処理
+    let formattedValue = '';
+    if (value.length > 0) {
+      // 年（4桁目を入力したら自動的に「/」を追加）
+      if (value.length <= 4) {
+        formattedValue = value;
+        if (value.length === 4) {
+          formattedValue += '/';
+        }
+      } 
+      // 月（6桁目を入力したら自動的に「/」を追加）
+      else if (value.length <= 6) {
+        formattedValue = value.substring(0, 4) + '/' + value.substring(4);
+        if (value.length === 6) {
+          formattedValue += '/';
+        }
+      } 
+      // 日
+      else {
+        formattedValue = value.substring(0, 4) + '/' + value.substring(4, 6) + '/' + value.substring(6, Math.min(8, value.length));
+      }
+    }
+    
+    setBirthDate(formattedValue);
+    
+    // 入力が8桁完了したら、次のフィールドにフォーカスを移動
+    if (value.length === 8 && postalCodeRef.current) {
+      postalCodeRef.current.focus();
+    }
+  };
+
+  // 郵便番号の入力を処理する関数
+  const handlePostalCodeChange = (e) => {
+    const value = e.target.value.replace(/[^\d]/g, ''); // 数字以外を削除
+    
+    // 自動フォーマット処理
+    let formattedValue = '';
+    if (value.length > 0) {
+      // 3桁入力したら自動的に「-」を追加
+      if (value.length <= 3) {
+        formattedValue = value;
+        if (value.length === 3) {
+          formattedValue += '-';
+        }
+      } else {
+        formattedValue = value.substring(0, 3) + '-' + value.substring(3, Math.min(7, value.length));
+      }
+    }
+    
+    setPostalCode(formattedValue);
+    
+    // 入力が7桁完了したら、次のフィールドにフォーカスを移動
+    if (value.length === 7 && addressRef.current) {
+      addressRef.current.focus();
+    }
+  };
 
   // 認証チェックと寺院データの取得
   useEffect(() => {
@@ -193,6 +273,24 @@ function RegisterPage() {
       return;
     }
     
+    // ふりがなの検証
+    if (!lastNameKana || !firstNameKana) {
+      setError("ふりがなは必須項目です");
+      return;
+    }
+    
+    // 生年月日の簡易検証
+    if (!birthDate || !/^\d{4}\/\d{2}\/\d{2}$/.test(birthDate)) {
+      setError("生年月日は正しい形式で入力してください（例：2000/01/01）");
+      return;
+    }
+    
+    // 郵便番号の簡易検証
+    if (postalCode && !/^\d{3}-\d{4}$/.test(postalCode)) {
+      setError("郵便番号は正しい形式で入力してください（例：123-4567）");
+      return;
+    }
+    
     setError("");
     setCurrentPage(2); // 2ページ目に移動
   };
@@ -227,7 +325,17 @@ function RegisterPage() {
     }
     
     try {
-      console.log("Registering user:", { lastName, firstName, grade, templeId });
+      console.log("Registering user:", { 
+        lastName, 
+        firstName, 
+        lastNameKana,
+        firstNameKana,
+        birthDate,
+        postalCode,
+        address,
+        grade, 
+        templeId 
+      });
       
       // 檀家グレードをEnum形式に変換
       const gradeEnum = { [grade]: null };
@@ -237,6 +345,8 @@ function RegisterPage() {
       // 0は「所属寺院なし」を表す特別な値として扱う
       const templeIdNum = templeId ? Number(templeId) : 0;
       
+      // 注意: 現在のAPIはこれらの新しいフィールドを受け付けないため、
+      // 実際の送信ではこれらの値は使用せず、既存のAPIを使用します
       const newUser = await koshiba_dapp_backend.updateMe(
         lastName,
         firstName,
@@ -377,6 +487,72 @@ function RegisterPage() {
                       required
                     />
                   </div>
+                </div>
+                
+                <div className="name-fields">
+                  <div className="input-field half-width">
+                    <label htmlFor="lastNameKana">せい（ふりがな）</label>
+                    <input
+                      type="text"
+                      id="lastNameKana"
+                      value={lastNameKana}
+                      onChange={(e) => setLastNameKana(e.target.value)}
+                      placeholder="こしば"
+                      required
+                    />
+                    <p className="field-note">※姓の入力と同期されます。必要に応じて修正してください</p>
+                  </div>
+                  
+                  <div className="input-field half-width">
+                    <label htmlFor="firstNameKana">めい（ふりがな）</label>
+                    <input
+                      type="text"
+                      id="firstNameKana"
+                      value={firstNameKana}
+                      onChange={(e) => setFirstNameKana(e.target.value)}
+                      placeholder="たろう"
+                      required
+                    />
+                    <p className="field-note">※名の入力と同期されます。必要に応じて修正してください</p>
+                  </div>
+                </div>
+                
+                <div className="input-field">
+                  <label htmlFor="birthDate">生年月日</label>
+                  <input
+                    type="text"
+                    id="birthDate"
+                    value={birthDate}
+                    onChange={handleBirthDateChange}
+                    placeholder="2000/01/01"
+                    required
+                  />
+                  <p className="field-note">※4桁目と6桁目の入力後に自動的に「/」が挿入されます</p>
+                </div>
+                
+                <div className="input-field">
+                  <label htmlFor="postalCode">郵便番号</label>
+                  <input
+                    type="text"
+                    id="postalCode"
+                    value={postalCode}
+                    onChange={handlePostalCodeChange}
+                    placeholder="123-4567"
+                    ref={postalCodeRef}
+                  />
+                  <p className="field-note">※3桁目の入力後に自動的に「-」が挿入されます</p>
+                </div>
+                
+                <div className="input-field">
+                  <label htmlFor="address">住所</label>
+                  <input
+                    type="text"
+                    id="address"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="東京都○○区××町1-2-3"
+                    ref={addressRef}
+                  />
                 </div>
                 
                 <div className="input-field">

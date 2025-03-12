@@ -1,0 +1,362 @@
+/* お寺を探すページのスタイル */
+:root {
+  --main-color: #00B900;
+  --main-color-dark: #009900;
+  --main-color-light: #00D800;
+}
+
+.search-temple-page {
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
+}
+
+.page-title {
+  font-size: 28px;
+  color: #333;
+  margin-bottom: 30px;
+  text-align: center;
+  position: relative;
+}
+
+.page-title::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70px;
+  height: 3px;
+  background: linear-gradient(to right, var(--main-color-dark), var(--main-color-light));
+  border-radius: 3px;
+}
+
+/* タブスタイル */
+.temple-tabs {
+  display: flex;
+  margin-bottom: 30px;
+  border-bottom: 2px solid var(--main-color);
+}
+
+.tab-button {
+  padding: 12px 20px;
+  background: none;
+  border: none;
+  font-size: 16px;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
+}
+
+.tab-button:hover {
+  color: var(--main-color-dark);
+  background-color: rgba(0, 185, 0, 0.1);
+}
+
+.tab-button.active {
+  color: var(--main-color-dark);
+  background-color: #FFF;
+  border-bottom: 3px solid var(--main-color);
+  margin-bottom: -2px;
+}
+
+.tab-button.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background-color: var(--main-color);
+}
+
+/* メッセージスタイル */
+.error-message {
+  background-color: rgba(244, 67, 54, 0.1);
+  color: #B71C1C;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #B71C1C;
+}
+
+.success-message {
+  background-color: rgba(0, 185, 0, 0.1);
+  color: var(--main-color-dark);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid var(--main-color);
+}
+
+/* 50音タブスタイル */
+.alphabetical-container {
+  background-color: #FFF;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* 検索ボックス */
+.search-box {
+  margin-bottom: 20px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 15px;
+  border: 2px solid var(--main-color-light);
+  border-radius: 30px;
+  font-size: 16px;
+  background-color: #FFF;
+  color: #333;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: var(--main-color);
+  box-shadow: 0 0 0 3px rgba(0, 185, 0, 0.1);
+}
+
+.search-box input::placeholder {
+  color: #999;
+}
+
+/* 50音グループ */
+.japanese-groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 25px;
+  padding: 15px;
+  background-color: rgba(0, 185, 0, 0.05);
+  border-radius: 8px;
+}
+
+.group-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #FFF;
+  border: 1px solid var(--main-color-light);
+  border-radius: 50%;
+  font-size: 15px;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.group-button:hover {
+  background-color: rgba(0, 216, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.group-button.active {
+  background-color: var(--main-color);
+  color: #FFF;
+  border-color: var(--main-color);
+  box-shadow: 0 4px 8px rgba(0, 185, 0, 0.3);
+}
+
+/* 寺院リスト */
+.temple-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 20px;
+}
+
+.temple-card {
+  display: flex;
+  flex-direction: column;
+  background-color: #FFF;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(0, 185, 0, 0.2);
+}
+
+.temple-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--main-color-dark), var(--main-color-light));
+}
+
+.temple-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.temple-info {
+  flex: 1;
+  padding-bottom: 15px;
+}
+
+.temple-info h3 {
+  color: #333;
+  font-size: 18px;
+  margin: 0 0 8px 0;
+}
+
+.temple-info p {
+  color: #666;
+  font-size: 14px;
+  margin: 0;
+}
+
+.set-temple-button {
+  background: linear-gradient(45deg, var(--main-color-dark), var(--main-color));
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 12px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.set-temple-button:hover {
+  background: linear-gradient(45deg, var(--main-color), var(--main-color-light));
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0, 185, 0, 0.3);
+}
+
+.set-temple-button:active {
+  transform: translateY(0);
+}
+
+.no-results {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 30px;
+  color: #666;
+  background-color: rgba(0, 185, 0, 0.05);
+  border-radius: 10px;
+  font-size: 16px;
+}
+
+/* 地図タブスタイル */
+.map-container {
+  background-color: #FFF;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  height: 600px;
+  position: relative;
+}
+
+.map-placeholder {
+  width: 100%;
+  height: 100%;
+  background-color: #f5f5f5;
+  background-image: linear-gradient(45deg, #e0e0e0 25%, transparent 25%, transparent 75%, #e0e0e0 75%, #e0e0e0),
+                    linear-gradient(45deg, #e0e0e0 25%, transparent 25%, transparent 75%, #e0e0e0 75%, #e0e0e0);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map-message {
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 30px;
+  border-radius: 8px;
+  text-align: center;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.map-message h2 {
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.map-message p {
+  color: #666;
+  margin-bottom: 10px;
+}
+
+/* ローディング表示 */
+.temple-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: calc(100vh - 120px);
+}
+
+.loading-circle {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(0, 185, 0, 0.2);
+  border-top: 5px solid var(--main-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 24px;
+  }
+  
+  .temple-tabs {
+    flex-direction: column;
+    border-bottom: none;
+  }
+  
+  .tab-button {
+    border-radius: 0;
+    padding: 12px;
+    border-bottom: 1px solid var(--main-color-light);
+  }
+  
+  .tab-button.active {
+    margin-bottom: 0;
+  }
+  
+  .japanese-groups {
+    padding: 10px;
+    gap: 5px;
+  }
+  
+  .group-button {
+    width: 35px;
+    height: 35px;
+    font-size: 14px;
+  }
+  
+  .temple-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .map-message {
+    width: 90%;
+    padding: 20px;
+  }
+} 

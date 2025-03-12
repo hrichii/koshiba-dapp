@@ -8,6 +8,7 @@ import Image_logo from "./img/logo.jpg";
 import IconHome from "./img/home.png";
 import IconSearch from "./img/search.png";
 import IconParticipate from "./img/group_add.png";
+import IconOffering from "./img/offering.png"; 
 import IconNotification from "./img/information.png";
 import IconAccount from "./img/account.png";
 
@@ -94,21 +95,13 @@ function Sidebar({ isOpen }) {
         <>
             {/* サイドバー - PCのみ表示 */}
             <div className={`sidebar ${isOpen ? 'active' : ''}`}>
-                {/* ロゴ部分 */}
-                <div className="logo">
+                {/* ロゴ部分 - クリックでホームに遷移 */}
+                <Link to="/home" className="logo">
                     <img src={Image_logo} alt="ロゴ" />
-                </div>
+                </Link>
 
                 {/* ナビゲーションリンク */}
                 <ul className="nav-links">
-                    <li>
-                        <Link 
-                            to="/home" 
-                            className={isActive("/home") ? "active" : ""}
-                        >
-                            ホーム
-                        </Link>
-                    </li>
                     <li>
                         <Link 
                             to="/search" 
@@ -123,6 +116,14 @@ function Sidebar({ isOpen }) {
                             className={isActive("/participate") ? "active" : ""}
                         >
                             寺運営に参加
+                        </Link>
+                    </li>
+                    <li>
+                        <Link 
+                            to="/offering" 
+                            className={isActive("/offering") ? "active" : ""}
+                        >
+                            御布施
                         </Link>
                     </li>
                     <li>
@@ -207,17 +208,6 @@ function Sidebar({ isOpen }) {
             {/* モバイル用ボトムナビゲーション - 常に表示 */}
             <div className="mobile-nav">
                 <Link 
-                    to="/home" 
-                    className={`mobile-nav-item ${isActive("/home") ? "active" : ""}`}
-                >
-                    <img 
-                        src={IconHome} 
-                        alt="ホーム" 
-                        className="mobile-nav-icon"
-                    />
-                    <span>ホーム</span>
-                </Link>
-                <Link 
                     to="/search" 
                     className={`mobile-nav-item ${isActive("/search") ? "active" : ""}`}
                 >
@@ -238,6 +228,17 @@ function Sidebar({ isOpen }) {
                         className="mobile-nav-icon"
                     />
                     <span>参加</span>
+                </Link>
+                <Link 
+                    to="/offering" 
+                    className={`mobile-nav-item ${isActive("/offering") ? "active" : ""}`}
+                >
+                    <img 
+                        src={IconOffering} 
+                        alt="御布施" 
+                        className="mobile-nav-icon"
+                    />
+                    <span>御布施</span>
                 </Link>
                 <Link 
                     to="/notification" 

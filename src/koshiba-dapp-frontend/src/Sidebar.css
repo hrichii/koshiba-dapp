@@ -113,6 +113,9 @@
     box-shadow: var(--shadow-small);
     border: 4px solid rgba(255, 255, 255, 0.7);
     transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
 }
 
 .logo:hover {

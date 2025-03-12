@@ -8,6 +8,7 @@ import SearchTemplePage from "./SearchTemplePage";
 import ParticipatePage from "./ParticipatePage";
 import NotificationPage from "./NotificationPage";
 import AccountInfoPage from "./AccountInfoPage";
+import OfferingPage from "./OfferingPage"; // 御布施ページをインポート
 import PrayerService from "./Notification/PrayerService";
 import GomakiService from "./Notification/GomakiService";
 import BuddhistItemsDiscount from "./Notification/BuddhistItemsDiscount";
@@ -50,6 +51,7 @@ function App() {
                   <Route path="home" element={<MainPage />} />
                   <Route path="search" element={<SearchTemplePage />} />
                   <Route path="participate" element={<ParticipatePage />} />
+                  <Route path="offering" element={<OfferingPage />} />  {/* 御布施ページのルートを追加 */}
                   <Route path="notification" element={<NotificationPage />} />
                   <Route path="account" element={<AccountInfoPage />} />
                   
