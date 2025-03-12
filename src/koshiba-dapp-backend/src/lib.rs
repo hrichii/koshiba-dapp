@@ -68,12 +68,6 @@ fn user_id() -> String {
     }
 }
 
-// TODO 後続タスクで削除予定
-#[query(name = "get_user")]
-fn get_me_tmp() -> Option<UserDto> {
-    get_me()
-}
-
 #[query(name = "getMe")]
 fn get_me() -> Option<UserDto> {
     let user_id = user_id();
@@ -83,17 +77,6 @@ fn get_me() -> Option<UserDto> {
     } else {
         None
     }
-}
-
-// TODO 後続タスクで削除予定
-#[update(name = "create_user")]
-fn update_me_tmp(
-    last_name: String,
-    first_name: String,
-    grade: Grade,
-    temple_id: u32,
-) -> Option<UserDto> {
-    update_me(last_name, first_name, grade, temple_id)
 }
 
 #[update(name = "updateMe")]
@@ -108,22 +91,10 @@ fn update_me(
     Some(UserDto::from_user(user))
 }
 
-// TODO 後続タスクで削除予定
-#[update(name = "delete_user")]
-fn delete_me_tmp() {
-    delete_me()
-}
-
 #[update(name = "deleteMe")]
 fn delete_me() {
     let user_id = user_id();
     user_service().delete(user_id);
-}
-
-// TODO 後続タスクで削除予定
-#[query(name = "get_user_events")]
-fn get_my_event_list_tmp() -> Vec<EventDto> {
-    get_my_event_list()
 }
 
 #[query(name = "getMyEventList")]
@@ -132,22 +103,11 @@ fn get_my_event_list() -> Vec<EventDto> {
     event_service().fetch_all_by_user_id(user_id).into_iter().map(EventDto::from_event).collect()
 }
 
-// TODO 後続タスクで削除予定
-#[query(name = "get_user_event")]
-fn get_my_event_tmp(id: u32) -> Option<EventDto> {
-    get_my_event(id)
-}
-
 #[query(name = "getMyEvent")]
 fn get_my_event(id: u32) -> Option<EventDto> {
     let user_id = user_id();
     let event = event_service().fetch(id, user_id)?;
     Some(EventDto::from_event(event))
-}
-// TODO 後続タスクで削除予定
-#[query(name = "update_vote")]
-fn update_my_vote_tmp(event_id: u32, your_vote: VoteStatus) -> Option<EventDto> {
-    update_my_vote(event_id, your_vote)
 }
 
 #[update(name = "updateMyVote")]
@@ -155,12 +115,6 @@ fn update_my_vote(event_id: u32, your_vote: VoteStatus) -> Option<EventDto> {
     let user_id = user_id();
     vote_service().save(event_id, user_id, your_vote);
     get_my_event(event_id)
-}
-
-// TODO 後続タスクで削除予定
-#[query(name = "get_temples")]
-fn get_temple_list_tmp() -> Vec<Temple> {
-    get_temple_list()
 }
 
 #[query(name = "getTempleList")]
