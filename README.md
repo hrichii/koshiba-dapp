@@ -33,13 +33,11 @@ getMe
 ```sh
 updateMe '("横国", "太郎", variant { S }, 1)'
 ```
-※`create_user`は`updateMe`に置換される予定です。
 
 ### ログイン中のユーザーの削除
 ```sh
 deleteMe
 ```
-※`delete_user`は`deleteMe`に置換される予定です。
 
 ## イベント
 
@@ -47,19 +45,16 @@ deleteMe
 ```sh
 getMyEventList
 ```
-※`get_user_events`は`getMyEventList`に置換される予定です。
 
 ### 指定したイベントの詳細を取得
 ```sh
 getMyEvent '(1)'
 ```
-※`get_user_event`は`getMyEvent`に置換される予定です。
 
 ### イベントへの投票を更新
 ```sh
 updateMyVote '(1, variant { Agree })'
 ```
-※`update_vote`は`updateMyVote`に修正される予定です。
 
 ## 寺
 
@@ -67,7 +62,6 @@ updateMyVote '(1, variant { Agree })'
 ```sh
 getTempleList
 ```
-※`get_temples`は`getTempleList`に置換される予定です。
 
 # デバッグ用のコマンド一覧
 ## プリンシパル
