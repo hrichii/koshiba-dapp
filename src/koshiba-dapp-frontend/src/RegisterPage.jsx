@@ -153,23 +153,23 @@ function RegisterPage() {
           // grade.rsの情報に基づいて値を設定
           switch(g) {
             case 'S':
-              payment = 5000000;
+              payment = 50000;
               voteCount = 25;
               break;
             case 'A':
-              payment = 3000000;
+              payment = 30000;
               voteCount = 15;
               break;
             case 'B':
-              payment = 1000000;
+              payment = 10000;
               voteCount = 10;
               break;
             case 'C':
-              payment = 500000;
+              payment = 5000;
               voteCount = 5;
               break;
             case 'D':
-              payment = 300000;
+              payment = 3000;
               voteCount = 3;
               break;
             default:

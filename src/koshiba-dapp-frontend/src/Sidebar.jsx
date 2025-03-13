@@ -208,6 +208,17 @@ function Sidebar({ isOpen }) {
             {/* モバイル用ボトムナビゲーション - 常に表示 */}
             <div className="mobile-nav">
                 <Link 
+                    to="/home" 
+                    className={`mobile-nav-item ${isActive("/home") ? "active" : ""}`}
+                >
+                    <img 
+                        src={IconHome} 
+                        alt="ホーム" 
+                        className="mobile-nav-icon"
+                    />
+                    <span>ホーム</span>
+                </Link>
+                <Link 
                     to="/search" 
                     className={`mobile-nav-item ${isActive("/search") ? "active" : ""}`}
                 >

@@ -38,34 +38,28 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0.95);
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  backdrop-filter: blur(5px);
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-medium);
+  margin: 20px 0;
+  box-shadow: var(--shadow-small);
 }
 
 .loading-container p {
-  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
   color: var(--main-color);
-  position: relative;
-  padding-left: 35px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
+  margin: 0;
 }
 
 .loading-container p::before {
   content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 22px;
-  height: 22px;
-  margin-top: -11px;
-  border: 3px solid var(--main-color);
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  border: 2px solid var(--main-color);
   border-top-color: transparent;
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -581,6 +575,22 @@ hr {
   font-weight: normal;
 }
 
+/* 投票ボタンコンテナ */
+.vote-buttons-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .vote-buttons-container {
+    flex-direction: row;
+    gap: 15px;
+  }
+}
+
 /* 投票ボタン */
 .vote-button {
   padding: 12px 20px;
@@ -590,7 +600,6 @@ hr {
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-normal);
-  margin: 8px 8px 8px 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -604,7 +613,7 @@ hr {
     min-width: 150px;
     font-size: 1rem;
     padding: 14px 24px;
-    margin: 10px 10px 0 0;
+    flex: 1;
   }
 }
 
@@ -649,6 +658,23 @@ hr {
   cursor: not-allowed;
   box-shadow: none;
   opacity: 0.7;
+}
+
+/* 投票状態の表示 */
+.vote-status {
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: #f5f5f5;
+  border-radius: var(--radius-small);
+  border-left: 3px solid var(--main-color);
+  font-size: 0.9rem;
+  color: var(--text-medium);
+  text-align: center;
+}
+
+.vote-status p {
+  margin: 0;
+  font-weight: 500;
 }
 
 /* イベントなしの表示 */
