@@ -7,6 +7,7 @@ alias getMyEvent='dfx canister call koshiba-dapp-backend getMyEvent --output jso
 alias getMyPaymentList='dfx canister call koshiba-dapp-backend getMyPaymentList --output json'
 alias updateMyVote='dfx canister call koshiba-dapp-backend updateMyVote --output json'
 alias getTempleList='dfx canister call koshiba-dapp-backend getTempleList --output json'
+alias getTemple='dfx canister call koshiba-dapp-backend getTemple --output json'
 alias getPaymentList='dfx canister call koshiba-dapp-backend getPaymentList --output json'
 
 alias getPrincipal='dfx canister call koshiba-dapp-backend getPrincipalDebug --output json'
