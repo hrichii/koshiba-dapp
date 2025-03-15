@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { koshiba_dapp_backend } from "../../declarations/koshiba-dapp-backend";
+import { AuthClient } from "@dfinity/auth-client";
 import "./Sidebar.css"; // ★ サイドバー専用のCSSを読み込む
 import Image_koshiba from "./img/koshiba.jpg";
 import Image_logo from "./img/logo.jpg";
@@ -91,6 +92,24 @@ function Sidebar({ isOpen }) {
         return "ユーザー";
     };
 
+    // ログアウト処理を追加
+    const handleLogout = async () => {
+        try {
+            // AuthClientのインスタンスを取得
+            const authClient = await AuthClient.create();
+            
+            // Internet Identityからログアウト
+            await authClient.logout();
+            
+            // ログアウト後にログイン画面に遷移
+            navigate("/");
+            
+            console.log("ログアウトが完了しました");
+        } catch (error) {
+            console.error("ログアウト中にエラーが発生しました:", error);
+        }
+    };
+
     return (
         <>
             {/* サイドバー - PCのみ表示 */}
@@ -149,7 +168,7 @@ function Sidebar({ isOpen }) {
                     {user ? (
                         // ログイン済みの場合：ログアウトとアカウント削除を表示
                         <ul className="account-menu">
-                            <li><Link to="/">ログアウト</Link></li>
+                            <li><button className="logout-link" onClick={handleLogout}>ログアウト</button></li>
                             <li>
                                 <button 
                                     className="delete-account-button" 

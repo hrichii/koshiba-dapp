@@ -153,23 +153,23 @@ function RegisterPage() {
           // grade.rsの情報に基づいて値を設定
           switch(g) {
             case 'S':
-              payment = 50000;
+              payment = 5000000;
               voteCount = 25;
               break;
             case 'A':
-              payment = 30000;
+              payment = 3000000;
               voteCount = 15;
               break;
             case 'B':
-              payment = 10000;
+              payment = 1000000;
               voteCount = 10;
               break;
             case 'C':
-              payment = 5000;
+              payment = 500000;
               voteCount = 5;
               break;
             case 'D':
-              payment = 3000;
+              payment = 300000;
               voteCount = 3;
               break;
             default:
@@ -460,6 +460,7 @@ function RegisterPage() {
                     readOnly
                     className="readonly-field"
                   />
+                  <p className="field-note">※あなたのInternet Identity番号です</p>
                 </div>
                 
                 <div className="name-fields">
@@ -490,7 +491,7 @@ function RegisterPage() {
                 
                 <div className="name-fields">
                   <div className="input-field half-width">
-                    <label htmlFor="lastNameKana">せい</label>
+                    <label htmlFor="lastNameKana">せい（ふりがな）</label>
                     <input
                       type="text"
                       id="lastNameKana"
@@ -499,10 +500,11 @@ function RegisterPage() {
                       placeholder="こしば"
                       required
                     />
+                    <p className="field-note">※姓の入力と同期されます。必要に応じて修正してください</p>
                   </div>
                   
                   <div className="input-field half-width">
-                    <label htmlFor="firstNameKana">めい</label>
+                    <label htmlFor="firstNameKana">めい（ふりがな）</label>
                     <input
                       type="text"
                       id="firstNameKana"
@@ -511,6 +513,7 @@ function RegisterPage() {
                       placeholder="たろう"
                       required
                     />
+                    <p className="field-note">※名の入力と同期されます。必要に応じて修正してください</p>
                   </div>
                 </div>
                 
@@ -524,6 +527,7 @@ function RegisterPage() {
                     placeholder="2000/01/01"
                     required
                   />
+                  <p className="field-note">※4桁目と6桁目の入力後に自動的に「/」が挿入されます</p>
                 </div>
                 
                 <div className="input-field">
@@ -536,6 +540,7 @@ function RegisterPage() {
                     placeholder="123-4567"
                     ref={postalCodeRef}
                   />
+                  <p className="field-note">※3桁目の入力後に自動的に「-」が挿入されます</p>
                 </div>
                 
                 <div className="input-field">
@@ -564,6 +569,7 @@ function RegisterPage() {
                       </option>
                     ))}
                   </select>
+                  <p className="field-note">※所属寺院の選択は任意です</p>
                 </div>
                 
                 <div className="button-group">

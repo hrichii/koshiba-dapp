@@ -90,10 +90,9 @@ function RemainingTime({ deadlineAt }) {
         const days = Math.floor(diff / (1000 * 60 * 60 * 24));
         const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
         
         // 表示形式を整形
-        setRemainingTime(`あと${days}日${hours}時間${minutes}分${seconds}秒で締め切り`);
+        setRemainingTime(`あと${days}日${hours}時間${minutes}分で締め切り`);
       } catch (error) {
         console.error("締め切り時間の計算エラー:", error);
         setRemainingTime("締め切り日時エラー");
@@ -103,8 +102,8 @@ function RemainingTime({ deadlineAt }) {
     // 初回計算
     calculateRemainingTime();
     
-    // 1秒ごとに更新
-    const intervalId = setInterval(calculateRemainingTime, 1000);
+    // 1分ごとに更新
+    const intervalId = setInterval(calculateRemainingTime, 60000);
     
     // クリーンアップ
     return () => clearInterval(intervalId);
@@ -495,14 +494,6 @@ function MainPage() {
             return (
               <div className="policy-item" key={event.event_id}>
                 <h3>{event.title}</h3>
-                
-                {/* 投票済みの場合、投票タイプ（賛成/反対）を右上に表示 */}
-                {hasVoted && voteTypeText && (
-                  <div className={`vote-status-indicator ${event.your_vote.Agree !== undefined ? 'voted-agree' : 'voted-disagree'}`}>
-                    {event.your_vote.Agree !== undefined ? '👍' : '👎'}
-                  </div>
-                )}
-                
                 <p>{event.content}</p>
                 
                 {/* 締め切り時間 */}
@@ -541,6 +532,16 @@ function MainPage() {
                   </div>
                 </div>
                 
+                {/* 投票済みの場合、投票タイプ（賛成/反対）を表示 */}
+                {hasVoted && voteTypeText && (
+                  <div className={`vote-status ${event.your_vote.Agree !== undefined ? 'voted-agree' : 'voted-disagree'}`}>
+                    <span className="vote-status-icon">
+                      {event.your_vote.Agree !== undefined ? '👍' : '👎'}
+                    </span>
+                    <span className="vote-status-text">{voteTypeText}</span>
+                  </div>
+                )}
+
                 {/* 投票ボタン */}
                 <button 
                   className="vote-button agree-btn"
