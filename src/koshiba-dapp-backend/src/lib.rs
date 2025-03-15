@@ -7,13 +7,15 @@ mod utils;
 
 use crate::dtos::user_dto::UserDto;
 use crate::models::{
-    grade::Grade, temple::Temple, user::User, vote::VoteStatistics, vote_status::VoteStatus,
+    grade::Grade, payment_status::PaymentBalanceStatus, temple::Temple, user::User,
+    vote::VoteStatistics, vote_status::VoteStatus,
 };
 use crate::repositories::user_repository::StableUserRepository;
 use crate::services::user_service::UserService;
 
 use candid::Principal;
 use dtos::event_dto::EventDto;
+use dtos::payment_dto::PaymentDto;
 use entities::vote_entity::VoteEntity;
 use ic_cdk::{caller, query, update};
 use repositories::event_repository::StableEventRepository;
@@ -103,6 +105,39 @@ fn get_my_event_list() -> Vec<EventDto> {
     event_service().fetch_all_by_user_id(user_id).into_iter().map(EventDto::from_event).collect()
 }
 
+#[query(name = "getMyPaymentList")]
+fn get_my_payment_list() -> Vec<PaymentDto> {
+    vec![
+        PaymentDto {
+            payment_id: 1,
+            title: "本殿の改修".to_string(),
+            content: "当神社の本殿は築120年が経過し、老朽化が進んでおります。特に屋根の傷みや柱の劣化が目立ち、安全面の懸念が増しております。これに伴い、本殿の改修工事を行いました。".to_string(),
+            temple_id: Some(1),
+            temple_name: Some("浅草寺".to_string()),
+            status: PaymentBalanceStatus::Expenses,
+            created_at: "2025-03-15T10:00:00Z".to_string(),
+        },
+        PaymentDto {
+            payment_id: 2,
+            title: "檀家料の奉納".to_string(),
+            content: "檀家料をいただきました。".to_string(),
+            temple_id: Some(1),
+            temple_name: Some("浅草寺".to_string()),
+            status: PaymentBalanceStatus::Income,
+            created_at: "2025-03-10T15:30:00Z".to_string(),
+        },
+        PaymentDto {
+            payment_id: 3,
+            title: "寺運営費".to_string(),
+            content: "人件費やお寺の維持費として使用しました。".to_string(),
+            temple_id: Some(1),
+            temple_name: Some("浅草寺".to_string()),
+            status: PaymentBalanceStatus::Expenses,
+            created_at: "2025-02-28T08:45:00Z".to_string(),
+        },
+    ]
+}
+
 #[query(name = "getMyEvent")]
 fn get_my_event(id: u32) -> Option<EventDto> {
     let user_id = user_id();
@@ -120,6 +155,39 @@ fn update_my_vote(event_id: u32, your_vote: VoteStatus) -> Option<EventDto> {
 #[query(name = "getTempleList")]
 fn get_temple_list() -> Vec<Temple> {
     temple_service().fetch_all()
+}
+
+#[query(name = "getPaymentList")]
+fn get_my_payment_list_by_temple_id(temple_id: u32) -> Vec<PaymentDto> {
+    vec![
+        PaymentDto {
+            payment_id: 1,
+            title: "本殿の改修".to_string(),
+            content: "当神社の本殿は築120年が経過し、老朽化が進んでおります。特に屋根の傷みや柱の劣化が目立ち、安全面の懸念が増しております。これに伴い、本殿の改修工事を行いました。".to_string(),
+            temple_id: Some(temple_id),
+            temple_name: Some("浅草寺".to_string()),
+            status: PaymentBalanceStatus::Expenses,
+            created_at: "2025-03-15T10:00:00Z".to_string(),
+        },
+        PaymentDto {
+            payment_id: 2,
+            title: "檀家料の奉納".to_string(),
+            content: "檀家料をいただきました。".to_string(),
+            temple_id: Some(temple_id),
+            temple_name: Some("浅草寺".to_string()),
+            status: PaymentBalanceStatus::Income,
+            created_at: "2025-03-10T15:30:00Z".to_string(),
+        },
+        PaymentDto {
+            payment_id: 3,
+            title: "寺運営費".to_string(),
+            content: "人件費やお寺の維持費として使用しました。".to_string(),
+            temple_id: Some(temple_id),
+            temple_name: Some("浅草寺".to_string()),
+            status: PaymentBalanceStatus::Expenses,
+            created_at: "2025-02-28T08:45:00Z".to_string(),
+        },
+    ]
 }
 
 // [デバッグ]iiの結果を取得
