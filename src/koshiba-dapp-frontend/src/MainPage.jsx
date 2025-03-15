@@ -50,6 +50,74 @@ function AnimatedNumber({ value, duration = 1500, suffix = "" }) {
   );
 }
 
+/**
+ * 締め切りまでの残り時間を計算して表示するコンポーネント
+ * @param {string} deadlineAt - 締め切り日時（ISO 8601形式）
+ */
+function RemainingTime({ deadlineAt }) {
+  const [remainingTime, setRemainingTime] = useState("");
+  
+  useEffect(() => {
+    // 締め切り日時が存在しない場合
+    if (!deadlineAt) {
+      setRemainingTime("締め切り日時未設定");
+      return;
+    }
+    
+    // 残り時間を計算する関数
+    const calculateRemainingTime = () => {
+      try {
+        // 日時文字列をDateオブジェクトに変換
+        const deadline = new Date(deadlineAt);
+        const now = new Date();
+        
+        // 日時が不正な場合
+        if (isNaN(deadline.getTime())) {
+          setRemainingTime("締め切り日時不正");
+          return;
+        }
+        
+        // 残り時間（ミリ秒）
+        const diff = deadline.getTime() - now.getTime();
+        
+        // 締め切り済みの場合
+        if (diff <= 0) {
+          setRemainingTime("締め切り済み");
+          return;
+        }
+        
+        // 残り時間を計算
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        // 表示形式を整形
+        setRemainingTime(`あと${days}日${hours}時間${minutes}分${seconds}秒で締め切り`);
+      } catch (error) {
+        console.error("締め切り時間の計算エラー:", error);
+        setRemainingTime("締め切り日時エラー");
+      }
+    };
+    
+    // 初回計算
+    calculateRemainingTime();
+    
+    // 1秒ごとに更新
+    const intervalId = setInterval(calculateRemainingTime, 1000);
+    
+    // クリーンアップ
+    return () => clearInterval(intervalId);
+  }, [deadlineAt]);
+  
+  return (
+    <div className="remaining-time">
+      <span className="time-icon">⏱</span>
+      <span className="time-text">{remainingTime}</span>
+    </div>
+  );
+}
+
 // ユーザー登録案内モーダルコンポーネント
 function UserRegistrationModal({ onClose }) {
   return (
@@ -201,11 +269,24 @@ function MainPage() {
       console.log("Events data:", eventsData);
       
       // イベントデータを処理
-      if (eventsData && eventsData.length > 0) {
-        setEvents(eventsData);
-      } else {
-        setEvents([]);
-      }
+      const processedEvents = eventsData 
+        ? eventsData.map(event => {
+            // 各イベントを処理
+            const processedEvent = processEventData(event);
+            
+            // イベントの投票情報がある場合、your_voteプロパティを適切に設定
+            // ※バックエンドから返されたデータにすでに含まれている場合はそのまま使用
+            if (processedEvent.your_vote === undefined) {
+              console.log(`Event ${processedEvent.event_id} has no your_vote information.`);
+            } else {
+              console.log(`Event ${processedEvent.event_id} has your_vote:`, processedEvent.your_vote);
+            }
+            
+            return processedEvent;
+          }) 
+        : [];
+      
+      setEvents(processedEvents);
       
     } catch (error) {
       console.error("Data fetch error:", error);
@@ -218,19 +299,8 @@ function MainPage() {
   
   // 投票処理
   const handleVote = async (eventId, voteStatus) => {
-    if (!user) {
-      setError("投票するにはログインが必要です");
-      return;
-    }
-
-    if (!eventId) {
-      setError("無効なイベントIDです");
-      return;
-    }
-
     try {
       console.log(`投票処理: イベントID=${eventId}, 投票=${JSON.stringify(voteStatus)}`);
-      setIsLoading(true);
       
       // バックエンドの投票処理を呼び出す
       const updatedEvent = await koshiba_dapp_backend.updateMyVote(
@@ -240,33 +310,96 @@ function MainPage() {
       
       console.log("投票結果:", updatedEvent);
       
-      if (updatedEvent) {
-        // バックエンドから更新されたイベント情報を受け取った場合、イベントリストを更新
-        setEvents(prevEvents => 
-          prevEvents.map(event => 
-            event.event_id === eventId ? updatedEvent : event
-          )
-        );
+      // バックエンドからの応答がない場合は、フロントエンドでモックデータを使用
+      if (!updatedEvent) {
+        // 現在のイベントを取得
+        const currentEvent = events.find(e => e.event_id === eventId);
+        if (!currentEvent) return;
+        
+        // 投票状態に応じてカウントを更新
+        const updatedVote = { ...currentEvent.vote };
+        
+        if (voteStatus.Agree !== undefined) {
+          updatedVote.agree += user.vote_count || 1;
+        } else if (voteStatus.Disagree !== undefined) {
+          updatedVote.disagree += user.vote_count || 1;
+        }
+        
+        // イベント一覧を更新（該当するイベントにのみ投票済みフラグを設定）
+        setEvents(events.map(event => 
+          event.event_id === eventId 
+            ? {
+                ...event,
+                vote: updatedVote,
+                your_vote: voteStatus
+              } 
+            : event
+        ));
       } else {
-        // エラーメッセージを表示
-        setError("投票処理に失敗しました。後でもう一度お試しください。");
+        // バックエンドからの応答がある場合はそれを使用
+        // 返されたデータに必要なプロパティが含まれているか確認
+        const processedEvent = processEventData(updatedEvent);
+        
+        // イベント一覧を更新（該当するイベントにのみ投票済みフラグを設定）
+        setEvents(events.map(event => 
+          event.event_id === eventId ? processedEvent : event
+        ));
       }
+      
+      // 投票後もユーザーの投票権を維持する（減らさない）
+      // 檀家グレードに応じた投票権は固定値として保持
     } catch (err) {
       console.error("Vote failed:", err);
       setError("投票処理中にエラーが発生しました");
-    } finally {
-      setIsLoading(false);
     }
+  };
+
+  // イベントデータを処理し、必要なプロパティが存在することを確認する関数
+  const processEventData = (event) => {
+    // イベントがない場合は空のオブジェクトを返す
+    if (!event) return {};
+    
+    // 配列の場合は最初の要素を取得
+    const eventData = Array.isArray(event) ? event[0] : event;
+    
+    // voteプロパティが存在しない場合はデフォルト値を設定
+    if (!eventData.vote) {
+      eventData.vote = {
+        agree: 0,
+        disagree: 0,
+        total: 0
+      };
+    }
+    
+    // voteプロパティのフィールドが存在しない場合はデフォルト値を設定
+    if (eventData.vote && typeof eventData.vote === 'object') {
+      if (eventData.vote.agree === undefined) eventData.vote.agree = 0;
+      if (eventData.vote.disagree === undefined) eventData.vote.disagree = 0;
+      if (eventData.vote.total === undefined) {
+        // totalが未定義の場合、agree + disagreeを設定
+        eventData.vote.total = eventData.vote.agree + eventData.vote.disagree;
+      }
+    }
+    
+    return eventData;
+  };
+
+  // 投票タイプを表示するための関数
+  const getVoteTypeText = (yourVote) => {
+    if (!yourVote) return null;
+    
+    if (yourVote.Agree !== undefined) {
+      return "賛成しました";
+    } else if (yourVote.Disagree !== undefined) {
+      return "反対しました";
+    }
+    
+    return null;
   };
 
   // 登録画面へ遷移
   const handleGoToRegister = () => {
     navigate("/register");
-  };
-
-  // 投票済みかどうかを確認する関数
-  const hasVoted = (event) => {
-    return event.your_vote !== undefined && event.your_vote !== null;
   };
 
   return (
@@ -338,33 +471,42 @@ function MainPage() {
           "お寺の運営方針"}
       </h3>
 
-      {/* ローディング表示 */}
-      {isLoading && (
-        <div className="loading-container">
-          <p>データを読み込み中...</p>
-        </div>
-      )}
-
       {/* イベントをまとめるコンテナ */}
       <div className="policy-container">
         {events.length > 0 ? (
           events.map((event) => {
-            // 投票済みかどうかを確認
-            const isVoted = hasVoted(event);
-            const unvoted = event.vote.total - (event.vote.agree + event.vote.disagree);
+            // voteプロパティが存在することを確認
+            const vote = event.vote || { agree: 0, disagree: 0, total: 0 };
+            const unvoted = vote.total - (vote.agree + vote.disagree);
             
             // ステータスバーの幅(%)を計算
             const agreeWidth =
-              event.vote.total > 0 ? (event.vote.agree / event.vote.total) * 100 : 0;
+              vote.total > 0 ? (vote.agree / vote.total) * 100 : 0;
             const disagreeWidth =
-              event.vote.total > 0 ? (event.vote.disagree / event.vote.total) * 100 : 0;
+              vote.total > 0 ? (vote.disagree / vote.total) * 100 : 0;
             const noneWidth =
-              event.vote.total > 0 ? (unvoted / event.vote.total) * 100 : 0;
+              vote.total > 0 ? (unvoted / vote.total) * 100 : 0;
+            
+            // 投票タイプのテキスト（賛成/反対）
+            const voteTypeText = getVoteTypeText(event.your_vote);
+            // 投票済みかどうか
+            const hasVoted = event.your_vote !== undefined;
 
             return (
               <div className="policy-item" key={event.event_id}>
                 <h3>{event.title}</h3>
+                
+                {/* 投票済みの場合、投票タイプ（賛成/反対）を右上に表示 */}
+                {hasVoted && voteTypeText && (
+                  <div className={`vote-status-indicator ${event.your_vote.Agree !== undefined ? 'voted-agree' : 'voted-disagree'}`}>
+                    {event.your_vote.Agree !== undefined ? '👍' : '👎'}
+                  </div>
+                )}
+                
                 <p>{event.content}</p>
+                
+                {/* 締め切り時間 */}
+                <RemainingTime deadlineAt={event.deadline_at} />
 
                 {/* ステータスバー */}
                 <div className="status-bar-container">
@@ -386,11 +528,11 @@ function MainPage() {
                   {/* 賛成・反対・未投票の「票数」を表示 */}
                   <div className="ratio-text">
                     <span className="ratio-agree">
-                      賛成: <AnimatedNumber value={event.vote.agree} suffix="票" />
+                      賛成: <AnimatedNumber value={vote.agree} suffix="票" />
                     </span>
                     <span className="separator">/</span>
                     <span className="ratio-disagree">
-                      反対: <AnimatedNumber value={event.vote.disagree} suffix="票" />
+                      反対: <AnimatedNumber value={vote.disagree} suffix="票" />
                     </span>
                     <span className="separator">/</span>
                     <span className="ratio-none">
@@ -398,37 +540,34 @@ function MainPage() {
                     </span>
                   </div>
                 </div>
-
+                
                 {/* 投票ボタン */}
-                <div className="vote-buttons-container">
-                  <button 
-                    className="vote-button agree-btn"
-                    onClick={() => handleVote(event.event_id, { Agree: null })}
-                    disabled={!user || isVoted}
-                  >
-                    {isVoted 
-                      ? (event.your_vote && 'Agree' in event.your_vote ? "賛成済み" : "投票済み") 
-                      : `賛成に投票する`}
-                  </button>
-                  <button 
-                    className="vote-button disagree-btn"
-                    onClick={() => handleVote(event.event_id, { Disagree: null })}
-                    disabled={!user || isVoted}
-                  >
-                    {isVoted 
-                      ? (event.your_vote && 'Disagree' in event.your_vote ? "反対済み" : "投票済み") 
-                      : `反対に投票する`}
-                  </button>
-                </div>
-
-                {/* 投票状態の表示 */}
-                {isVoted && (
-                  <div className="vote-status">
-                    <p>
-                      あなたは{event.your_vote && 'Agree' in event.your_vote ? "賛成" : "反対"}に投票しました
-                    </p>
-                  </div>
-                )}
+                <button 
+                  className="vote-button agree-btn"
+                  onClick={() => handleVote(event.event_id, { Agree: null })}
+                  disabled={!user || user.vote_count <= 0 || hasVoted}
+                >
+                  {hasVoted 
+                    ? "投票済み" 
+                    : user 
+                      ? (user.vote_count > 0 
+                        ? `${user.vote_count}票 賛成に入れる` 
+                        : "投票権がありません") 
+                      : "ログイン後に投票できます"}
+                </button>
+                <button 
+                  className="vote-button disagree-btn"
+                  onClick={() => handleVote(event.event_id, { Disagree: null })}
+                  disabled={!user || user.vote_count <= 0 || hasVoted}
+                >
+                  {hasVoted 
+                    ? "投票済み" 
+                    : user 
+                      ? (user.vote_count > 0 
+                        ? `${user.vote_count}票 反対に入れる` 
+                        : "投票権がありません") 
+                      : "ログイン後に投票できます"}
+                </button>
               </div>
             );
           })

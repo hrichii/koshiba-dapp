@@ -460,7 +460,6 @@ function RegisterPage() {
                     readOnly
                     className="readonly-field"
                   />
-                  <p className="field-note">※あなたのInternet Identity番号です</p>
                 </div>
                 
                 <div className="name-fields">
@@ -491,7 +490,7 @@ function RegisterPage() {
                 
                 <div className="name-fields">
                   <div className="input-field half-width">
-                    <label htmlFor="lastNameKana">せい（ふりがな）</label>
+                    <label htmlFor="lastNameKana">せい</label>
                     <input
                       type="text"
                       id="lastNameKana"
@@ -500,11 +499,10 @@ function RegisterPage() {
                       placeholder="こしば"
                       required
                     />
-                    <p className="field-note">※姓の入力と同期されます。必要に応じて修正してください</p>
                   </div>
                   
                   <div className="input-field half-width">
-                    <label htmlFor="firstNameKana">めい（ふりがな）</label>
+                    <label htmlFor="firstNameKana">めい</label>
                     <input
                       type="text"
                       id="firstNameKana"
@@ -513,7 +511,6 @@ function RegisterPage() {
                       placeholder="たろう"
                       required
                     />
-                    <p className="field-note">※名の入力と同期されます。必要に応じて修正してください</p>
                   </div>
                 </div>
                 
@@ -527,7 +524,6 @@ function RegisterPage() {
                     placeholder="2000/01/01"
                     required
                   />
-                  <p className="field-note">※4桁目と6桁目の入力後に自動的に「/」が挿入されます</p>
                 </div>
                 
                 <div className="input-field">
@@ -540,7 +536,6 @@ function RegisterPage() {
                     placeholder="123-4567"
                     ref={postalCodeRef}
                   />
-                  <p className="field-note">※3桁目の入力後に自動的に「-」が挿入されます</p>
                 </div>
                 
                 <div className="input-field">
@@ -569,7 +564,6 @@ function RegisterPage() {
                       </option>
                     ))}
                   </select>
-                  <p className="field-note">※所属寺院の選択は任意です</p>
                 </div>
                 
                 <div className="button-group">

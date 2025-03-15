@@ -38,28 +38,34 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
-  background-color: rgba(255, 255, 255, 0.8);
-  border-radius: var(--radius-medium);
-  margin: 20px 0;
-  box-shadow: var(--shadow-small);
+  height: 100vh;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.95);
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
 }
 
 .loading-container p {
-  display: flex;
-  align-items: center;
-  font-size: 1rem;
+  font-size: 1.1rem;
   color: var(--main-color);
-  margin: 0;
+  position: relative;
+  padding-left: 35px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }
 
 .loading-container p::before {
   content: '';
-  display: inline-block;
-  width: 20px;
-  height: 20px;
-  margin-right: 10px;
-  border: 2px solid var(--main-color);
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  margin-top: -11px;
+  border: 3px solid var(--main-color);
   border-top-color: transparent;
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -421,14 +427,14 @@ hr {
 
 /* 運営方針アイテム */
 .policy-item {
-  background: var(--bg-white);
-  border-radius: var(--radius-medium);
+  position: relative; /* 子要素の絶対配置の基準点とする */
+  background-color: #fff;
   padding: 20px;
-  box-shadow: var(--shadow-small);
-  transition: all var(--transition-normal);
-  border: 1px solid var(--border-color);
-  position: relative;
-  overflow: hidden;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
+  border-left: 3px solid var(--main-color);
+  transition: all 0.3s ease;
 }
 
 @media (min-width: 768px) {
@@ -575,22 +581,6 @@ hr {
   font-weight: normal;
 }
 
-/* 投票ボタンコンテナ */
-.vote-buttons-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 15px;
-  width: 100%;
-}
-
-@media (min-width: 768px) {
-  .vote-buttons-container {
-    flex-direction: row;
-    gap: 15px;
-  }
-}
-
 /* 投票ボタン */
 .vote-button {
   padding: 12px 20px;
@@ -600,6 +590,7 @@ hr {
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition-normal);
+  margin: 8px 8px 8px 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -613,7 +604,7 @@ hr {
     min-width: 150px;
     font-size: 1rem;
     padding: 14px 24px;
-    flex: 1;
+    margin: 10px 10px 0 0;
   }
 }
 
@@ -658,23 +649,6 @@ hr {
   cursor: not-allowed;
   box-shadow: none;
   opacity: 0.7;
-}
-
-/* 投票状態の表示 */
-.vote-status {
-  margin-top: 10px;
-  padding: 10px 15px;
-  background-color: #f5f5f5;
-  border-radius: var(--radius-small);
-  border-left: 3px solid var(--main-color);
-  font-size: 0.9rem;
-  color: var(--text-medium);
-  text-align: center;
-}
-
-.vote-status p {
-  margin: 0;
-  font-weight: 500;
 }
 
 /* イベントなしの表示 */
@@ -849,5 +823,88 @@ hr {
   .policy-item {
     padding: 12px;
     margin-bottom: 12px;
+  }
+}
+
+/* 残り時間表示 */
+.remaining-time {
+  background-color: rgba(0, 185, 0, 0.05);
+  padding: 10px 15px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+  border-left: 3px solid var(--main-color);
+  font-size: 0.9rem;
+  color: var(--text-medium);
+}
+
+.time-icon {
+  margin-right: 8px;
+  font-size: 1.1rem;
+}
+
+.time-text {
+  font-weight: 500;
+}
+
+/* 投票状態表示（控えめなインジケーター） */
+.vote-status-indicator {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  opacity: 0.8;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+.vote-status-indicator:hover {
+  transform: scale(1.1);
+  opacity: 1;
+}
+
+.vote-status-indicator.voted-agree {
+  background-color: rgba(0, 185, 0, 0.15);
+  border: 1px solid rgba(0, 185, 0, 0.3);
+}
+
+.vote-status-indicator.voted-disagree {
+  background-color: rgba(229, 57, 53, 0.15);
+  border: 1px solid rgba(229, 57, 53, 0.3);
+}
+
+/* 以前の投票状態表示を非表示（削除予定） */
+.vote-status {
+  display: none;
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 768px) {
+  .remaining-time {
+    padding: 8px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .time-icon {
+    font-size: 1rem;
+  }
+  
+  .vote-status {
+    padding: 10px 14px;
+  }
+  
+  .vote-status-icon {
+    font-size: 1.1rem;
+  }
+  
+  .vote-status-text {
+    font-size: 0.9rem;
   }
 }
