@@ -46,6 +46,11 @@ deleteMe
 getMyEventList
 ```
 
+### 指定した寺のイベント一覧を取得
+```sh
+getEventListByTempleId 1
+```
+
 ### 所属する寺の指定したイベントの詳細を取得
 ```sh
 getMyEvent '(1)'

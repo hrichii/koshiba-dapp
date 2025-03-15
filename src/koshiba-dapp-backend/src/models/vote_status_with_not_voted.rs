@@ -8,6 +8,7 @@ pub enum VoteStatusWithNotVoted {
     NotVoted,
     Agree,
     Disagree,
+    Disabled,
 }
 
 impl VoteStatusWithNotVoted {
