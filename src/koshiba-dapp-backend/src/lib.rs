@@ -18,6 +18,7 @@ use crate::services::user_service::UserService;
 use candid::Principal;
 use entities::vote_entity::VoteEntity;
 use ic_cdk::{caller, query, update};
+use models::address::Address;
 use repositories::event_repository::StableEventRepository;
 use repositories::temple_repository::StableTempleRepository;
 use repositories::vote_repository::StableVoteRepository;
@@ -150,6 +151,23 @@ fn update_my_vote(event_id: u32, your_vote: VoteStatus) -> Option<EventDto> {
     let user_id = user_id();
     vote_service().save(event_id, user_id, your_vote);
     get_my_event(event_id)
+}
+
+#[query(name = "getTemple")]
+fn get_temple(temple_id: u32) -> Option<TempleDto> {
+    Some(TempleDto {
+        id: temple_id,
+        name: "浅草寺".to_string(),
+        address: Address {
+            postal_code: "1110032".to_string(),
+            province: "東京都".to_string(),
+            city: "台東区".to_string(),
+            street: "浅草2-3-1".to_string(),
+            building: None,
+        },
+        image_url: "https://upload.wikimedia.org/wikipedia/commons/8/8d/Asakusa_Senso-ji_2021-12_ac_%282%29.jpg".to_string(),
+        description: "浅草寺（せんそうじ）は、東京都台東区浅草二丁目にある都内最古の寺で、正式には金龍山浅草寺（きんりゅうざんせんそうじ）と号する。聖観世音菩薩を本尊とすることから、浅草観音（あさくさかんのん）として知られている。".to_string(),
+    })
 }
 
 #[query(name = "getTempleList")]

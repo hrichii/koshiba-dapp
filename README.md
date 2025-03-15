@@ -64,6 +64,12 @@ updateMyVote '(1, variant { Agree })'
 
 ## 寺
 
+### 指定した寺の詳細情報を取得
+以下はtemple_id=1の場合の例
+```sh
+getTemple 1
+```
+
 ### 寺の一覧を取得
 ```sh
 getTempleList
