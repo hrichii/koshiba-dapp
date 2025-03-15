@@ -5,7 +5,9 @@ mod repositories;
 mod services;
 mod utils;
 
-use crate::dtos::user_dto::UserDto;
+use crate::dtos::{
+    event_dto::EventDto, payment_dto::PaymentDto, temple_dto::TempleDto, user_dto::UserDto,
+};
 use crate::models::{
     grade::Grade, payment_status::PaymentBalanceStatus, temple::Temple, user::User,
     vote::VoteStatistics, vote_status::VoteStatus,
@@ -14,8 +16,6 @@ use crate::repositories::user_repository::StableUserRepository;
 use crate::services::user_service::UserService;
 
 use candid::Principal;
-use dtos::event_dto::EventDto;
-use dtos::payment_dto::PaymentDto;
 use entities::vote_entity::VoteEntity;
 use ic_cdk::{caller, query, update};
 use repositories::event_repository::StableEventRepository;
@@ -153,8 +153,8 @@ fn update_my_vote(event_id: u32, your_vote: VoteStatus) -> Option<EventDto> {
 }
 
 #[query(name = "getTempleList")]
-fn get_temple_list() -> Vec<Temple> {
-    temple_service().fetch_all()
+fn get_temple_list() -> Vec<TempleDto> {
+    temple_service().fetch_all().into_iter().map(TempleDto::from_temple).collect()
 }
 
 #[query(name = "getPaymentList")]
@@ -265,7 +265,7 @@ fn delete_vote_debug(event_id: u32, user_id: String) -> Option<EventDto> {
 
 // [デバッグ]寺の取得更新削除
 #[query(name = "getAllTempleDebug")]
-fn get_temple_list_debug() -> Vec<Temple> {
+fn get_temple_list_debug() -> Vec<TempleDto> {
     get_temple_list()
 }
 
