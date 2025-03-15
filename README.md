@@ -17,7 +17,7 @@ sh src/koshiba-dapp-backend/init.sh
 
 **【重要!!!】まずは以下コマンドを実行してください。**
 これで`dfx canister call koshiba-dapp-backend`を省略できるようになります。
-```
+```sh
 source src/koshiba-dapp-backend/dfx_aliases
 ```
 
@@ -41,14 +41,20 @@ deleteMe
 
 ## イベント
 
-### ログイン中のユーザーのイベント一覧を取得
+### 所属する寺のイベント一覧を取得
 ```sh
 getMyEventList
 ```
 
-### 指定したイベントの詳細を取得
+### 所属する寺の指定したイベントの詳細を取得
 ```sh
 getMyEvent '(1)'
+```
+
+## 支払い履歴
+### 所属する寺の支払い履歴一覧を取得
+```sh
+getMyPaymentList
 ```
 
 ### イベントへの投票を更新
@@ -61,6 +67,13 @@ updateMyVote '(1, variant { Agree })'
 ### 寺の一覧を取得
 ```sh
 getTempleList
+```
+
+## 支払い履歴
+### 指定した寺の支払い履歴一覧を取得
+temple_idが1のお寺の支払い履歴一覧を取得する場合は以下コマンド
+```sh
+getPaymentList 1
 ```
 
 # デバッグ用のコマンド一覧
