@@ -162,6 +162,8 @@ function OfferingPage() {
           </div>
           <h1>御布施</h1>
           <p className="subtitle">{templeName}への感謝の気持ち</p>
+          <p className="subtitle">御布施は読経や戒名授与などの謝礼として、僧侶の生活を支えるための大切なものです。</p>
+          <p className="subtitle">皆様の心のこもったご支援に深く感謝申し上げます。</p>
         </div>
         
         {error && <div className="error-message">{error}</div>}
@@ -170,7 +172,6 @@ function OfferingPage() {
         {showThanks && (
           <div className="thanks-overlay">
             <div className="thanks-content">
-              <div className="thanks-icon">🙏</div>
               <h2>ありがとうございます</h2>
               <p>心よりの感謝を申し上げます</p>
             </div>
@@ -250,12 +251,11 @@ function OfferingPage() {
           
           {/* メッセージ入力（任意） */}
           <div className="message-input">
-            <label htmlFor="message">メッセージ（任意）</label>
             <textarea
               id="message"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="寺院への感謝のメッセージがあればご記入ください"
+              placeholder="メッセージがあればご記入ください"
               rows="3"
             ></textarea>
           </div>
@@ -265,13 +265,6 @@ function OfferingPage() {
             お布施を送る
           </button>
           
-          {/* 説明文 */}
-          <div className="offering-info">
-            <p>
-              御布施は読経や戒名授与などの謝礼として、僧侶の生活を支えるための大切なものです。
-              皆様の心のこもったご支援に深く感謝申し上げます。
-            </p>
-          </div>
         </form>
       </div>
     </div>

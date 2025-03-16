@@ -3,20 +3,25 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { koshiba_dapp_backend } from "../../declarations/koshiba-dapp-backend";
 import { AuthClient } from "@dfinity/auth-client";
 import "./Sidebar.css"; // ★ サイドバー専用のCSSを読み込む
-import Image_koshiba from "./img/koshiba.jpg";
 import Image_logo from "./img/logo.jpg";
 // ボトムバー用アイコン画像
 import IconHome from "./img/home.png";
 import IconSearch from "./img/search.png";
-import IconParticipate from "./img/group_add.png";
+import IconVote from "./img/vote.png"; // 運営方針用アイコン
 import IconOffering from "./img/offering.png"; 
 import IconNotification from "./img/information.png";
 import IconAccount from "./img/account.png";
+// 折りたたみアイコンを追加
+import IconLeftArrow from "./img/left_arrow.png";
+import IconRightArrow from "./img/right_arrow.png";
 
-function Sidebar({ isOpen }) {
+function Sidebar({ isOpen: propIsOpen }) {
     const [showModal, setShowModal] = useState(false);
+    const [showAccountModal, setShowAccountModal] = useState(false);
     const [user, setUser] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [principalId, setPrincipalId] = useState("");
+    const [isCollapsed, setIsCollapsed] = useState(false); // サイドバー折りたたみ状態
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -46,6 +51,14 @@ function Sidebar({ isOpen }) {
                 
                 console.log("Sidebar - Processed user data:", processedData);
                 setUser(processedData);
+                
+                // Principal IDを取得
+                try {
+                    const principal = await koshiba_dapp_backend.getPrincipalDebug();
+                    setPrincipalId(principal);
+                } catch (error) {
+                    console.error("Principal IDの取得に失敗しました:", error);
+                }
             } catch (error) {
                 console.error("ユーザー情報取得中にエラーが発生しました:", error);
                 setUser(null);
@@ -66,6 +79,8 @@ function Sidebar({ isOpen }) {
             await koshiba_dapp_backend.deleteMe();
             // ユーザー削除後、ログイン画面（"/"）へ遷移
             navigate("/");
+            setShowModal(false);
+            setShowAccountModal(false);
         } catch (error) {
             console.error("ユーザー削除中にエラーが発生しました:", error);
         }
@@ -74,22 +89,6 @@ function Sidebar({ isOpen }) {
     // ユーザー登録画面へ遷移
     const handleGoToRegister = () => {
         navigate("/register");
-    };
-
-    // ユーザー名を表示する関数
-    const displayUserName = () => {
-        if (isLoading) return "読み込み中...";
-        if (!user) return "ゲスト";
-        
-        // last_nameとfirst_nameが存在する場合のみ連結して表示
-        const lastName = user.last_name || "";
-        const firstName = user.first_name || "";
-        
-        if (lastName || firstName) {
-            return `${lastName}${firstName}`;
-        }
-        
-        return "ユーザー";
     };
 
     // ログアウト処理を追加
@@ -105,36 +104,104 @@ function Sidebar({ isOpen }) {
             navigate("/");
             
             console.log("ログアウトが完了しました");
+            
+            // モーダルを閉じる
+            setShowAccountModal(false);
         } catch (error) {
             console.error("ログアウト中にエラーが発生しました:", error);
         }
     };
+    
+    // サイドバーの折りたたみ状態を切り替え
+    const toggleSidebar = () => {
+        setIsCollapsed(!isCollapsed);
+    };
 
     return (
         <>
+            {/* アカウントアイコンボタン */}
+            <button 
+                className={`account-icon-button ${showAccountModal ? 'active' : ''}`}
+                onClick={() => setShowAccountModal(!showAccountModal)}
+            >
+                <img src={IconAccount} alt="アカウント" />
+            </button>
+            
+            {/* アカウントモーダル */}
+            {showAccountModal && (
+                <div className="account-modal-overlay" onClick={() => setShowAccountModal(false)}>
+                    <div className="account-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="account-modal-header">
+                            <h3 className="account-modal-title">アカウント情報</h3>
+                        </div>
+                        
+                        <div className="principal-id-container">
+                            <p className="principal-id-label">Principal ID</p>
+                            <p className="principal-id">{principalId || "読み込み中..."}</p>
+                        </div>
+                        
+                        <div className="account-modal-actions">
+                            <button 
+                                className="modal-action-button logout"
+                                onClick={handleLogout}
+                            >
+                                <span>ログアウト</span>
+                            </button>
+                            
+                            <button 
+                                className="modal-action-button delete"
+                                onClick={() => {
+                                    setShowAccountModal(false);
+                                    setShowModal(true);
+                                }}
+                            >
+                                <span>アカウント削除</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+        
             {/* サイドバー - PCのみ表示 */}
-            <div className={`sidebar ${isOpen ? 'active' : ''}`}>
+            <div className={`sidebar ${propIsOpen ? 'active' : ''} ${isCollapsed ? 'collapsed' : ''}`}>
                 {/* ロゴ部分 - クリックでホームに遷移 */}
                 <Link to="/home" className="logo">
                     <img src={Image_logo} alt="ロゴ" />
                 </Link>
-
+                
                 {/* ナビゲーションリンク */}
                 <ul className="nav-links">
+                    <li>
+                        <Link 
+                            to="/home" 
+                            className={isActive("/home") ? "active" : ""}
+                        >
+                            <div className="sidebar-nav-item">
+                                <img src={IconHome} alt="ホーム" className="sidebar-icon" />
+                                <span className="nav-text">ホーム</span>
+                            </div>
+                        </Link>
+                    </li>
                     <li>
                         <Link 
                             to="/search" 
                             className={isActive("/search") ? "active" : ""}
                         >
-                            お寺を探す
+                            <div className="sidebar-nav-item">
+                                <img src={IconSearch} alt="お寺を探す" className="sidebar-icon" />
+                                <span className="nav-text">お寺を探す</span>
+                            </div>
                         </Link>
                     </li>
                     <li>
                         <Link 
-                            to="/participate" 
-                            className={isActive("/participate") ? "active" : ""}
+                            to="/policy" 
+                            className={isActive("/policy") ? "active" : ""}
                         >
-                            寺運営に参加
+                            <div className="sidebar-nav-item">
+                                <img src={IconVote} alt="運営方針" className="sidebar-icon" />
+                                <span className="nav-text">運営方針</span>
+                            </div>
                         </Link>
                     </li>
                     <li>
@@ -142,7 +209,10 @@ function Sidebar({ isOpen }) {
                             to="/offering" 
                             className={isActive("/offering") ? "active" : ""}
                         >
-                            御布施
+                            <div className="sidebar-nav-item">
+                                <img src={IconOffering} alt="御布施" className="sidebar-icon" />
+                                <span className="nav-text">御布施</span>
+                            </div>
                         </Link>
                     </li>
                     <li>
@@ -150,81 +220,59 @@ function Sidebar({ isOpen }) {
                             to="/notification" 
                             className={isActive("/notification") ? "active" : ""}
                         >
-                            お知らせ
+                            <div className="sidebar-nav-item">
+                                <img src={IconNotification} alt="お知らせ" className="sidebar-icon" />
+                                <span className="nav-text">お知らせ</span>
+                            </div>
                         </Link>
                     </li>
                 </ul>
-
-                {/* アカウント情報 */}
-                <div className="account-section">
-                    <div className="account-info-row">
-                        <img src={Image_koshiba} alt="小柴" />
-                        <Link to={user ? "/account" : "#"}>
-                            {displayUserName()}
-                        </Link>
-                    </div>
-                    
-                    {/* ユーザーの状態に応じたメニュー表示 */}
-                    {user ? (
-                        // ログイン済みの場合：ログアウトとアカウント削除を表示
-                        <ul className="account-menu">
-                            <li><button className="logout-link" onClick={handleLogout}>ログアウト</button></li>
-                            <li>
-                                <button 
-                                    className="delete-account-button" 
-                                    onClick={() => setShowModal(true)}
-                                >
-                                    アカウント削除
-                                </button>
-                            </li>
-                        </ul>
-                    ) : (
-                        // 未ログインの場合：ユーザー登録リンクを表示
-                        <ul className="account-menu">
-                            <li>
-                                <button 
-                                    className="register-account-button" 
-                                    onClick={handleGoToRegister}
-                                >
-                                    ユーザー登録
-                                </button>
-                            </li>
-                        </ul>
-                    )}
-                </div>
-
-                {/* モーダル表示 - デザイン改善版 */}
-                {showModal && (
-                    <div className="modal-overlay">
-                        <div className="delete-account-modal">
-                            <div className="modal-header">
-                                <span className="warning-icon">⚠</span>
-                                <h2>アカウント削除の確認</h2>
-                            </div>
-                            <div className="modal-content">
-                                <p className="modal-message">本当にアカウントを削除しますか？</p>
-                                <p className="modal-warning">この操作は取り消すことができません。アカウントを削除すると、すべてのデータが永久に失われます。</p>
-                            </div>
-                            <div className="modal-buttons">
-                                <button 
-                                    className="cancel-button"
-                                    onClick={() => setShowModal(false)}
-                                >
-                                    キャンセル
-                                </button>
-                                <button 
-                                    className="delete-button"
-                                    onClick={handleDeleteUser}
-                                >
-                                    削除する
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                )}
+                
+                {/* サイドバー折りたたみボタン - 下部に配置 */}
+                <button 
+                    className="collapse-toggle"
+                    onClick={toggleSidebar}
+                    aria-label={isCollapsed ? "展開する" : "折りたたむ"}
+                >
+                    <img 
+                        src={isCollapsed ? IconRightArrow : IconLeftArrow} 
+                        alt={isCollapsed ? "展開" : "折りたたみ"} 
+                        className="collapse-icon" 
+                    />
+                </button>
             </div>
             
-            {/* モバイル用ボトムナビゲーション - 常に表示 */}
+            {/* アカウント削除確認モーダル */}
+            {showModal && (
+                <div className="modal-overlay">
+                    <div className="delete-account-modal">
+                        <div className="modal-header">
+                            <span className="warning-icon">⚠</span>
+                            <h2>アカウント削除の確認</h2>
+                        </div>
+                        <div className="modal-content">
+                            <p className="modal-message">本当にアカウントを削除しますか？</p>
+                            <p className="modal-warning">この操作は取り消すことができません。アカウントを削除すると、すべてのデータが永久に失われます。</p>
+                        </div>
+                        <div className="modal-buttons">
+                            <button 
+                                className="cancel-button"
+                                onClick={() => setShowModal(false)}
+                            >
+                                キャンセル
+                            </button>
+                            <button 
+                                className="delete-button"
+                                onClick={handleDeleteUser}
+                            >
+                                削除する
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+            
+            {/* モバイル用ボトムナビゲーション */}
             <div className="mobile-nav">
                 <Link 
                     to="/home" 
@@ -249,15 +297,15 @@ function Sidebar({ isOpen }) {
                     <span>お寺を探す</span>
                 </Link>
                 <Link 
-                    to="/participate" 
-                    className={`mobile-nav-item ${isActive("/participate") ? "active" : ""}`}
+                    to="/policy" 
+                    className={`mobile-nav-item ${isActive("/policy") ? "active" : ""}`}
                 >
                     <img 
-                        src={IconParticipate} 
-                        alt="参加" 
+                        src={IconVote} 
+                        alt="運営方針" 
                         className="mobile-nav-icon"
                     />
-                    <span>参加</span>
+                    <span>運営方針</span>
                 </Link>
                 <Link 
                     to="/offering" 
@@ -280,17 +328,6 @@ function Sidebar({ isOpen }) {
                         className="mobile-nav-icon"
                     />
                     <span>お知らせ</span>
-                </Link>
-                <Link 
-                    to={user ? "/account" : "/"}
-                    className={`mobile-nav-item ${isActive("/account") || isActive("/") ? "active" : ""}`}
-                >
-                    <img 
-                        src={IconAccount} 
-                        alt="マイページ" 
-                        className="mobile-nav-icon"
-                    />
-                    <span>{user ? "マイページ" : "ログイン"}</span>
                 </Link>
             </div>
         </>

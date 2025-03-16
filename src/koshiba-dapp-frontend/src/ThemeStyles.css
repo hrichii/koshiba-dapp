@@ -1,0 +1,90 @@
+/* テーマカラー変数 */
+:root {
+  /* ライトモード（デフォルト）のカラー設定 */
+  --bg-primary: #f8f9fa;
+  --bg-secondary: #ffffff;
+  --text-primary: #333333;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --border-color: #eeeeee;
+  --main-color: #00B900;
+  --main-color-dark: #009900;
+  --main-color-light: #00D800;
+  --accent-color: #FF8800;
+  --danger-color: #e53935;
+  --shadow-small: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.08);
+  --shadow-large: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* ダークモード設定 */
+body.dark-mode {
+  --bg-primary: #121212;
+  --bg-secondary: #1e1e1e;
+  --text-primary: #e0e0e0;
+  --text-secondary: #b0b0b0;
+  --text-muted: #808080;
+  --border-color: #333333;
+  --main-color: #00D800;
+  --main-color-dark: #00B900;
+  --main-color-light: #00FF00;
+  --accent-color: #FFA94D;
+  --danger-color: #f44336;
+  --shadow-small: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.3);
+  --shadow-large: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+/* ダークモード時のコンポーネント特有スタイル */
+body.dark-mode .sidebar {
+  background: linear-gradient(135deg, var(--main-color) 0%, #007000 100%);
+}
+
+body.dark-mode .user-info-container {
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, #242424 100%);
+}
+
+body.dark-mode .detail-item {
+  background-color: #2a2a2a;
+  border-color: #333333;
+}
+
+body.dark-mode .status-bar {
+  background-color: #303030;
+}
+
+body.dark-mode .policy-item,
+body.dark-mode .policy-link-container {
+  background-color: var(--bg-secondary);
+  border-color: #333333;
+}
+
+body.dark-mode .mobile-header {
+  background: linear-gradient(135deg, var(--main-color) 0%, #007000 100%);
+}
+
+/* テーマ切り替えボタン */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;
+  margin-bottom: 20px;
+  padding: 10px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: var(--text-light);
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  width: 80%;
+  font-weight: bold;
+}
+
+.theme-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+}
+
+.theme-toggle svg {
+  margin-right: 8px;
+} 

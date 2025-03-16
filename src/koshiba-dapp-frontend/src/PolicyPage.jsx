@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AuthClient } from "@dfinity/auth-client";
-import "./MainPage.css";
+import "./PolicyPage.css";
 // バックエンドのモジュールをインポート
 import { koshiba_dapp_backend } from "../../declarations/koshiba-dapp-backend";
 
-import templeIcon from "./img/templeIcon.jpg";
-import rankIcon from "./img/rankIcon.jpg";
-import voteIcon from "./img/voteIcon.jpg";
 import IconAccount from "./img/account.png";
 
 /**
@@ -118,44 +115,56 @@ function RemainingTime({ deadlineAt }) {
   );
 }
 
-// ユーザー登録案内モーダルコンポーネント
-function UserRegistrationModal({ onClose }) {
-  return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>ユーザー登録が必要です</h2>
-        <p>アプリを利用するにはユーザー登録が必要です。</p>
-        <p>登録画面に移動して、必要な情報を入力してください。</p>
-        
-        <div className="button-group">
-          <button
-            type="button"
-            className="register-button"
-            onClick={onClose}
-          >
-            登録画面へ進む
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+/**
+ * カウントダウンコンポーネント
+ * @param {string} deadlineAt - 締め切り日時（ISO 8601形式）
+ */
+function Countdown({ deadlineAt }) {
+  const [timeRemaining, setTimeRemaining] = useState("");
+  
+  useEffect(() => {
+    if (!deadlineAt) return;
+    
+    const calculateTimeRemaining = () => {
+      const now = new Date();
+      const deadline = new Date(deadlineAt);
+      const diff = deadline.getTime() - now.getTime();
+      
+      if (diff <= 0) {
+        setTimeRemaining("締め切り済み");
+        return;
+      }
+      
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      setTimeRemaining(`締切まで${days}日${hours}時間${minutes}分${seconds}秒`);
+    };
+    
+    calculateTimeRemaining();
+    // 1秒ごとに更新
+    const interval = setInterval(calculateTimeRemaining, 1000);
+    
+    return () => clearInterval(interval);
+  }, [deadlineAt]);
+  
+  return <span>{timeRemaining}</span>;
 }
 
-function MainPage() {
+function PolicyPage() {
   const navigate = useNavigate();
   
   // 状態変数
   const [user, setUser] = useState(null);
   const [events, setEvents] = useState([]);
-  const [payments, setPayments] = useState([]); // 運営収支データ
   // 認証チェック中
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   // データ読み込み中
   const [isLoading, setIsLoading] = useState(true);
   // エラーメッセージ
   const [error, setError] = useState("");
-  // ユーザー登録モーダルの表示状態
-  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   // アカウントモーダルの表示状態
   const [showAccountModal, setShowAccountModal] = useState(false);
   // Principal ID
@@ -274,7 +283,6 @@ function MainPage() {
         });
       } else {
         setUser(null);
-        setShowRegistrationModal(true);
       }
       
       // イベント情報を取得
@@ -300,15 +308,6 @@ function MainPage() {
         : [];
       
       setEvents(processedEvents);
-      
-      // 運営収支情報を取得
-      try {
-        const paymentsData = await koshiba_dapp_backend.getMyPaymentList();
-        console.log("Payments data:", paymentsData);
-        setPayments(paymentsData || []);
-      } catch (paymentError) {
-        console.error("運営収支情報の取得に失敗しました:", paymentError);
-      }
       
     } catch (error) {
       console.error("Data fetch error:", error);
@@ -410,18 +409,13 @@ function MainPage() {
   const getVoteTypeText = (yourVote) => {
     if (!yourVote) return null;
     
-    if (yourVote.Agree !== undefined) {
+    if (yourVote.Agree !== undefined && yourVote.Agree !== null) {
       return "賛成しました";
-    } else if (yourVote.Disagree !== undefined) {
+    } else if (yourVote.Disagree !== undefined && yourVote.Disagree !== null) {
       return "反対しました";
     }
     
     return null;
-  };
-
-  // 登録画面へ遷移
-  const handleGoToRegister = () => {
-    navigate("/register");
   };
   
   // ログアウト処理
@@ -454,70 +448,6 @@ function MainPage() {
     } catch (error) {
       console.error("ユーザー削除中にエラーが発生しました:", error);
     }
-  };
-
-  // 投票状態を表示するためのヘルパー関数
-  const renderVoteStatus = (yourVote) => {
-    if (!yourVote) {
-      return <span className="vote-status-badge not-voted">未投票</span>;
-    }
-    
-    if (yourVote.Agree !== undefined) {
-      return <span className="vote-status-badge agree">賛成</span>;
-    } else if (yourVote.Disagree !== undefined) {
-      return <span className="vote-status-badge disagree">反対</span>;
-    }
-    
-    return <span className="vote-status-badge not-voted">未投票</span>;
-  };
-  
-  // 支出/収入のステータスに基づいたクラス名を返す
-  const getPaymentStatusClass = (status) => {
-    if (!status) return "";
-    
-    // statusがオブジェクトの場合（Enum変換後）
-    if (typeof status === 'object') {
-      if ('Expenses' in status) {
-        return "payment-status-expenses";
-      } else if ('Income' in status) {
-        return "payment-status-income";
-      }
-    } 
-    // 文字列の場合は従来通り
-    else if (typeof status === 'string') {
-      if (status === "Expenses") {
-        return "payment-status-expenses";
-      } else if (status === "Income") {
-        return "payment-status-income";
-      }
-    }
-    
-    return "";
-  };
-  
-  // 支出/収入のステータスに基づいたラベルを返す
-  const getPaymentStatusLabel = (status) => {
-    if (!status) return "不明";
-    
-    // statusがオブジェクトの場合（Enum変換後）
-    if (typeof status === 'object') {
-      if ('Expenses' in status) {
-        return "支出";
-      } else if ('Income' in status) {
-        return "収入";
-      }
-    } 
-    // 文字列の場合は従来通り
-    else if (typeof status === 'string') {
-      if (status === "Expenses") {
-        return "支出";
-      } else if (status === "Income") {
-        return "収入";
-      }
-      return status;
-    }
-    
-    return "不明";
   };
 
   // ローディング表示
@@ -573,117 +503,175 @@ function MainPage() {
         </div>
       )}
 
-      {/* ユーザー登録モーダル */}
-      {showRegistrationModal && (
-        <UserRegistrationModal onClose={handleGoToRegister} />
-      )}
+      {/* 見出し */}
+      <h3 className="policy-title">
+        {user && user.temple_name ? 
+          `${user.temple_name}の運営方針` : 
+          "お寺の運営方針"}
+      </h3>
 
-      {/* メインコンテンツ (ユーザーデータの有無にかかわらず表示) */}
-      <div className={`user-info-container ${user && user.grade ? `user-info-container-${Object.keys(user.grade)[0] || ""}` : ""}`}>
-        {/* ユーザー名 */}
-        <h2 className="user-name">
-          {user && user.last_name && user.first_name ? 
-            `${user.last_name} ${user.first_name}` : 
-            "ゲストユーザー"}
-        </h2>
+      {/* イベントをまとめるコンテナ */}
+      <div className="policy-container">
+        {events.length > 0 ? (
+          events.map((event) => {
+            // voteプロパティが存在することを確認
+            const vote = event.vote || { agree: 0, disagree: 0, total: 0 };
+            const total = vote.total || (vote.agree + vote.disagree);
+            
+            // 投票タイプのテキスト（賛成/反対）
+            const voteTypeText = getVoteTypeText(event.your_vote);
+            // 投票済みかどうか
+            const hasVoted = event.your_vote !== undefined && 
+              (event.your_vote.Agree !== undefined || event.your_vote.Disagree !== undefined);
+            
+            // 比率計算
+            const yesProportion = total > 0 ? vote.agree / total : 0;
+            const noProportion = total > 0 ? vote.disagree / total : 0;
+            
+            // マジョリティの閾値（サンプル値）
+            const immediateMajorityPercent = 66; // 即時決定の閾値
+            const standardMajorityPercent = 50;  // 標準決定の閾値
 
-        <div className="user-details">
-          {/* 所属寺院 */}
-          <div className="detail-item">
-            <div className="icon-row">
-              <img src={templeIcon} alt="寺院アイコン" className="icon" />
-              <span>所属寺院</span>
-            </div>
-            <span className="status">
-              {user && user.temple_name ? 
-                user.temple_name : 
-                "所属寺院なし"}
-            </span>
-          </div>
+            return (
+              <div className="policy-item" key={event.event_id}>
+                <h3>{event.title}</h3>
+                <p>{event.content}</p>
+                
+                {/* 締め切り時間 */}
+                <RemainingTime deadlineAt={event.deadline_at} />
 
-          {/* 檀家グレード */}
-          <div className="detail-item">
-            <div className="icon-row">
-              <img src={rankIcon} alt="檀家グレードアイコン" className="icon" />
-              <span>檀家グレード</span>
-            </div>
-            <span className={`status ${user && user.grade ? `grade-status-${Object.keys(user.grade)[0] || ""}` : ""}`}>
-              {user && user.grade ? 
-                `Rank ${Object.keys(user.grade)[0] || "不明"}` : 
-                "グレード情報なし"}
-            </span>
-          </div>
-
-          {/* 所持投票数 */}
-          <div className="detail-item">
-            <div className="icon-row">
-              <img src={voteIcon} alt="投票アイコン" className="icon" />
-              <span>所持投票数</span>
-            </div>
-            <span className="status">
-              {user && user.vote_count !== undefined ? 
-                `${user.vote_count}票` : 
-                "0票"}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <hr />
-
-      <div className="dashboard-grid">
-        {/* 運営方針セクション - 変更 */}
-        <div className="dashboard-card policy-card">
-          <h3 className="dashboard-card-title">運営方針</h3>
-          
-          <div className="policy-event-list">
-            {events.length > 0 ? (
-              events.slice(0, 3).map((event) => (
-                <div key={event.event_id} className="policy-event-item">
-                  <div className="policy-event-header">
-                    <h4 className="policy-event-title">{event.title}</h4>
-                    {renderVoteStatus(event.your_vote)}
+                {/* 投票結果表示 - 新デザイン */}
+                <div className="voting-results">
+                  <h2 className="voting-results-title">投票結果</h2>
+                  
+                  <div className="voting-stats" 
+                       style={{
+                         '--immediate-majority': `${immediateMajorityPercent}%`,
+                         '--standard-majority': `${standardMajorityPercent}%`
+                       }}>
+                    {/* 賛成パーセンテージ */}
+                    <div className="voting-column yes-column">
+                      <span className="vote-label">賛成</span>
+                      <span className="vote-percentage">
+                        {(yesProportion * 100).toFixed(3)}%
+                      </span>
+                    </div>
+                    
+                    {/* 反対パーセンテージ */}
+                    <div className="voting-column no-column">
+                      <span className="vote-label">反対</span>
+                      <span className="vote-percentage">
+                        {(noProportion * 100).toFixed(3)}%
+                      </span>
+                    </div>
+                    
+                    {/* プログレスバーとマジョリティマーカー */}
+                    <div className="voting-progress-container">
+                      {/* 即時マジョリティのマーカー */}
+                      <div className="majority immediate-majority">
+                        <div className="majority-icon immediate-majority"></div>
+                      </div>
+                      
+                      {/* 標準マジョリティのマーカー */}
+                      <div className="majority standard-majority">
+                        <div className="majority-icon standard-majority"></div>
+                      </div>
+                      
+                      {/* プログレスバー - 賛成は左から、反対は右から伸びる */}
+                      <div className="progressbar" role="progressbar" aria-label="投票進捗">
+                        {/* 賛成票のバー - 左から伸びる */}
+                        <div 
+                          className="voting-progress-bar yes-bar" 
+                          style={{ width: `${yesProportion * 100}%` }}
+                        ></div>
+                        
+                        {/* 反対票のバー - 右から伸びる */}
+                        <div 
+                          className="voting-progress-bar no-bar" 
+                          style={{ width: `${noProportion * 100}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                    
+                    {/* 賛成の投票力 */}
+                    <div className="voting-power yes-power">
+                      <span>
+                        <span className="yes">{vote.agree.toLocaleString()}</span>
+                        <span className="label description">投票力</span>
+                      </span>
+                    </div>
+                    
+                    {/* 期限表示 */}
+                    <div className="voting-expiration">
+                      <p>期限</p>
+                      <div>
+                        <Countdown deadlineAt={event.deadline_at} />
+                      </div>
+                    </div>
+                    
+                    {/* 反対の投票力 */}
+                    <div className="voting-power no-power">
+                      <span>
+                        <span className="no">{vote.disagree.toLocaleString()}</span>
+                        <span className="label description">投票力</span>
+                      </span>
+                    </div>
+                  </div>
+                  
+                  {/* マジョリティ説明セクション */}
+                  <div className="votes-results-legends">
+                    <h3>決定条件</h3>
+                    <ol>
+                      <li>
+                        <h4>即時多数決</h4>
+                        <p>投票の66%以上が賛成の場合、即時に決定されます。</p>
+                      </li>
+                      <li>
+                        <h4>標準多数決</h4>
+                        <p>期限までに賛成が50%を超えた場合に決定されます。</p>
+                      </li>
+                    </ol>
                   </div>
                 </div>
-              ))
-            ) : (
-              <p className="no-data-message">現在投票できる議案はありません</p>
-            )}
-          </div>
-          
-          <Link to="/policy" className="see-more-link">
-            ＞＞投票はこちら
-          </Link>
-        </div>
-        
-        {/* 運営収支セクション - 新規追加 */}
-        <div className="dashboard-card payment-card">
-          <h3 className="dashboard-card-title">運営収支</h3>
-          
-          <div className="payment-list">
-            {payments.length > 0 ? (
-              payments.slice(0, 3).map((payment) => (
-                <div key={payment.payment_id} className="payment-item">
-                  <div className="payment-item-header">
-                    <h4 className="payment-item-title">{payment.title}</h4>
-                    <span className={`payment-status ${getPaymentStatusClass(payment.status)}`}>
-                      {getPaymentStatusLabel(payment.status)}
+                
+                {/* 投票済みの場合、投票タイプ（賛成/反対）を表示 */}
+                {hasVoted && voteTypeText && (
+                  <div className={`vote-status ${event.your_vote.Agree !== undefined ? 'voted-agree' : 'voted-disagree'}`}>
+                    <span className="vote-status-icon">
+                      {event.your_vote.Agree !== undefined ? '👍' : '👎'}
                     </span>
+                    <span className="vote-status-text">{voteTypeText}</span>
                   </div>
-                </div>
-              ))
-            ) : (
-              <p className="no-data-message">収支情報はありません</p>
-            )}
-          </div>
-          
-          <Link to="/offering" className="see-more-link">
-            ＞＞詳細はこちら
-          </Link>
-        </div>
+                )}
+                
+                {/* 未投票の場合のみ投票ボタンを表示 */}
+                {!hasVoted && (
+                  <div className="vote-buttons">
+                    <button
+                      className="vote-button agree-btn"
+                      onClick={() => handleVote(event.event_id, { Agree: null })}
+                      disabled={!user || user.vote_count <= 0 || hasVoted}
+                    >
+                      賛成
+                    </button>
+                    <button
+                      className="vote-button disagree-btn"
+                      onClick={() => handleVote(event.event_id, { Disagree: null })}
+                      disabled={!user || user.vote_count <= 0 || hasVoted}
+                    >
+                      反対
+                    </button>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        ) : (
+          <p className="no-events">現在、投票できるイベントはありません</p>
+        )}
       </div>
     </div>
   );
 }
 
-export default MainPage;
+export default PolicyPage;

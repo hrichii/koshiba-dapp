@@ -12,9 +12,6 @@ function RegisterPage() {
   const [temples, setTemples] = useState([]);
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
-  const [lastNameKana, setLastNameKana] = useState("");
-  const [firstNameKana, setFirstNameKana] = useState("");
-  const [birthDate, setBirthDate] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [address, setAddress] = useState("");
   const [templeId, setTempleId] = useState("");
@@ -24,80 +21,59 @@ function RegisterPage() {
   const [error, setError] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [identityInfo, setIdentityInfo] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  
+  // 生年月日を年・月・日に分けて管理（プルダウン用）
+  const [birthYear, setBirthYear] = useState("");
+  const [birthMonth, setBirthMonth] = useState("");
+  const [birthDay, setBirthDay] = useState("");
   
   // 入力フィールドへの参照
   const postalCodeRef = useRef(null);
   const addressRef = useRef(null);
 
-  // 姓が変更されたときにふりがなを同期（変換なし）
-  useEffect(() => {
-    setLastNameKana(lastName);
-  }, [lastName]);
-
-  // 名が変更されたときにふりがなを同期（変換なし）
-  useEffect(() => {
-    setFirstNameKana(firstName);
-  }, [firstName]);
-
-  // 生年月日の入力を処理する関数
-  const handleBirthDateChange = (e) => {
-    const value = e.target.value.replace(/[^\d]/g, ''); // 数字以外を削除
-    
-    // 自動フォーマット処理
-    let formattedValue = '';
-    if (value.length > 0) {
-      // 年（4桁目を入力したら自動的に「/」を追加）
-      if (value.length <= 4) {
-        formattedValue = value;
-        if (value.length === 4) {
-          formattedValue += '/';
-        }
-      } 
-      // 月（6桁目を入力したら自動的に「/」を追加）
-      else if (value.length <= 6) {
-        formattedValue = value.substring(0, 4) + '/' + value.substring(4);
-        if (value.length === 6) {
-          formattedValue += '/';
-        }
-      } 
-      // 日
-      else {
-        formattedValue = value.substring(0, 4) + '/' + value.substring(4, 6) + '/' + value.substring(6, Math.min(8, value.length));
-      }
+  // 年、月、日の選択肢を生成
+  const generateYears = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    // 120年前から現在までの年を生成
+    for (let year = currentYear - 120; year <= currentYear; year++) {
+      years.push(year);
     }
-    
-    setBirthDate(formattedValue);
-    
-    // 入力が8桁完了したら、次のフィールドにフォーカスを移動
-    if (value.length === 8 && postalCodeRef.current) {
-      postalCodeRef.current.focus();
-    }
+    return years.reverse(); // 新しい年が上にくるように
   };
 
-  // 郵便番号の入力を処理する関数
-  const handlePostalCodeChange = (e) => {
-    const value = e.target.value.replace(/[^\d]/g, ''); // 数字以外を削除
+  const generateMonths = () => {
+    return Array.from({ length: 12 }, (_, i) => i + 1);
+  };
+
+  const generateDays = () => {
+    // 選択された年と月に基づいて、適切な日数を計算
+    if (!birthYear || !birthMonth) return Array.from({ length: 31 }, (_, i) => i + 1);
     
-    // 自動フォーマット処理
-    let formattedValue = '';
-    if (value.length > 0) {
-      // 3桁入力したら自動的に「-」を追加
-      if (value.length <= 3) {
-        formattedValue = value;
-        if (value.length === 3) {
-          formattedValue += '-';
-        }
-      } else {
-        formattedValue = value.substring(0, 3) + '-' + value.substring(3, Math.min(7, value.length));
+    const daysInMonth = new Date(birthYear, birthMonth, 0).getDate();
+    return Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  };
+
+  // 選択された年・月が変更されたときに日の選択肢を更新
+  useEffect(() => {
+    // 年と月が変更されたとき、選択可能な日を再計算
+    if (birthYear && birthMonth) {
+      const daysInMonth = new Date(birthYear, birthMonth, 0).getDate();
+      // 選択されている日が新しい月の日数より大きい場合、日をリセット
+      if (birthDay > daysInMonth) {
+        setBirthDay("");
       }
     }
-    
-    setPostalCode(formattedValue);
-    
-    // 入力が7桁完了したら、次のフィールドにフォーカスを移動
-    if (value.length === 7 && addressRef.current) {
-      addressRef.current.focus();
-    }
+  }, [birthYear, birthMonth, birthDay]);
+
+  // 年・月・日から生年月日文字列を生成する関数
+  const getBirthDateString = () => {
+    if (!birthYear || !birthMonth || !birthDay) return "";
+    // YYYY/MM/DD 形式で返す
+    const month = birthMonth.toString().padStart(2, '0');
+    const day = birthDay.toString().padStart(2, '0');
+    return `${birthYear}/${month}/${day}`;
   };
 
   // 認証チェックと寺院データの取得
@@ -153,23 +129,23 @@ function RegisterPage() {
           // grade.rsの情報に基づいて値を設定
           switch(g) {
             case 'S':
-              payment = 5000000;
+              payment = 50000;
               voteCount = 25;
               break;
             case 'A':
-              payment = 3000000;
+              payment = 30000;
               voteCount = 15;
               break;
             case 'B':
-              payment = 1000000;
+              payment = 10000;
               voteCount = 10;
               break;
             case 'C':
-              payment = 500000;
+              payment = 5000;
               voteCount = 5;
               break;
             case 'D':
-              payment = 300000;
+              payment = 3000;
               voteCount = 3;
               break;
             default:
@@ -273,15 +249,9 @@ function RegisterPage() {
       return;
     }
     
-    // ふりがなの検証
-    if (!lastNameKana || !firstNameKana) {
-      setError("ふりがなは必須項目です");
-      return;
-    }
-    
-    // 生年月日の簡易検証
-    if (!birthDate || !/^\d{4}\/\d{2}\/\d{2}$/.test(birthDate)) {
-      setError("生年月日は正しい形式で入力してください（例：2000/01/01）");
+    // 生年月日の検証
+    if (!birthYear || !birthMonth || !birthDay) {
+      setError("生年月日を選択してください");
       return;
     }
     
@@ -328,13 +298,11 @@ function RegisterPage() {
       console.log("Registering user:", { 
         lastName, 
         firstName, 
-        lastNameKana,
-        firstNameKana,
-        birthDate,
+        birthDate: getBirthDateString(),
         postalCode,
         address,
-        grade, 
-        templeId 
+        templeId: templeId || 0,
+        grade
       });
       
       // 檀家グレードをEnum形式に変換
@@ -416,6 +384,55 @@ function RegisterPage() {
     }).format(amount);
   };
 
+  /* 生年月日入力部分のみを差し替え */
+  const renderBirthDateSelectors = () => {
+    return (
+      <div className="input-field">
+        <label htmlFor="birthDate">生年月日</label>
+        <div className="birth-date-container">
+          <select
+            id="birthYear"
+            value={birthYear}
+            onChange={(e) => setBirthYear(e.target.value)}
+            className="birth-selector"
+            required
+          >
+            <option value="">年</option>
+            {generateYears().map(year => (
+              <option key={year} value={year}>{year}年</option>
+            ))}
+          </select>
+          
+          <select
+            id="birthMonth"
+            value={birthMonth}
+            onChange={(e) => setBirthMonth(e.target.value)}
+            className="birth-selector"
+            required
+          >
+            <option value="">月</option>
+            {generateMonths().map(month => (
+              <option key={month} value={month}>{month}月</option>
+            ))}
+          </select>
+          
+          <select
+            id="birthDay"
+            value={birthDay}
+            onChange={(e) => setBirthDay(e.target.value)}
+            className="birth-selector"
+            required
+          >
+            <option value="">日</option>
+            {generateDays().map(day => (
+              <option key={day} value={day}>{day}日</option>
+            ))}
+          </select>
+        </div>
+      </div>
+    );
+  };
+
   // ローディング中の表示
   if (isLoading) {
     return (
@@ -452,7 +469,7 @@ function RegisterPage() {
               <form onSubmit={handleNextPage} className="register-form">
                 {/* Internet Identity 情報表示フィールド */}
                 <div className="input-field">
-                  <label htmlFor="identityInfo">Internet Identity</label>
+                  <label htmlFor="identityInfo">Principal ID</label>
                   <input
                     type="text"
                     id="identityInfo"
@@ -460,12 +477,12 @@ function RegisterPage() {
                     readOnly
                     className="readonly-field"
                   />
-                  <p className="field-note">※あなたのInternet Identity番号です</p>
+                  <p className="field-note">※Principal ID</p>
                 </div>
                 
                 <div className="name-fields">
                   <div className="input-field half-width">
-                    <label htmlFor="lastName">姓</label>
+                    <label htmlFor="lastName">名字</label>
                     <input
                       type="text"
                       id="lastName"
@@ -477,7 +494,7 @@ function RegisterPage() {
                   </div>
                   
                   <div className="input-field half-width">
-                    <label htmlFor="firstName">名</label>
+                    <label htmlFor="firstName">名前</label>
                     <input
                       type="text"
                       id="firstName"
@@ -489,46 +506,8 @@ function RegisterPage() {
                   </div>
                 </div>
                 
-                <div className="name-fields">
-                  <div className="input-field half-width">
-                    <label htmlFor="lastNameKana">せい（ふりがな）</label>
-                    <input
-                      type="text"
-                      id="lastNameKana"
-                      value={lastNameKana}
-                      onChange={(e) => setLastNameKana(e.target.value)}
-                      placeholder="こしば"
-                      required
-                    />
-                    <p className="field-note">※姓の入力と同期されます。必要に応じて修正してください</p>
-                  </div>
-                  
-                  <div className="input-field half-width">
-                    <label htmlFor="firstNameKana">めい（ふりがな）</label>
-                    <input
-                      type="text"
-                      id="firstNameKana"
-                      value={firstNameKana}
-                      onChange={(e) => setFirstNameKana(e.target.value)}
-                      placeholder="たろう"
-                      required
-                    />
-                    <p className="field-note">※名の入力と同期されます。必要に応じて修正してください</p>
-                  </div>
-                </div>
-                
-                <div className="input-field">
-                  <label htmlFor="birthDate">生年月日</label>
-                  <input
-                    type="text"
-                    id="birthDate"
-                    value={birthDate}
-                    onChange={handleBirthDateChange}
-                    placeholder="2000/01/01"
-                    required
-                  />
-                  <p className="field-note">※4桁目と6桁目の入力後に自動的に「/」が挿入されます</p>
-                </div>
+                {/* 生年月日のプルダウンを表示 */}
+                {renderBirthDateSelectors()}
                 
                 <div className="input-field">
                   <label htmlFor="postalCode">郵便番号</label>
@@ -536,13 +515,11 @@ function RegisterPage() {
                     type="text"
                     id="postalCode"
                     value={postalCode}
-                    onChange={handlePostalCodeChange}
+                    onChange={(e) => setPostalCode(e.target.value)}
                     placeholder="123-4567"
                     ref={postalCodeRef}
                   />
-                  <p className="field-note">※3桁目の入力後に自動的に「-」が挿入されます</p>
                 </div>
-                
                 <div className="input-field">
                   <label htmlFor="address">住所</label>
                   <input

@@ -12,6 +12,8 @@
     --transition-fast: 0.2s ease;
     --transition-normal: 0.3s ease;
     --transition-slow: 0.5s ease;
+    --sidebar-width: 180px;
+    --sidebar-collapsed-width: 60px;
 }
 
 /* サイドバー全体 */
@@ -19,7 +21,7 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 220px;
+    width: var(--sidebar-width);
     height: 100vh;
     background: linear-gradient(135deg, var(--main-color) 0%, var(--main-color-dark) 100%); 
     display: flex;
@@ -31,9 +33,43 @@
     z-index: 999;
     box-shadow: var(--shadow-medium);
     font-family: 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Noto Sans JP', sans-serif;
-    transition: transform var(--transition-normal), width var(--transition-normal);
+    transition: all var(--transition-normal);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+/* 折りたたまれたサイドバー */
+.sidebar.collapsed {
+    width: var(--sidebar-collapsed-width);
+}
+
+/* サイドバー折りたたみボタン - サイズを大きく修正 */
+.collapse-toggle {
+    position: absolute;
+    bottom: 30px;
+    right: 10px;
+    width: 36px; /* サイズを大きく */
+    height: 36px; /* サイズを大きく */
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    z-index: 10;
+}
+
+.collapse-toggle:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.collapse-icon {
+    width: 18px; /* アイコンも大きく */
+    height: 18px; /* アイコンも大きく */
+    filter: brightness(0) invert(1); /* アイコンを白色に */
 }
 
 /* モバイル表示用（サイドバーを画面外に配置） */
@@ -104,8 +140,10 @@
 
 /* ロゴを丸くくり抜いて中心表示 */
 .logo {
-    width: 110px;
-    height: 110px;
+    width: 80px;
+    height: 80px;
+    min-width: 60px;
+    min-height: 60px;
     border-radius: 50%;
     overflow: hidden;
     margin-bottom: 1.5rem;
@@ -116,6 +154,11 @@
     text-decoration: none;
     display: block;
     cursor: pointer;
+}
+
+/* 折りたたみ時にロゴを非表示にする */
+.sidebar.collapsed .logo {
+    display: none;
 }
 
 .logo:hover {
@@ -134,18 +177,26 @@
     transform: scale(1.1);
 }
 
-/* ナビゲーションリンク */
+/* ナビゲーションリンク - 固定位置を確保するために修正 */
 .nav-links {
     list-style: none;
     padding: 0;
-    margin: 1rem 0;
+    margin: 0; /* マージンを削除 */
     width: 100%;
-    text-align: center;
+    text-align: left;
+    /* ロゴが非表示になっても位置が固定されるように */
+    position: absolute;
+    top: 120px; /* ロゴ + マージンの高さ分 */
+}
+
+.sidebar.collapsed .nav-links {
+    top: 20px; /* 折りたたみ時はトップから開始 */
 }
 
 .nav-links li {
     margin: 5px 0;
-    padding: 0 15px;
+    padding: 0;
+    width: 100%;
 }
 
 .nav-links a {
@@ -153,187 +204,254 @@
     text-decoration: none;
     font-weight: bold;
     display: block;
-    padding: 12px 0;
-    border-radius: 8px;
-    transition: all var(--transition-normal);
-    position: relative;
-    overflow: hidden;
+    padding: 12px 10px;
+    border-radius: 0;
     letter-spacing: 0.5px;
     font-size: 0.95rem;
-}
-
-.nav-links a::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
     width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    transition: transform 0.4s ease;
-    transform: skewX(-15deg);
+    box-sizing: border-box;
 }
 
 .nav-links a:hover {
     background-color: rgba(255, 255, 255, 0.15);
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-small);
-}
-
-.nav-links a:hover::before {
-    transform: translateX(200%) skewX(-15deg);
-}
-
-.nav-links a:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* アクティブなリンク */
 .nav-links a.active {
     background-color: rgba(255, 255, 255, 0.2);
-    box-shadow: var(--shadow-small);
 }
 
-/* アカウント情報の背景を少し薄く */
-.account-section {
-    margin-top: auto;
-    width: 100%;
-    background: rgba(0, 0, 0, 0.15);
-    padding: 15px;
-    box-sizing: border-box;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-}
-
-/* 画像とユーザー名を横並びに */
-.account-info-row {
+/* サイドバー用のナビゲーションアイテム */
+.sidebar-nav-item {
     display: flex;
     align-items: center;
     gap: 12px;
+    transition: padding var(--transition-normal);
+    width: 100%;
+}
+
+.sidebar.collapsed .sidebar-nav-item {
     justify-content: center;
-    margin-bottom: 12px;
-    padding: 8px;
-    border-radius: 10px;
-    transition: background-color var(--transition-normal);
+    padding: 0;
 }
 
-.account-info-row:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+.sidebar-icon {
+    width: 22px;
+    height: 22px;
+    filter: brightness(0) invert(1);
+    transition: transform 0.2s ease;
 }
 
-.account-info-row img {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    object-fit: cover;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    border: 2px solid rgba(255, 255, 255, 0.8);
-    transition: transform var(--transition-normal);
-}
-
-.account-info-row:hover img {
+.nav-links a:hover .sidebar-icon {
     transform: scale(1.1);
 }
 
-.account-info-row a {
-    color: var(--text-light);
-    text-decoration: none;
-    font-weight: bold;
-    letter-spacing: 0.5px;
-    font-size: 15px;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+/* 折りたたみ時のテキスト非表示 */
+.sidebar.collapsed .nav-text {
+    display: none;
 }
 
-/* ログアウト・アカウント削除・ユーザー登録 */
-.account-menu {
-    list-style: none;
-    padding: 0;
-    margin: 5px 0 0 0;
-    text-align: center;
+/* アカウント情報セクションを非表示に */
+.account-section {
+    display: none;
 }
 
-.account-menu li {
-    margin: 8px 0;
-}
-
-/* ログアウトリンクスタイル */
-.logout-link {
-    background: none;
+/* アカウントアイコンボタン - 右上に固定 */
+.account-icon-button {
+    position: fixed;
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--main-color);
     border: none;
-    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    font-family: inherit;
-    color: #fff;
-    text-decoration: underline;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    display: inline-block;
+    z-index: 1000;
+    box-shadow: var(--shadow-small);
+    transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-.logout-link:hover {
-    color: #f0f0f0;
-    transform: translateY(-2px);
+.account-icon-button:hover {
+    transform: scale(1.05);
+    background-color: var(--main-color-dark);
 }
 
-.account-menu li a {
-    color: var(--text-light);
-    text-decoration: none;
-    font-weight: normal;
-    display: block;
-    padding: 8px 0;
-    border-radius: 6px;
-    transition: all var(--transition-normal);
+.account-icon-button.active {
+    background-color: var(--main-color-dark);
+    transform: scale(1.05);
 }
 
-.account-menu li a:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-1px);
+.account-icon-button img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
 }
 
-/* ボタンの見た目調整 */
-.delete-account-button, .register-account-button {
-    background: none;
-    border: none;
-    color: var(--text-light);
-    font-size: inherit;
-    cursor: pointer;
-    padding: 8px 12px;
+/* モバイル表示時のアカウントボタン調整 */
+@media (max-width: 991px) {
+    .account-icon-button {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        width: 36px;
+        height: 36px;
+        box-shadow: none;
+        background-color: transparent;
+    }
+    
+    .account-icon-button:hover {
+        transform: none;
+        background-color: transparent;
+    }
+    
+    .account-icon-button img {
+        width: 22px;
+        height: 22px;
+        filter: brightness(0) invert(1); /* アイコンを白色に */
+    }
+    
+    /* アプリのコンテナに相対位置を設定してアカウントボタンの配置基準にする */
+    .container {
+        position: relative;
+        padding-top: 50px; /* ヘッダー分の余白を確保 */
+    }
+}
+
+/* アカウントメニューモーダル */
+.account-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    border-radius: 6px;
-    transition: all var(--transition-normal);
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.25);
+    backdrop-filter: blur(3px);
+    z-index: 1090;
+    display: flex;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding-top: 60px;
+    padding-right: 15px;
+    animation: fadeIn 0.2s ease;
 }
 
-.delete-account-button {
-    color: rgba(255, 255, 255, 0.9);
+.account-modal {
+    position: relative;
+    background-color: white;
+    border-radius: 12px;
+    padding: 20px;
+    width: 90%;
+    max-width: 300px;
+    box-shadow: var(--shadow-large);
+    animation: popIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+    margin-right: 5px;
 }
 
-.delete-account-button:hover {
-    background-color: rgba(255, 70, 70, 0.2);
-    text-decoration: none;
-    color: var(--text-light);
+/* 吹き出しの三角形を追加 */
+.account-modal::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    right: 20px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid white;
 }
 
-/* ユーザー登録ボタンの強調表示 */
-.register-account-button {
+@keyframes popIn {
+    0% { 
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    100% { 
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* モバイル用の調整 */
+@media (max-width: 991px) {
+    .account-modal-overlay {
+        padding-top: 50px;
+        padding-right: 10px;
+    }
+    
+    .account-modal {
+        max-width: 280px;
+    }
+}
+
+.account-modal-header {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 10px;
+}
+
+.account-modal-title {
+    font-size: 1.2rem;
     font-weight: bold;
-    background-color: rgba(255, 255, 255, 0.2);
+    margin: 0;
+    padding: 0;
+    color: var(--text-dark);
+}
+
+.principal-id-container {
+    background-color: #f5f5f5;
+    padding: 10px;
     border-radius: 6px;
-    padding: 10px 12px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    letter-spacing: 0.5px;
+    margin-bottom: 15px;
 }
 
-.register-account-button:hover {
-    background-color: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-    text-decoration: none;
+.principal-id-label {
+    font-size: 0.8rem;
+    color: var(--text-medium);
+    margin: 0 0 5px 0;
 }
 
-.register-account-button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+.principal-id {
+    font-size: 0.9rem;
+    word-break: break-all;
+    margin: 0;
+    color: var(--text-dark);
+    font-family: monospace;
+}
+
+.account-modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-action-button {
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background-color: transparent;
+    font-size: 1rem;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color var(--transition-fast);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-action-button:hover {
+    background-color: #f5f5f5;
+}
+
+.modal-action-button.logout {
+    color: var(--primary-blue);
+}
+
+.modal-action-button.delete {
+    color: var(--danger-color);
 }
 
 /* モーダル用のスタイル - 基本 */
@@ -574,4 +692,86 @@
     .sidebar {
         display: none;
     }
+}
+
+/* モバイル用テーマ切り替えボタン */
+.mobile-theme-toggle {
+  position: fixed;
+  bottom: 80px;
+  right: 20px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--main-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  z-index: 900;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.mobile-theme-toggle:hover,
+.mobile-theme-toggle:active {
+  transform: scale(1.05);
+  background-color: var(--main-color-dark);
+}
+
+@media (min-width: 992px) {
+  .mobile-theme-toggle {
+    display: none;
+  }
+}
+
+body.dark-mode .mobile-theme-toggle {
+  background-color: #424242;
+}
+
+.mobile-theme-toggle img {
+  width: 24px;
+  height: 24px;
+  filter: brightness(0) invert(1);
+}
+
+/* SVGアイコンの色調整 */
+.theme-toggle img,
+.mobile-theme-toggle img {
+  filter: brightness(0) invert(1); /* アイコンを白色に */
+  width: 24px;
+  height: 24px;
+}
+
+/* サイドバー用のテーマ切り替えボタン */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  padding: 12px 15px;
+  border-radius: 8px;
+  margin-top: auto;
+  margin-bottom: 20px;
+  width: calc(100% - 30px);
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.theme-toggle img {
+  width: 22px;
+  height: 22px;
+  filter: brightness(0) invert(1);
+}
+
+.theme-toggle span {
+  font-size: 0.95rem;
 }

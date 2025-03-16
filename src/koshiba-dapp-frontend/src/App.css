@@ -7,16 +7,24 @@
     font-family: sans-serif;
     width: 100%;
     position: relative;
+    background-color: var(--bg-color);
 }
 
 /* メインコンテンツ */
 .main-content {
-  margin-left: 200px; /* サイドバーの幅分だけ左に余白 */
   flex: 1;
+  margin-left: var(--sidebar-width); /* サイドバーの幅に合わせる */
+  transition: margin-left var(--transition-normal);
   background-color: #f5f5f5;
   padding: 20px;
-  width: calc(100% - 200px); /* サイドバーの幅を引いた幅 */
+  width: calc(100% - var(--sidebar-width));
   box-sizing: border-box;
+}
+
+/* サイドバー折りたたみ時のメインコンテンツ調整 */
+.sidebar.collapsed ~ .main-content {
+  margin-left: var(--sidebar-collapsed-width);
+  width: calc(100% - var(--sidebar-collapsed-width));
 }
 
 /* スマホ・タブレットサイズのレスポンシブ対応 */
@@ -30,8 +38,8 @@
   }
   
   .main-content {
-    margin: 0 3px; /* 左右に明示的に3pxのマージンを設定 */
-    width: calc(100% - 6px); /* 左右の余白3pxずつ考慮 */
+    margin-left: 0;
+    width: 100%;
     padding: 0; /* 上下のパディングは0のまま */
     box-sizing: border-box;
     max-width: calc(100% - 6px);
@@ -42,4 +50,10 @@
   body.has-mobile-header .main-content {
     padding-top: 46px; /* ヘッダーの高さ（46px） */
   }
+}
+
+/* 暗い背景 */
+.dark-bg {
+  background-color: var(--dark-bg);
+  color: var(--text-light);
 }

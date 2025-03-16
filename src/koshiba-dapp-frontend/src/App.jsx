@@ -1,14 +1,15 @@
 // App.jsx
 import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "./ThemeStyles.css"; // テーマスタイルをインポート
 import LoginPage from "./LoginPage";
 import MainPage from "./MainPage";
 import RegisterPage from "./RegisterPage";
 import SearchTemplePage from "./SearchTemplePage";
-import ParticipatePage from "./ParticipatePage";
 import NotificationPage from "./NotificationPage";
 import AccountInfoPage from "./AccountInfoPage";
 import OfferingPage from "./OfferingPage"; // 御布施ページをインポート
+import PolicyPage from "./PolicyPage"; // 運営方針ページをインポート
 import PrayerService from "./Notification/PrayerService";
 import GomakiService from "./Notification/GomakiService";
 import BuddhistItemsDiscount from "./Notification/BuddhistItemsDiscount";
@@ -21,12 +22,14 @@ import OssuaryUsage from "./Notification/OssuaryUsage";
 import SpecialCeremony from "./Notification/SpecialCeremony";
 import PriorityParticipation from "./Notification/PriorityParticipation";
 import PurificationService from "./Notification/PurificationService";
-import MobileHeader from "./MobileHeader"; // モバイルヘッダーをインポート
 import "./App.css"; // 全体レイアウト用
 import Sidebar from "./Sidebar"; // ★ Sidebarをインポート
 import NotificationDetail from "./Notification/NotificationDetail";
 
 function App() {
+  // useState追加: サイドバーの表示状態を管理
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   return (
     <Router>
       <Routes>
@@ -40,18 +43,17 @@ function App() {
           path="/*"
           element={
             <div className="app-container">
-              {/* モバイルヘッダー */}
-              <MobileHeader />
+              {/* モバイルヘッダーコンポーネントを削除 */}
               
               {/* サイドバー */}
-              <Sidebar isOpen={false} />
+              <Sidebar isOpen={sidebarOpen} />
               
               <div className="main-content">
                 <Routes>
                   <Route path="home" element={<MainPage />} />
                   <Route path="search" element={<SearchTemplePage />} />
-                  <Route path="participate" element={<ParticipatePage />} />
                   <Route path="offering" element={<OfferingPage />} />  {/* 御布施ページのルートを追加 */}
+                  <Route path="policy" element={<PolicyPage />} />  {/* 運営方針ページのルートを追加 */}
                   <Route path="notification" element={<NotificationPage />} />
                   <Route path="account" element={<AccountInfoPage />} />
                   
