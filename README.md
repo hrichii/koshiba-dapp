@@ -84,7 +84,7 @@ getTempleList
 ### 指定した寺の支払い履歴一覧を取得
 temple_idが1のお寺の支払い履歴一覧を取得する場合は以下コマンド
 ```sh
-getPaymentList 1
+getPaymentListByTempleId 1
 ```
 
 # デバッグ用のコマンド一覧
