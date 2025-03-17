@@ -4,10 +4,15 @@ use serde::Serialize;
 
 use std::borrow::Cow;
 
+use crate::models::address::Address;
+
 #[derive(Clone, Serialize, Deserialize, CandidType)]
 pub struct TempleEntity {
     pub id: u32,
     pub name: String,
+    pub address: Address,
+    pub image_url: String,
+    pub description: String,
 }
 
 impl Storable for TempleEntity {

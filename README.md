@@ -144,7 +144,7 @@ getTempleList
 
 ### 寺を更新
 ```sh
-updateTemple '(1, "浅草寺")'
+updateTemple '(1, "浅草寺", "1110032", "東京都", "台東区", "浅草2-3-1", null, "https://upload.wikimedia.org/wikipedia/commons/8/8d/Asakusa_Senso-ji_2021-12_ac_%282%29.jpg", "浅草寺（せんそうじ）は、東京都台東区浅草二丁目にある都内最古の寺です。")'
 ```
 ### 寺を削除
 ```sh
