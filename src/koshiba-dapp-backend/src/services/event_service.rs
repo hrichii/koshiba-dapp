@@ -70,15 +70,22 @@ impl EventService {
             .fold(0, |count, user_entity| user_entity.grade.vote_count() + count);
 
         // ユーザー自身の投票ステータスを取得 (未投票なら `NotVoted` に変換)
-        let your_vote: VoteStatusWithNotVoted = vote_entity_all_list
-            .iter()
-            .find(|vote_entity| {
-                vote_entity.user_id == user_id && vote_entity.event_id == event_entity.id
-            })
-            .map_or(VoteStatusWithNotVoted::NotVoted, |entity| {
-                VoteStatusWithNotVoted::from_vote_status(entity.vote_status.clone())
-            });
-
+        let nullable_my_temple_id =
+            self.user_repository.fetch(user_id.clone()).map(|entity| entity.temple_id);
+        let your_vote: VoteStatusWithNotVoted;
+        if nullable_my_temple_id == None || nullable_my_temple_id.unwrap() != event_entity.temple_id
+        {
+            your_vote = VoteStatusWithNotVoted::Disabled;
+        } else {
+            your_vote = vote_entity_all_list
+                .iter()
+                .find(|vote_entity| {
+                    vote_entity.user_id == user_id && vote_entity.event_id == event_entity.id
+                })
+                .map_or(VoteStatusWithNotVoted::NotVoted, |entity| {
+                    VoteStatusWithNotVoted::from_vote_status(entity.vote_status.clone())
+                });
+        }
         let vote_statistics =
             VoteStatistics { agree: agree_count, disagree: disagree_count, total: total_count };
 
@@ -100,6 +107,25 @@ impl EventService {
         // ユーザーが所属する寺院のイベントを取得し、`fetch_from_entites` を使って詳細情報を補完
         self.event_repository
             .fetch_all_by_temple_id(my_temple_id)
+            .into_iter()
+            .map(|event_entity| {
+                self.fetch_from_entites(
+                    user_id.clone(),
+                    event_entity,
+                    vote_entity_all_list.clone(),
+                    user_entity_all_list.clone(),
+                )
+            })
+            .collect()
+    }
+
+    pub fn fetch_all_by_temple_id(&self, temple_id: u32, user_id: String) -> Vec<Event> {
+        let vote_entity_all_list = self.vote_repository.fetch_all();
+        let user_entity_all_list = self.user_repository.fetch_all();
+
+        // ユーザーが所属する寺院のイベントを取得し、`fetch_from_entites` を使って詳細情報を補完
+        self.event_repository
+            .fetch_all_by_temple_id(temple_id)
             .into_iter()
             .map(|event_entity| {
                 self.fetch_from_entites(

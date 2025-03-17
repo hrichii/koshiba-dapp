@@ -114,8 +114,12 @@ fn get_my_event_list() -> Vec<EventDto> {
 
 #[query(name = "getEventListByTempleId")]
 fn get_event_list_by_temple_id(temple_id: u32) -> Vec<EventDto> {
-    // TODO 要修正
-    event_service().fetch_all().into_iter().map(EventDto::from_event).collect()
+    let user_id = user_id();
+    event_service()
+        .fetch_all_by_temple_id(temple_id, user_id)
+        .into_iter()
+        .map(EventDto::from_event)
+        .collect()
 }
 
 #[query(name = "getMyPaymentList")]
