@@ -20,9 +20,11 @@ use entities::vote_entity::VoteEntity;
 use ic_cdk::{caller, query, update};
 use models::address::Address;
 use repositories::event_repository::StableEventRepository;
+use repositories::payment_repository::StablePaymentRepository;
 use repositories::temple_repository::StableTempleRepository;
 use repositories::vote_repository::StableVoteRepository;
 use services::event_service::EventService;
+use services::payment_service::PaymentService;
 use services::temple_service::TempleService;
 use services::vote_service::VoteService;
 use time::{format_description::well_known::Rfc3339, OffsetDateTime};
@@ -60,6 +62,10 @@ fn vote_service() -> VoteService {
         Box::new(StableEventRepository),
         Box::new(StableUserRepository),
     )
+}
+
+fn payment_service() -> PaymentService {
+    PaymentService::new(Box::new(StablePaymentRepository), Box::new(StableTempleRepository))
 }
 
 fn user_id() -> String {
@@ -114,35 +120,16 @@ fn get_event_list_by_temple_id(temple_id: u32) -> Vec<EventDto> {
 
 #[query(name = "getMyPaymentList")]
 fn get_my_payment_list() -> Vec<PaymentDto> {
-    vec![
-        PaymentDto {
-            payment_id: 1,
-            title: "本殿の改修".to_string(),
-            content: "当神社の本殿は築120年が経過し、老朽化が進んでおります。特に屋根の傷みや柱の劣化が目立ち、安全面の懸念が増しております。これに伴い、本殿の改修工事を行いました。".to_string(),
-            temple_id: Some(1),
-            temple_name: Some("浅草寺".to_string()),
-            status: PaymentBalanceStatus::Expenses,
-            created_at: "2025-03-15T10:00:00Z".to_string(),
-        },
-        PaymentDto {
-            payment_id: 2,
-            title: "檀家料の奉納".to_string(),
-            content: "檀家料をいただきました。".to_string(),
-            temple_id: Some(1),
-            temple_name: Some("浅草寺".to_string()),
-            status: PaymentBalanceStatus::Income,
-            created_at: "2025-03-10T15:30:00Z".to_string(),
-        },
-        PaymentDto {
-            payment_id: 3,
-            title: "寺運営費".to_string(),
-            content: "人件費やお寺の維持費として使用しました。".to_string(),
-            temple_id: Some(1),
-            temple_name: Some("浅草寺".to_string()),
-            status: PaymentBalanceStatus::Expenses,
-            created_at: "2025-02-28T08:45:00Z".to_string(),
-        },
-    ]
+    let user_id = user_id();
+    user_service().fetch(user_id).map_or(vec![], |user: User| {
+        user.temple.map_or(vec![], |temple: Temple| {
+            payment_service()
+                .fetch_all_by_temple_id(temple.id)
+                .into_iter()
+                .map(|payment| PaymentDto::from_payment(payment))
+                .collect()
+        })
+    })
 }
 
 #[query(name = "getMyEvent")]
@@ -181,37 +168,13 @@ fn get_temple_list() -> Vec<TempleDto> {
     temple_service().fetch_all().into_iter().map(TempleDto::from_temple).collect()
 }
 
-#[query(name = "getPaymentList")]
-fn get_my_payment_list_by_temple_id(temple_id: u32) -> Vec<PaymentDto> {
-    vec![
-        PaymentDto {
-            payment_id: 1,
-            title: "本殿の改修".to_string(),
-            content: "当神社の本殿は築120年が経過し、老朽化が進んでおります。特に屋根の傷みや柱の劣化が目立ち、安全面の懸念が増しております。これに伴い、本殿の改修工事を行いました。".to_string(),
-            temple_id: Some(temple_id),
-            temple_name: Some("浅草寺".to_string()),
-            status: PaymentBalanceStatus::Expenses,
-            created_at: "2025-03-15T10:00:00Z".to_string(),
-        },
-        PaymentDto {
-            payment_id: 2,
-            title: "檀家料の奉納".to_string(),
-            content: "檀家料をいただきました。".to_string(),
-            temple_id: Some(temple_id),
-            temple_name: Some("浅草寺".to_string()),
-            status: PaymentBalanceStatus::Income,
-            created_at: "2025-03-10T15:30:00Z".to_string(),
-        },
-        PaymentDto {
-            payment_id: 3,
-            title: "寺運営費".to_string(),
-            content: "人件費やお寺の維持費として使用しました。".to_string(),
-            temple_id: Some(temple_id),
-            temple_name: Some("浅草寺".to_string()),
-            status: PaymentBalanceStatus::Expenses,
-            created_at: "2025-02-28T08:45:00Z".to_string(),
-        },
-    ]
+#[query(name = "getPaymentListByTempleId")]
+fn get_payment_list_by_temple_id(temple_id: u32) -> Vec<PaymentDto> {
+    payment_service()
+        .fetch_all_by_temple_id(temple_id)
+        .into_iter()
+        .map(|payment: models::payment::Payment| PaymentDto::from_payment(payment))
+        .collect()
 }
 
 // [デバッグ]iiの結果を取得
@@ -301,6 +264,34 @@ fn update_temple_debug(id: u32, name: String) -> Temple {
 #[update(name = "deleteTempleDebug")]
 fn delete_temple_debug(id: u32) {
     temple_service().delete(id)
+}
+
+// [デバッグ]支払いの取得更新削除
+#[query(name = "getPaymentListDebug")]
+fn get_payment_list() -> Vec<PaymentDto> {
+    payment_service()
+        .fetch_all()
+        .into_iter()
+        .map(|payment: models::payment::Payment| PaymentDto::from_payment(payment))
+        .collect()
+}
+
+#[update(name = "updatePaymentDebug")]
+fn update_payment_debug(
+    id: u32,
+    temple_id: u32,
+    title: String,
+    content: String,
+    amount: u32,
+    status: PaymentBalanceStatus,
+) -> PaymentDto {
+    let payment = payment_service().save(id, temple_id, title, content, amount, status);
+    PaymentDto::from_payment(payment)
+}
+
+#[update(name = "deletePaymentDebug")]
+fn delete_payment_debug(id: u32) {
+    payment_service().delete(id)
 }
 
 ic_cdk_macros::export_candid!();

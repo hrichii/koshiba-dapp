@@ -3,7 +3,7 @@ use serde::Serialize;
 
 use crate::entities::temple_entity::TempleEntity;
 
-#[derive(Serialize, Deserialize, CandidType)]
+#[derive(Serialize, Deserialize, CandidType, Clone)]
 pub struct Temple {
     pub id: u32,
     pub name: String,

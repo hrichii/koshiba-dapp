@@ -9,7 +9,7 @@ alias getMyPaymentList='dfx canister call koshiba-dapp-backend getMyPaymentList 
 alias updateMyVote='dfx canister call koshiba-dapp-backend updateMyVote --output json'
 alias getTempleList='dfx canister call koshiba-dapp-backend getTempleList --output json'
 alias getTemple='dfx canister call koshiba-dapp-backend getTemple --output json'
-alias getPaymentList='dfx canister call koshiba-dapp-backend getPaymentList --output json'
+alias getPaymentListByTempleId='dfx canister call koshiba-dapp-backend getPaymentListByTempleId --output json'
 
 alias getPrincipal='dfx canister call koshiba-dapp-backend getPrincipalDebug --output json'
 alias getEventList='dfx canister call koshiba-dapp-backend getEventListDebug --output json'
@@ -24,3 +24,6 @@ alias deleteVote='dfx canister call koshiba-dapp-backend deleteVoteDebug --outpu
 alias getTempleList='dfx canister call koshiba-dapp-backend getAllTempleDebug --output json'
 alias updateTemple='dfx canister call koshiba-dapp-backend updateTempleDebug --output json'
 alias deleteTemple='dfx canister call koshiba-dapp-backend deleteTempleDebug --output json'
+alias getPaymentList='dfx canister call koshiba-dapp-backend getPaymentListDebug --output json'
+alias updatePayment='dfx canister call koshiba-dapp-backend updatePaymentDebug --output json'
+alias deletePayment='dfx canister call koshiba-dapp-backend deletePaymentDebug --output json'

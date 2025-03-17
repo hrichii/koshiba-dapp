@@ -18,4 +18,10 @@ echo "\n"
 dfx canister call koshiba-dapp-backend updateVoteDebug '(1, "1", variant { Agree })' --output json
 dfx canister call koshiba-dapp-backend updateVoteDebug '(1, "2", variant { Disagree })' --output json
 echo "\n"
+echo "---------------支払い履歴の更新---------------"
+echo "\n"
+dfx canister call koshiba-dapp-backend updatePaymentDebug '(1, 1, "本殿の改修", "当神社の本殿は築120年が経過し、老朽化が進んでおります。特に屋根の傷みや柱の劣化が目立ち、安全面の懸念が増しております。これに伴い、本殿の改修工事を行いました。", 1000000, variant { Expenses } )' --output json
+dfx canister call koshiba-dapp-backend updatePaymentDebug '(2, 1, "檀家料の奉納", "檀家料をいただきました。", 1000000, variant { Income } )' --output json
+dfx canister call koshiba-dapp-backend updatePaymentDebug '(3, 1, "寺運営費", "人件費やお寺の維持費として使用しました。", 1000000, variant { Expenses } )' --output json
+echo "\n"
 echo "------------------------------------------"
