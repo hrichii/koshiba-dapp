@@ -1,6 +1,7 @@
 pub mod address;
 pub mod event;
 pub mod grade;
+pub mod payment;
 pub mod payment_status;
 pub mod temple;
 pub mod user;

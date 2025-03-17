@@ -84,7 +84,7 @@ getTempleList
 ### 指定した寺の支払い履歴一覧を取得
 temple_idが1のお寺の支払い履歴一覧を取得する場合は以下コマンド
 ```sh
-getPaymentList 1
+getPaymentListByTempleId 1
 ```
 
 # デバッグ用のコマンド一覧
@@ -149,4 +149,19 @@ updateTemple '(1, "浅草寺")'
 ### 寺を削除
 ```sh
 deleteTemple '(1)'
+```
+
+# 支払い履歴
+### 支払い履歴一覧を取得
+```sh
+getPaymentList
+```
+
+### 支払い履歴を更新
+```sh
+updatePayment '(1, 1, "本殿の改修", "当神社の本殿は築120年が経過し、老朽化が進んでおります。特に屋根の傷みや柱の劣化が目立ち、安全面の懸念が増しております。これに伴い、本殿の改修工事を行いました。", 1000000, variant { Expenses } )'
+```
+### 支払い履歴を削除
+```sh
+deletePayment 1
 ```
