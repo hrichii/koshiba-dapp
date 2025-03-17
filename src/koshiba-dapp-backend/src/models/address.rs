@@ -1,7 +1,7 @@
 use candid::{CandidType, Deserialize};
 use serde::Serialize;
 
-#[derive(Serialize, Deserialize, CandidType)]
+#[derive(Serialize, Deserialize, CandidType, Clone)]
 pub struct Address {
     pub postal_code: String,      // 郵便番号
     pub province: String,         // 都道府県 (例: 東京都)

@@ -148,19 +148,7 @@ fn update_my_vote(event_id: u32, your_vote: VoteStatus) -> Option<EventDto> {
 
 #[query(name = "getTemple")]
 fn get_temple(temple_id: u32) -> Option<TempleDto> {
-    Some(TempleDto {
-        id: temple_id,
-        name: "浅草寺".to_string(),
-        address: Address {
-            postal_code: "1110032".to_string(),
-            province: "東京都".to_string(),
-            city: "台東区".to_string(),
-            street: "浅草2-3-1".to_string(),
-            building: None,
-        },
-        image_url: "https://upload.wikimedia.org/wikipedia/commons/8/8d/Asakusa_Senso-ji_2021-12_ac_%282%29.jpg".to_string(),
-        description: "浅草寺（せんそうじ）は、東京都台東区浅草二丁目にある都内最古の寺で、正式には金龍山浅草寺（きんりゅうざんせんそうじ）と号する。聖観世音菩薩を本尊とすることから、浅草観音（あさくさかんのん）として知られている。".to_string(),
-    })
+    temple_service().fetch(temple_id).map(TempleDto::from_temple)
 }
 
 #[query(name = "getTempleList")]
@@ -257,8 +245,26 @@ fn get_temple_list_debug() -> Vec<TempleDto> {
 }
 
 #[update(name = "updateTempleDebug")]
-fn update_temple_debug(id: u32, name: String) -> Temple {
-    temple_service().save(id, name)
+fn update_temple_debug(
+    id: u32,
+    name: String,
+    postal_code: String,
+    province: String,
+    city: String,
+    street: String,
+    building: Option<String>,
+    image_url: String,
+    description: String,
+) -> TempleDto {
+    let address = Address { postal_code, province, city, street, building };
+    let temple = temple_service().save(
+        id,
+        name.clone(),
+        address.clone(),
+        image_url.clone(),
+        description.clone(),
+    );
+    TempleDto { id: temple.id, name: temple.name, address, image_url, description }
 }
 
 #[update(name = "deleteTempleDebug")]

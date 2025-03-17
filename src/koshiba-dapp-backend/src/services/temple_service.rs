@@ -1,6 +1,6 @@
 use crate::{
     entities::temple_entity::TempleEntity,
-    models::temple::Temple,
+    models::{address::Address, temple::Temple},
     repositories::{
         event_repository::EventRepository, temple_repository::TempleRepository,
         vote_repository::VoteRepository,
@@ -22,12 +22,29 @@ impl TempleService {
         TempleService { temple_repository, vote_repository, event_repository }
     }
 
+    pub fn fetch(&self, id: u32) -> Option<Temple> {
+        self.temple_repository.fetch(id).map(Temple::from_entity)
+    }
+
     pub fn fetch_all(&self) -> Vec<Temple> {
         self.temple_repository.fetch_all().into_iter().map(Temple::from_entity).collect()
     }
 
-    pub fn save(&self, id: u32, name: String) -> Temple {
-        let temple_entity: TempleEntity = self.temple_repository.save(id.clone(), name.clone());
+    pub fn save(
+        &self,
+        id: u32,
+        name: String,
+        address: Address,
+        image_url: String,
+        description: String,
+    ) -> Temple {
+        let temple_entity: TempleEntity = self.temple_repository.save(
+            id.clone(),
+            name.clone(),
+            address,
+            image_url.clone(),
+            description.clone(),
+        );
         Temple::from_entity(temple_entity)
     }
 

@@ -1,4 +1,5 @@
 use crate::entities::temple_entity::TempleEntity;
+use crate::models::address::Address;
 
 use ic_stable_structures::memory_manager::{MemoryId, MemoryManager, VirtualMemory};
 use ic_stable_structures::{DefaultMemoryImpl, StableBTreeMap};
@@ -7,7 +8,14 @@ use std::cell::RefCell;
 type Memory = VirtualMemory<DefaultMemoryImpl>;
 
 pub trait TempleRepository {
-    fn save(&self, id: u32, name: String) -> TempleEntity;
+    fn save(
+        &self,
+        id: u32,
+        name: String,
+        address: Address,
+        image_url: String,
+        description: String,
+    ) -> TempleEntity;
 
     fn fetch(&self, id: u32) -> Option<TempleEntity>;
 
@@ -30,8 +38,16 @@ thread_local! {
 }
 
 impl TempleRepository for StableTempleRepository {
-    fn save(&self, id: u32, name: String) -> TempleEntity {
-        let temple_entity: TempleEntity = TempleEntity { id, name };
+    fn save(
+        &self,
+        id: u32,
+        name: String,
+        address: Address,
+        image_url: String,
+        description: String,
+    ) -> TempleEntity {
+        let temple_entity: TempleEntity =
+            TempleEntity { id, name, address, image_url, description };
 
         TEMPLES.with(|templtes| templtes.borrow_mut().insert(id.clone(), temple_entity.clone()));
         temple_entity

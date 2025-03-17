@@ -16,16 +16,6 @@ impl PaymentService {
         PaymentService { payment_repository, temple_repository }
     }
 
-    // 支払い履歴を取得する。
-    pub fn fetch(&self, payment_id: u32) -> Option<Payment> {
-        let payment_entity = self.payment_repository.fetch(payment_id)?;
-        let temple = self
-            .temple_repository
-            .fetch(payment_entity.temple_id)
-            .map(|temple_entity| Temple::from_entity(temple_entity));
-        Some(Payment::from_entity(payment_entity, temple))
-    }
-
     pub fn fetch_all_by_temple_id(&self, temple_id: u32) -> Vec<Payment> {
         self.payment_repository
             .fetch_all_by_temple_id(temple_id)
