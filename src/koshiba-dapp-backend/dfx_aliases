@@ -2,6 +2,7 @@
 alias getMe='dfx canister call koshiba-dapp-backend getMe --output json'
 alias updateMe='dfx canister call koshiba-dapp-backend updateMe --output json'
 alias deleteMe='dfx canister call koshiba-dapp-backend deleteMe --output json'
+alias updateMyTemple='dfx canister call koshiba-dapp-backend updateMyTemple --output json'
 alias getMyEventList='dfx canister call koshiba-dapp-backend getMyEventList --output json'
 alias getEventListByTempleId='dfx canister call koshiba-dapp-backend getEventListByTempleId --output json'
 alias getMyEvent='dfx canister call koshiba-dapp-backend getMyEvent --output json'

@@ -106,6 +106,13 @@ fn delete_me() {
     user_service().delete(user_id);
 }
 
+#[update(name = "updateMyTemple")]
+fn update_my_temple(temple_id: u32) -> Option<UserDto> {
+    let user_id = user_id();
+    let user: User = user_service().update_temple_id(user_id, temple_id)?;
+    Some(UserDto::from_user(user))
+}
+
 #[query(name = "getMyEventList")]
 fn get_my_event_list() -> Vec<EventDto> {
     let user_id = user_id();
