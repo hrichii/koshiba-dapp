@@ -63,6 +63,23 @@ impl UserService {
         User::from_entity(user_entity, nullable_temple_entity.map(Temple::from_entity))
     }
 
+    pub fn update_temple_id(&self, id: String, temple_id: u32) -> Option<User> {
+        let user_entity = self.user_repository.fetch(id)?;
+        let updated_user_entity: UserEntity = self.user_repository.save(
+            user_entity.id.clone(),
+            user_entity.last_name.clone(),
+            user_entity.first_name.clone(),
+            user_entity.grade.clone(),
+            temple_id.clone(),
+        );
+        let nullable_temple_entity =
+            self.temple_repository.fetch(updated_user_entity.temple_id.clone());
+        Some(User::from_entity(
+            updated_user_entity,
+            nullable_temple_entity.map(Temple::from_entity),
+        ))
+    }
+
     pub fn delete(&self, id: String) {
         self.user_repository.delete(id.clone());
         self.vote_repository.delete_by_user_id(id.clone());
