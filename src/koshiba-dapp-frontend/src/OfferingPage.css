@@ -139,8 +139,9 @@
 
 /* 金額入力部分 */
 .amount-input-container {
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .amount-input-container label {
@@ -149,6 +150,7 @@
   font-weight: 600;
   color: var(--text-dark);
   font-size: 16px;
+  padding-left: 2px;
 }
 
 .amount-input-wrapper {
@@ -219,7 +221,7 @@
   color: white;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position: relative;
   overflow: hidden;
@@ -238,8 +240,6 @@
 
 .amount-button:hover {
   background: linear-gradient(to bottom, var(--main-color), var(--main-color-dark));
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 153, 0, 0.2);
 }
 
 .amount-button:hover::before {
@@ -247,13 +247,15 @@
 }
 
 .amount-button:active {
-  transform: translateY(0);
+  background: linear-gradient(to bottom, var(--main-color-dark), var(--main-color-dark));
+  transform: none;
 }
 
 /* メッセージ入力 */
 .message-input {
   width: 100%;
   box-sizing: border-box;
+  margin-bottom: 5px;
 }
 
 .message-input label {
@@ -262,6 +264,7 @@
   font-weight: 600;
   color: var(--text-dark);
   font-size: 16px;
+  padding-left: 2px;
 }
 
 .message-input textarea {
@@ -317,8 +320,8 @@
 
 .submit-button:hover {
   background: linear-gradient(45deg, var(--main-color), var(--main-color-dark));
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 153, 0, 0.4);
+  transform: none;
+  box-shadow: 0 4px 15px rgba(0, 153, 0, 0.3);
 }
 
 .submit-button:hover::before {
@@ -326,7 +329,7 @@
 }
 
 .submit-button:active {
-  transform: translateY(-1px);
+  transform: none;
 }
 
 /* 情報表示部分 */
@@ -373,7 +376,8 @@
   justify-content: center;
   align-items: center;
   z-index: 10;
-  animation: fadeIn 0.3s ease;
+  animation: fadeIn 0.5s ease;
+  animation: fadeOut 0.7s ease;
 }
 
 .thanks-content {
@@ -384,7 +388,7 @@
 .thanks-icon {
   font-size: 60px;
   margin-bottom: 20px;
-  animation: bounce 2s infinite;
+  animation: bounce 3s infinite;
 }
 
 @keyframes bounce {
@@ -436,22 +440,62 @@
 
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
+  .offering-page {
+    padding: 10px 12px;
+    min-height: auto;
+  }
+
   .offering-container {
     padding: 20px 15px;
+    max-width: 100%;
+    margin: 0 auto;
     border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    width: calc(100% - 16px);
+  }
+  
+  .offering-header {
+    margin-bottom: 20px;
   }
   
   .offering-header h1 {
-    font-size: 28px;
+    font-size: 26px;
+    margin-bottom: 2px;
+  }
+  
+  .subtitle {
+    font-size: 14px;
+    margin-bottom: 5px;
+    padding: 0 8px;
+  }
+  
+  .buddha-icon {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 10px;
+  }
+  
+  .icon-circle {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .offering-form {
+    gap: 15px;
+    padding: 0 5px;
   }
   
   .amount-buttons {
     flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 15px;
   }
   
   .amount-button {
-    flex: 1 1 calc(50% - 10px);
+    flex: 1 1 calc(50% - 8px);
     font-size: 14px;
+    padding: 10px;
+    border-radius: 20px;
   }
   
   .currency-symbol,
@@ -463,9 +507,113 @@
     font-size: 20px;
   }
   
+  .message-input textarea {
+    min-height: 60px;
+    padding: 12px;
+  }
+  
   .submit-button {
     font-size: 16px;
     padding: 14px 20px;
+    margin-top: 10px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .offering-info {
+    margin-top: 15px;
+    padding: 12px 15px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .error-message {
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  /* 確認モーダルの調整 */
+  .confirm-modal-header {
+    padding: 15px 20px;
+  }
+  
+  .confirm-modal-header h2 {
+    font-size: 20px;
+  }
+  
+  .confirm-modal-content {
+    padding: 20px;
+  }
+  
+  .temple-name {
+    font-size: 16px;
+    margin-bottom: 15px;
+    padding: 0 5px 10px 5px;
+  }
+  
+  .confirm-amount, .confirm-message {
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  
+  .amount-value {
+    font-size: 20px;
+  }
+  
+  .confirm-modal-buttons button {
+    padding: 15px;
+    font-size: 15px;
+  }
+
+  .amount-input-wrapper {
+    height: 48px;
+    padding: 0 15px;
+  }
+
+  .amount-input-container label {
+    margin-bottom: 8px;
+    font-size: 15px;
+    padding-left: 5px;
+  }
+  
+  .message-input label {
+    margin-bottom: 8px;
+    font-size: 15px;
+    padding-left: 5px;
+  }
+
+  /* 確認モーダルの調整 - ブラウザ最下部に固定表示 */
+  .confirm-modal {
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    margin-bottom: 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+  }
+  
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+  
+  .confirm-modal-overlay {
+    align-items: flex-end;
+    padding: 0 10px;
+  }
+
+  /* フォーム要素間の間隔調整 */
+  .offering-form > *:not(:last-child) {
+    margin-bottom: 10px;
   }
 }
 
@@ -486,7 +634,7 @@
 }
 
 .confirm-modal {
-  background: rgba(255, 250, 240, 0.98);
+  background: #fff;
   border-radius: 16px;
   width: 90%;
   max-width: 500px;
@@ -629,17 +777,23 @@
   font-weight: 600;
   font-family: 'Hiragino Mincho ProN', 'Yu Mincho', serif;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background-color 0.3s ease;
 }
 
 .cancel-button {
-  background: rgba(255, 255, 255, 0.7);
+  background-color: #f5f5f5;
   color: var(--text-dark);
   border-right: 1px solid rgba(0, 185, 0, 0.3);
 }
 
 .cancel-button:hover {
-  background: rgba(240, 240, 240, 0.8);
+  background-color: #ebebeb;
+  transform: none;
+}
+
+.cancel-button:active {
+  background-color: #dcdcdc;
+  transform: none;
 }
 
 .confirm-button {
@@ -650,9 +804,11 @@
 
 .confirm-button:hover {
   background: linear-gradient(45deg, var(--main-color), var(--main-color-light));
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transform: none;
+  box-shadow: none;
 }
 
 .confirm-button:active {
-  transform: translateY(1px);
+  background: linear-gradient(45deg, var(--main-color-dark), var(--main-color-dark));
+  transform: none;
 } 

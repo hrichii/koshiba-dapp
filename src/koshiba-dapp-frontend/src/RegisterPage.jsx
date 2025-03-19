@@ -12,7 +12,8 @@ function RegisterPage() {
   const [temples, setTemples] = useState([]);
   const [lastName, setLastName] = useState("");
   const [firstName, setFirstName] = useState("");
-  const [postalCode, setPostalCode] = useState("");
+  const [postalCode1, setPostalCode1] = useState("");
+  const [postalCode2, setPostalCode2] = useState("");
   const [address, setAddress] = useState("");
   const [templeId, setTempleId] = useState("");
   const [grade, setGrade] = useState(null);
@@ -29,7 +30,8 @@ function RegisterPage() {
   const [birthDay, setBirthDay] = useState("");
   
   // 入力フィールドへの参照
-  const postalCodeRef = useRef(null);
+  const postalCode1Ref = useRef(null);
+  const postalCode2Ref = useRef(null);
   const addressRef = useRef(null);
 
   // 年、月、日の選択肢を生成
@@ -162,7 +164,10 @@ function RegisterPage() {
           };
         });
         
-        setGradeList(gradeInfo.reverse()); // D→Sの順に表示するため反転
+        // 「D」「B」「S」グレードのみをフィルタリング
+        const filteredGrades = gradeInfo.filter(g => ['D', 'B', 'S'].includes(g.grade));
+        
+        setGradeList(filteredGrades.reverse()); // D→Sの順に表示するため反転
         
       } catch (err) {
         console.error("Error during initialization:", err);
@@ -256,7 +261,7 @@ function RegisterPage() {
     }
     
     // 郵便番号の簡易検証
-    if (postalCode && !/^\d{3}-\d{4}$/.test(postalCode)) {
+    if ((postalCode1 && !/^\d{3}$/.test(postalCode1)) || (postalCode2 && !/^\d{4}$/.test(postalCode2))) {
       setError("郵便番号は正しい形式で入力してください（例：123-4567）");
       return;
     }
@@ -295,6 +300,9 @@ function RegisterPage() {
     }
     
     try {
+      // 郵便番号をハイフン付きで結合
+      const postalCode = postalCode1 && postalCode2 ? `${postalCode1}-${postalCode2}` : "";
+      
       console.log("Registering user:", { 
         lastName, 
         firstName, 
@@ -511,14 +519,30 @@ function RegisterPage() {
                 
                 <div className="input-field">
                   <label htmlFor="postalCode">郵便番号</label>
-                  <input
-                    type="text"
-                    id="postalCode"
-                    value={postalCode}
-                    onChange={(e) => setPostalCode(e.target.value)}
-                    placeholder="123-4567"
-                    ref={postalCodeRef}
-                  />
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      id="postalCode1"
+                      value={postalCode1}
+                      onChange={(e) => setPostalCode1(e.target.value)}
+                      placeholder="123"
+                      maxLength="3"
+                      style={{ width: '30%' }}
+                      ref={postalCode1Ref}
+                    />
+                    <span style={{ margin: '0 10px' }}>-</span>
+                    <input
+                      type="text"
+                      id="postalCode2"
+                      value={postalCode2}
+                      onChange={(e) => setPostalCode2(e.target.value)}
+                      placeholder="4567"
+                      maxLength="4"
+                      style={{ width: '40%' }}
+                      ref={postalCode2Ref}
+                    />
+                  </div>
+                  <p className="field-note">※β版のため登録はされません</p>
                 </div>
                 <div className="input-field">
                   <label htmlFor="address">住所</label>
@@ -530,6 +554,7 @@ function RegisterPage() {
                     placeholder="東京都○○区××町1-2-3"
                     ref={addressRef}
                   />
+                  <p className="field-note">※β版のため登録はされません</p>
                 </div>
                 
                 <div className="input-field">

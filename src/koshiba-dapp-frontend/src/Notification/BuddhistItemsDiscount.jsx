@@ -12,11 +12,6 @@ function BuddhistItemsDiscount() {
         当寺院がお勧めする良質な仏具を、檀家の皆様だけの特別価格でお求めいただけます。
       </p>
       
-      <div className="image-container">
-        <img src={buddhistItemsImage} alt="仏具のイメージ" />
-        <p className="image-caption">当寺院推奨の高品質仏具</p>
-      </div>
-      
       <h2>割引購入プログラムの特長</h2>
       <ul>
         <li><strong>高品質な仏具</strong>：熟練の職人が丁寧に作り上げた、品質にこだわった仏具をご提供</li>

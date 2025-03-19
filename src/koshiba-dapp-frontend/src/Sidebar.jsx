@@ -8,6 +8,7 @@ import Image_logo from "./img/logo.jpg";
 import IconHome from "./img/home.png";
 import IconSearch from "./img/search.png";
 import IconVote from "./img/vote.png"; // 運営方針用アイコン
+import IconWallet from "./img/wallet.png"; // 運営収支用アイコン
 import IconOffering from "./img/offering.png"; 
 import IconNotification from "./img/information.png";
 import IconAccount from "./img/account.png";
@@ -206,23 +207,23 @@ function Sidebar({ isOpen: propIsOpen }) {
                     </li>
                     <li>
                         <Link 
+                            to="/payment" 
+                            className={isActive("/payment") ? "active" : ""}
+                        >
+                            <div className="sidebar-nav-item">
+                                <img src={IconWallet} alt="運営収支" className="sidebar-icon" />
+                                <span className="nav-text">運営収支</span>
+                            </div>
+                        </Link>
+                    </li>
+                    <li>
+                        <Link 
                             to="/offering" 
                             className={isActive("/offering") ? "active" : ""}
                         >
                             <div className="sidebar-nav-item">
                                 <img src={IconOffering} alt="御布施" className="sidebar-icon" />
                                 <span className="nav-text">御布施</span>
-                            </div>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link 
-                            to="/notification" 
-                            className={isActive("/notification") ? "active" : ""}
-                        >
-                            <div className="sidebar-nav-item">
-                                <img src={IconNotification} alt="お知らせ" className="sidebar-icon" />
-                                <span className="nav-text">お知らせ</span>
                             </div>
                         </Link>
                     </li>
@@ -308,6 +309,17 @@ function Sidebar({ isOpen: propIsOpen }) {
                     <span>運営方針</span>
                 </Link>
                 <Link 
+                    to="/payment" 
+                    className={`mobile-nav-item ${isActive("/payment") ? "active" : ""}`}
+                >
+                    <img 
+                        src={IconWallet} 
+                        alt="運営収支" 
+                        className="mobile-nav-icon"
+                    />
+                    <span>運営収支</span>
+                </Link>
+                <Link 
                     to="/offering" 
                     className={`mobile-nav-item ${isActive("/offering") ? "active" : ""}`}
                 >
@@ -317,17 +329,6 @@ function Sidebar({ isOpen: propIsOpen }) {
                         className="mobile-nav-icon"
                     />
                     <span>御布施</span>
-                </Link>
-                <Link 
-                    to="/notification" 
-                    className={`mobile-nav-item ${isActive("/notification") ? "active" : ""}`}
-                >
-                    <img 
-                        src={IconNotification} 
-                        alt="お知らせ" 
-                        className="mobile-nav-icon"
-                    />
-                    <span>お知らせ</span>
                 </Link>
             </div>
         </>

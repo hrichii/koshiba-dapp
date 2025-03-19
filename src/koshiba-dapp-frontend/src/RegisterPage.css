@@ -185,7 +185,7 @@
 }
 
 .logo:hover {
-  transform: scale(1.05);
+  transform: none;
 }
 
 @keyframes pulse {
@@ -321,7 +321,7 @@
 /* グレードカード */
 .grade-cards {
   display: flex;
-  gap: 15px;
+  gap: 20px;
   padding-top: 10px;
   margin: 15px 0;
   flex-wrap: wrap;
@@ -332,12 +332,12 @@
 }
 
 .grade-card {
-  flex: 1 1 18%;
-  min-width: 160px;
-  max-width: 200px;
+  flex: 1 1 28%;
+  min-width: 240px;
+  max-width: 320px;
   border: 2px solid transparent; /* 選択時と同じ太さのボーダーを透明に設定 */
   border-radius: 14px;
-  padding: 15px;
+  padding: 20px;
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -627,7 +627,8 @@
 /* レスポンシブ対応 */
 @media (max-width: 1200px) {
   .grade-card {
-    flex: 1 1 30%;
+    flex: 1 1 45%;
+    min-width: 280px;
   }
 }
 
@@ -636,35 +637,32 @@
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 15px;
+    gap: 20px;
     max-width: 100%;
     padding: 0 5px;
   }
   
   .grade-card {
-    flex: 1 1 45%;
-    min-width: 150px;
-    max-width: none;
-    width: calc(50% - 15px);
+    flex: 1 1 80%;
+    min-width: 280px;
+    max-width: 400px;
+    width: calc(100% - 40px);
     box-sizing: border-box;
   }
 }
 
 @media (max-width: 768px) {
   .register-container {
-    padding: 15px;
-    align-items: flex-start;
-    padding-top: 30px;
+    padding: 0;
+    max-width: 100%;
   }
   
   .register-card {
-    padding: 25px 15px;
+    padding: 20px 2px; /* 左右のパディングを2pxに縮小 */
+    border-radius: 0;
+    box-shadow: none;
+    width: 100%;
     max-width: 100%;
-    width: 95%;
-    margin: 0 auto;
-    left: 0 !important;
-    right: 0 !important;
-    transform: none !important;
   }
   
   .register-header h1 {
@@ -742,8 +740,8 @@
 }
 
 .grade-card:hover {
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  transform: translateY(-5px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transform: none;
 }
 
 .grade-card.selected {
@@ -772,10 +770,10 @@
 /* グレードカードのヘッダー */
 .grade-header {
   text-align: center;
-  margin-bottom: 18px;
-  padding-bottom: 18px;
+  margin-bottom: 25px;
+  padding-bottom: 25px;
   border-bottom: 1px solid #eee;
-  height: 140px; /* ヘッダーの高さを固定 */
+  height: 160px; /* ヘッダーの高さを増加 */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -788,11 +786,11 @@
 }
 
 .grade-title {
-  font-size: 32px;
+  font-size: 38px; /* タイトルサイズ増加 */
   font-weight: bold;
   color: var(--main-color);
-  margin-bottom: 12px;
-  height: 40px; /* タイトルの高さを固定 */
+  margin-bottom: 15px;
+  height: 45px; /* タイトルの高さを固定 */
   display: flex;
   align-items: center;
   justify-content: center;

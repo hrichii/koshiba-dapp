@@ -276,13 +276,13 @@
 }
 
 .account-icon-button:hover {
-    transform: scale(1.05);
+    transform: none;
     background-color: var(--main-color-dark);
 }
 
 .account-icon-button.active {
     background-color: var(--main-color-dark);
-    transform: scale(1.05);
+    transform: none;
 }
 
 .account-icon-button img {

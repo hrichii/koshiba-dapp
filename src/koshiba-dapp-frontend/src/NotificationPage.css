@@ -40,7 +40,7 @@
   max-width: 100%;
   margin: 0;
   padding: 0;
-  background-color: #f5f5f5;
+  background-color: rgba(255, 250, 240, 0.98);
   min-height: 100vh;
 }
 
@@ -49,7 +49,7 @@
   font-size: 1.2rem;
   font-weight: 600;
   margin: 0;
-  padding: 12px 10px; /* パディングを縮小 */
+  padding: 12px 2px; /* 左右のパディングを2pxに縮小 */
   color: var(--text-dark);
   background-color: var(--bg-white);
   border-bottom: 1px solid var(--border-color);
@@ -69,7 +69,7 @@
 /* お知らせアイテム */
 .notification-item {
   display: block;
-  padding: 12px 10px; /* パディングを縮小 */
+  padding: 12px 2px; /* 左右のパディングを2pxに縮小 */
   text-decoration: none;
   color: var(--text-dark);
   background-color: var(--bg-white);

@@ -92,14 +92,6 @@ function NotificationDetail({
     }
   };
 
-  // ローディング中の表示
-  if (isLoading) {
-    return (
-      <div className="loading-container">
-        <p>データを読み込み中...</p>
-      </div>
-    );
-  }
 
   // アクセス制限チェックを廃止し、常にコンテンツを表示する
   return (
@@ -140,7 +132,7 @@ function NotificationDetail({
       
       <div className="action-buttons">
         <button className="back-button" onClick={() => {
-          navigate("/notification", { 
+          navigate("/home", { 
             state: { 
               preserveFilter: true 
             }

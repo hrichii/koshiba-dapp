@@ -141,6 +141,68 @@ function UserRegistrationModal({ onClose }) {
   );
 }
 
+// コンパクトな残り時間表示コンポーネント（運営方針カード用）
+function RemainingTimeCompact({ deadline_at }) {
+  const [remainingTime, setRemainingTime] = useState("");
+  
+  useEffect(() => {
+    // 締め切り日時が存在しない場合
+    if (!deadline_at) {
+      setRemainingTime("");
+      return;
+    }
+    
+    // 残り時間を計算する関数
+    const calculateRemainingTime = () => {
+      try {
+        // 日時文字列をDateオブジェクトに変換
+        const deadline = new Date(deadline_at);
+        const now = new Date();
+        
+        // 日時が不正な場合
+        if (isNaN(deadline.getTime())) {
+          setRemainingTime("");
+          return;
+        }
+        
+        // 残り時間（ミリ秒）
+        const diff = deadline.getTime() - now.getTime();
+        
+        // 締め切り済みの場合
+        if (diff <= 0) {
+          setRemainingTime("（期限切れ）");
+          return;
+        }
+        
+        // 残り時間を計算
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        
+        // 表示形式を整形（コンパクトに）
+        if (days > 0) {
+          setRemainingTime(`（残り${days}日）`);
+        } else {
+          setRemainingTime(`（残り${hours}時間）`);
+        }
+      } catch (error) {
+        console.error("締め切り時間の計算エラー:", error);
+        setRemainingTime("");
+      }
+    };
+    
+    // 初回計算
+    calculateRemainingTime();
+    
+    // 1時間ごとに更新
+    const intervalId = setInterval(calculateRemainingTime, 3600000);
+    
+    // クリーンアップ
+    return () => clearInterval(intervalId);
+  }, [deadline_at]);
+  
+  return <>{remainingTime}</>;
+}
+
 function MainPage() {
   const navigate = useNavigate();
   
@@ -160,6 +222,11 @@ function MainPage() {
   const [showAccountModal, setShowAccountModal] = useState(false);
   // Principal ID
   const [principalId, setPrincipalId] = useState("");
+  // お知らせデータ
+  const [notifications, setNotifications] = useState([]);
+  const [allNotifications, setAllNotifications] = useState([]);
+  // カテゴリフィルター用のステート
+  const [selectedCategory, setSelectedCategory] = useState("all");
   
   // 認証状態のチェック
   useEffect(() => {
@@ -310,6 +377,10 @@ function MainPage() {
         console.error("運営収支情報の取得に失敗しました:", paymentError);
       }
       
+      // お知らせデータを取得
+      const notificationsData = getAllNotifications();
+      setAllNotifications(notificationsData);
+      setNotifications(notificationsData);
     } catch (error) {
       console.error("Data fetch error:", error);
       setError("データの取得に失敗しました");
@@ -457,9 +528,15 @@ function MainPage() {
   };
 
   // 投票状態を表示するためのヘルパー関数
-  const renderVoteStatus = (yourVote) => {
+  const renderVoteStatus = (yourVote, deadline_at) => {
     if (!yourVote) {
-      return <span className="vote-status-badge not-voted">未投票</span>;
+      // 未投票の場合は「未投票」と残り時間を表示
+      return (
+        <span className="vote-status-badge deadline">
+          <span className="not-voted-text">未投票</span>
+          {deadline_at && <RemainingTimeCompact deadline_at={deadline_at} />}
+        </span>
+      );
     }
     
     if (yourVote.Agree !== undefined) {
@@ -469,6 +546,12 @@ function MainPage() {
     }
     
     return <span className="vote-status-badge not-voted">未投票</span>;
+  };
+  
+  // 金額を3桁区切りでフォーマットする関数
+  const formatAmount = (amount) => {
+    if (amount === undefined || amount === null) return "0";
+    return amount.toLocaleString();
   };
   
   // 支出/収入のステータスに基づいたクラス名を返す
@@ -520,14 +603,192 @@ function MainPage() {
     return "不明";
   };
 
-  // ローディング表示
-  if (isLoading) {
-    return (
-      <div className="loading-container">
-        <p>データを読み込み中...</p>
-      </div>
-    );
-  }
+  // カテゴリキーから表示名を取得する関数
+  const getCategoryNameFromKey = (key) => {
+    switch(key) {
+      case 'notice': return 'お知らせ';
+      case 'event': return 'イベント';
+      case 'service': return 'サービス';
+      case 'benefit': return '特典';
+      default: return '';
+    }
+  };
+
+  // カテゴリフィルタリングの変更時に通知リストを更新
+  useEffect(() => {
+    if (selectedCategory === "all") {
+      setNotifications(allNotifications);
+    } else {
+      const filtered = allNotifications.filter(
+        notification => notification.category === getCategoryNameFromKey(selectedCategory)
+      );
+      setNotifications(filtered);
+    }
+  }, [selectedCategory, allNotifications]);
+
+  // 全てのお知らせを取得する関数
+  const getAllNotifications = () => {
+    console.log("Getting all notifications regardless of grade");
+    
+    // 全てのお知らせを配列として定義
+    const allNotifications = [
+      // Dグレードのお知らせ
+      {
+        id: "temple-newsletter",
+        title: "寺院だより最新号",
+        summary: "今月の寺院だよりが発行されました。季節の行事や仏教の教えについて解説しています。",
+        category: "お知らせ",
+        date: "2023/12/10",
+        grade: "D"
+      },
+      {
+        id: "year-end-prayer",
+        title: "年末の祈祷会参加募集",
+        summary: "今年も年末の特別祈祷会を開催します。どなたでもご参加いただけます。",
+        category: "イベント",
+        date: "2023/12/05",
+        grade: "D"
+      },
+      // Cグレードのお知らせ
+      {
+        id: "gomaki-service",
+        title: "お焚き上げサービスのご案内",
+        summary: "毎月のお焚き上げサービスの日程と申込方法についてご案内します。",
+        category: "サービス",
+        date: "2023/12/03",
+        grade: "C"
+      },
+      {
+        id: "annual-events",
+        title: "年中行事カレンダー",
+        summary: "今年の年中行事予定表です。ぜひご参加ください。",
+        category: "イベント",
+        date: "2023/11/28",
+        grade: "C"
+      },
+      {
+        id: "ossuary-usage",
+        title: "納骨堂利用について",
+        summary: "納骨堂の利用方法と空き状況についての最新情報です。",
+        category: "お知らせ",
+        date: "2023/11/25",
+        grade: "C"
+      },
+      // Bグレードのお知らせ
+      {
+        id: "buddhist-items-discount",
+        title: "仏具の割引購入プログラム",
+        summary: "当寺院指定の仏具を特別価格でご購入いただけます。最新のカタログをご覧ください。",
+        category: "特典",
+        date: "2023/11/20",
+        grade: "B"
+      },
+      {
+        id: "special-ceremony",
+        title: "特別法要へのご招待",
+        summary: "来月の特別法要にご招待します。檀家の皆様だけの特別な機会です。",
+        category: "イベント",
+        date: "2023/11/18",
+        grade: "B"
+      },
+      {
+        id: "priority-participation",
+        title: "寺院イベントの優先参加について",
+        summary: "人気の高い寺院イベントに優先的にご参加いただけます。近日開催のイベント情報をご確認ください。",
+        category: "特典",
+        date: "2023/11/15",
+        grade: "B"
+      },
+      // Aグレードのお知らせ
+      {
+        id: "prayer-service",
+        title: "祈祷サービスのご案内",
+        summary: "毎月のご祈祷サービスについて最新情報をお届けします。",
+        category: "お知らせ",
+        date: "2023/10/20",
+        grade: "A"
+      },
+      {
+        id: "dedicated-parking",
+        title: "専用駐車場のご利用案内",
+        summary: "寺院専用駐車場のご利用方法と注意事項についてご案内します。",
+        category: "特典",
+        date: "2023/11/10",
+        grade: "A"
+      },
+      {
+        id: "priority-invitation",
+        title: "重要法要への優先招待",
+        summary: "来月の重要法要に優先的にご招待します。特別席をご用意しております。",
+        category: "イベント",
+        date: "2023/11/08",
+        grade: "A"
+      },
+      {
+        id: "priest-meeting",
+        title: "住職との個別面談（月1回）のご案内",
+        summary: "毎月の住職との個別面談の予約を受け付けております。ご希望の日時をお知らせください。",
+        category: "サービス",
+        date: "2023/11/05",
+        grade: "A"
+      },
+      // Sグレードのお知らせ
+      {
+        id: "priority-reservation",
+        title: "寺院行事の優先予約について",
+        summary: "すべての寺院行事に最優先でご予約いただけます。今後の行事予定をご確認ください。",
+        category: "特典",
+        date: "2023/11/01",
+        grade: "S"
+      },
+      {
+        id: "purification-service",
+        title: "特別清祓サービスのご案内",
+        summary: "邸宅や事業所などへの出張清祓サービスをご提供しています。詳細はお問い合わせください。",
+        category: "サービス",
+        date: "2023/10/15",
+        grade: "S"
+      }
+    ];
+    
+    return allNotifications;
+  };
+
+  // カテゴリの色を取得
+  const getCategoryColor = (category) => {
+    switch(category) {
+      case 'お知らせ': return 'notice';
+      case 'イベント': return 'event';
+      case 'サービス': return 'service';
+      case '特典': return 'benefit';
+      default: return '';
+    }
+  };
+
+  // カテゴリボタンクリックハンドラ
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(category);
+  };
+
+  // カテゴリごとの件数を取得
+  const getCategoryCounts = () => {
+    const counts = {
+      all: allNotifications.length,
+      notice: 0,
+      event: 0,
+      service: 0,
+      benefit: 0
+    };
+    
+    allNotifications.forEach(notification => {
+      if (notification.category === 'お知らせ') counts.notice++;
+      if (notification.category === 'イベント') counts.event++;
+      if (notification.category === 'サービス') counts.service++;
+      if (notification.category === '特典') counts.benefit++;
+    });
+    
+    return counts;
+  };
 
   return (
     <div className="container">
@@ -631,8 +892,9 @@ function MainPage() {
 
       <hr />
 
-      <div className="dashboard-grid">
-        {/* 運営方針セクション - 変更 */}
+      {/* 運営方針と運営収支のグリッド（横並び） */}
+      <div className="dashboard-grid horizontal">
+        {/* 運営方針セクション */}
         <div className="dashboard-card policy-card">
           <h3 className="dashboard-card-title">運営方針</h3>
           
@@ -642,7 +904,7 @@ function MainPage() {
                 <div key={event.event_id} className="policy-event-item">
                   <div className="policy-event-header">
                     <h4 className="policy-event-title">{event.title}</h4>
-                    {renderVoteStatus(event.your_vote)}
+                    {renderVoteStatus(event.your_vote, event.deadline_at)}
                   </div>
                 </div>
               ))
@@ -656,7 +918,7 @@ function MainPage() {
           </Link>
         </div>
         
-        {/* 運営収支セクション - 新規追加 */}
+        {/* 運営収支セクション */}
         <div className="dashboard-card payment-card">
           <h3 className="dashboard-card-title">運営収支</h3>
           
@@ -666,9 +928,12 @@ function MainPage() {
                 <div key={payment.payment_id} className="payment-item">
                   <div className="payment-item-header">
                     <h4 className="payment-item-title">{payment.title}</h4>
-                    <span className={`payment-status ${getPaymentStatusClass(payment.status)}`}>
-                      {getPaymentStatusLabel(payment.status)}
-                    </span>
+                    <div className="payment-item-amount">
+                      <span className={`payment-status ${getPaymentStatusClass(payment.status)}`}>
+                        {typeof payment.status === 'object' && 'Expenses' in payment.status ? "-" : "+"}
+                        {formatAmount(payment.amount)}円
+                      </span>
+                    </div>
                   </div>
                 </div>
               ))
@@ -677,9 +942,75 @@ function MainPage() {
             )}
           </div>
           
-          <Link to="/offering" className="see-more-link">
+          <Link to="/payment" className="see-more-link">
             ＞＞詳細はこちら
           </Link>
+        </div>
+      </div>
+
+      {/* 水平線 */}
+      <hr className="section-divider" />
+
+      {/* お知らせセクション */}
+      <div className="notification-section">
+        {/* カテゴリフィルター */}
+        <div className="category-filter-container">
+          <button 
+            className={`category-filter-btn ${selectedCategory === 'all' ? 'active all' : ''}`}
+            onClick={() => handleCategoryClick('all')}
+          >
+            全て ({getCategoryCounts().all})
+          </button>
+          <button 
+            className={`category-filter-btn ${selectedCategory === 'notice' ? 'active notice' : ''}`}
+            onClick={() => handleCategoryClick('notice')}
+          >
+            お知らせ ({getCategoryCounts().notice})
+          </button>
+          <button 
+            className={`category-filter-btn ${selectedCategory === 'event' ? 'active event' : ''}`}
+            onClick={() => handleCategoryClick('event')}
+          >
+            イベント ({getCategoryCounts().event})
+          </button>
+          <button 
+            className={`category-filter-btn ${selectedCategory === 'service' ? 'active service' : ''}`}
+            onClick={() => handleCategoryClick('service')}
+          >
+            サービス ({getCategoryCounts().service})
+          </button>
+          <button 
+            className={`category-filter-btn ${selectedCategory === 'benefit' ? 'active benefit' : ''}`}
+            onClick={() => handleCategoryClick('benefit')}
+          >
+            特典 ({getCategoryCounts().benefit})
+          </button>
+        </div>
+        
+        {/* お知らせ一覧 */}
+        <div className="notification-list">
+          {notifications.length > 0 ? (
+            notifications.map((notification) => (
+              <Link
+                key={notification.id}
+                to={`/notification/${notification.id}`}
+                className={`notification-card ${getCategoryColor(notification.category)}`}
+              >
+                <div className="notification-content">
+                  <div className="notification-header">
+                    <span className={`category-badge ${getCategoryColor(notification.category)}`}>
+                      {notification.category}
+                    </span>
+                    <span className="notification-date">{notification.date}</span>
+                  </div>
+                  <h3 className="notification-title">{notification.title}</h3>
+                  <p className="notification-summary">{notification.summary}</p>
+                </div>
+              </Link>
+            ))
+          ) : (
+            <p className="no-data-message">お知らせはありません</p>
+          )}
         </div>
       </div>
     </div>

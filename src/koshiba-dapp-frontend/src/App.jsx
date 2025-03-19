@@ -6,10 +6,14 @@ import LoginPage from "./LoginPage";
 import MainPage from "./MainPage";
 import RegisterPage from "./RegisterPage";
 import SearchTemplePage from "./SearchTemplePage";
+import TempleDetailPage from "./TempleDetailPage"; // 寺院詳細ページをインポート
 import NotificationPage from "./NotificationPage";
 import AccountInfoPage from "./AccountInfoPage";
 import OfferingPage from "./OfferingPage"; // 御布施ページをインポート
 import PolicyPage from "./PolicyPage"; // 運営方針ページをインポート
+import PaymentPage from "./PaymentPage"; // 運営収支ページをインポート
+import TemplePolicyPage from "./TemplePolicyPage"; // 寺院別運営方針ページをインポート
+import TemplePaymentPage from "./TemplePaymentPage"; // 寺院別運営収支ページをインポート
 import PrayerService from "./Notification/PrayerService";
 import GomakiService from "./Notification/GomakiService";
 import BuddhistItemsDiscount from "./Notification/BuddhistItemsDiscount";
@@ -52,8 +56,13 @@ function App() {
                 <Routes>
                   <Route path="home" element={<MainPage />} />
                   <Route path="search" element={<SearchTemplePage />} />
+                  <Route path="temple/:id" element={<TempleDetailPage />} />
+                  <Route path="my-temple" element={<TempleDetailPage />} />
                   <Route path="offering" element={<OfferingPage />} />  {/* 御布施ページのルートを追加 */}
                   <Route path="policy" element={<PolicyPage />} />  {/* 運営方針ページのルートを追加 */}
+                  <Route path="payment" element={<PaymentPage />} />  {/* 運営収支ページのルートを追加 */}
+                  <Route path="temple-policy/:id" element={<TemplePolicyPage />} />  {/* 寺院別運営方針ページのルートを追加 */}
+                  <Route path="temple-payment/:id" element={<TemplePaymentPage />} /> {/* 寺院別運営収支ページのルートを追加 */}
                   <Route path="notification" element={<NotificationPage />} />
                   <Route path="account" element={<AccountInfoPage />} />
                   

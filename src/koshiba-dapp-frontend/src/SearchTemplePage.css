@@ -102,9 +102,17 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
 
+/* 寺院コンテナ */
+.temple-container {
+  background-color: #FFF;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
 /* 検索ボックス */
 .search-box {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .search-box input {
@@ -167,88 +175,99 @@
   box-shadow: 0 4px 8px rgba(0, 185, 0, 0.3);
 }
 
-/* 寺院リスト */
-.temple-list {
+/* 寺院グリッド */
+.temple-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 25px;
 }
 
+/* 寺院カード */
 .temple-card {
   display: flex;
   flex-direction: column;
   background-color: #FFF;
   border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  position: relative;
   overflow: hidden;
-  border: 1px solid rgba(0, 185, 0, 0.2);
-}
-
-.temple-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 5px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: box-shadow 0.3s ease;
   height: 100%;
-  background: linear-gradient(to bottom, var(--main-color-dark), var(--main-color-light));
 }
 
 .temple-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  transform: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* 寺院画像 */
+.temple-image {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+}
+
+.temple-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.temple-card:hover .temple-image img {
+  transform: none;
+}
+
+/* 寺院情報 */
 .temple-info {
-  flex: 1;
-  padding-bottom: 15px;
+  padding: 16px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
 .temple-info h3 {
-  color: #333;
+  margin: 0 0 10px 0;
   font-size: 18px;
-  margin: 0 0 8px 0;
+  color: #333;
+  line-height: 1.3;
+  text-align: left;
 }
 
 .temple-info p {
-  color: #666;
-  font-size: 14px;
   margin: 0;
+  font-size: 14px;
+  color: #666;
+  line-height: 1.4;
+  text-align: left;
 }
 
-.set-temple-button {
+/* 詳細ボタン */
+.detail-button {
+  width: 100%;
+  text-align: center;
+  padding: 12px 0;
   background: linear-gradient(45deg, var(--main-color-dark), var(--main-color));
   color: white;
   border: none;
-  border-radius: 30px;
-  padding: 12px;
   font-size: 15px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  margin-top: 10px;
   font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: auto;
 }
 
-.set-temple-button:hover {
+.detail-button:hover {
   background: linear-gradient(45deg, var(--main-color), var(--main-color-light));
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(0, 185, 0, 0.3);
-}
-
-.set-temple-button:active {
-  transform: translateY(0);
 }
 
 .no-results {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 30px;
-  color: #666;
+  padding: 40px 20px;
   background-color: rgba(0, 185, 0, 0.05);
   border-radius: 10px;
+  color: #666;
   font-size: 16px;
 }
 
@@ -321,6 +340,10 @@
 
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
+  .search-temple-page {
+    padding: 20px 2px; /* 左右のパディングを2pxに縮小 */
+  }
+  
   .page-title {
     font-size: 24px;
   }
@@ -351,12 +374,39 @@
     font-size: 14px;
   }
   
-  .temple-list {
+  .temple-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .temple-image {
+    height: 160px;
   }
   
   .map-message {
     width: 90%;
     padding: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .search-temple-page {
+    padding: 15px 2px; /* 左右のパディングを2pxに縮小 */
+  }
+  
+  .temple-container {
+    padding: 15px 2px; /* 左右のパディングを2pxに縮小 */
+  }
+  
+  .search-box input {
+    padding: 12px;
+    font-size: 14px;
+  }
+  
+  .temple-info h3 {
+    font-size: 16px;
+  }
+  
+  .temple-info p {
+    font-size: 13px;
   }
 } 

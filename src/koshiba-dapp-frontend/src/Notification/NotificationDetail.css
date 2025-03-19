@@ -359,7 +359,7 @@
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
   .notification-detail-page {
-    padding: 10px;
+    padding: 10px 2px;
     border-radius: 0;
     box-shadow: none;
     margin-top: 0;

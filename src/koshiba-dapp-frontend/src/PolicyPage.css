@@ -355,12 +355,12 @@
 /* レスポンシブデザイン */
 @media (max-width: 768px) {
   .mobile-header {
-    display: block;
+    display: flex;
   }
   
   .container {
-    padding: 15px;
-    padding-top: 0;
+    padding: 0 2px;
+    margin-top: 46px;
   }
   
   .policy-title {
@@ -457,7 +457,6 @@
   overflow: hidden;
   position: relative;
   margin: 20px 0;
-  --immediate-majority: 66%;
   --standard-majority: 50%;
 }
 
@@ -467,11 +466,16 @@
   height: 100%;
   position: relative;
   overflow: hidden;
+  background-color: #f0f0f0;
+  border-radius: 12px;
 }
 
 .voting-progress-bar {
   height: 100%;
   transition: width 1.5s ease-out;
+  will-change: width;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .yes-bar {
@@ -482,6 +486,7 @@
   height: 100%;
   width: 0; /* 初期値は0、JSXで動的に設定 */
   z-index: 2;
+  animation: barGrow 1.5s ease-out forwards;
 }
 
 .no-bar {
@@ -492,25 +497,28 @@
   height: 100%;
   width: 0; /* 初期値は0、JSXで動的に設定 */
   z-index: 2;
+  animation: barGrow 1.5s ease-out forwards;
 }
 
-.vote-marker {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  position: absolute;
-  bottom: -7px;
-  z-index: 2;
+@keyframes barGrow {
+  from { width: 0; }
+  to { width: var(--final-width, 0%); }
 }
 
-.yes-marker {
-  background-color: #4CAF50;
-  left: 10px;
+/* 数値のカウントアップアニメーション用スタイル */
+.vote-percentage, .voting-power .yes, .voting-power .no {
+  display: inline-block;
+  will-change: contents;
+  transform: translateZ(0);
 }
 
-.no-marker {
-  background-color: #F44336;
-  right: 10px;
+/* アニメーション中は小数点以下の挙動が不自然になるのを防ぐためのスタイル調整 */
+.animated-percentage {
+  min-width: 80px;
+  text-align: center;
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
 /* マジョリティマーカー */
@@ -520,11 +528,6 @@
   width: 4px;
   height: 24px;
   z-index: 5;
-}
-
-.immediate-majority {
-  left: var(--immediate-majority);
-  transform: translateX(-50%);
 }
 
 .standard-majority {
@@ -540,10 +543,6 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-}
-
-.majority-icon.immediate-majority {
-  background: #9c27b0; /* orchid/purple */
 }
 
 .majority-icon.standard-majority {
@@ -600,6 +599,11 @@
   color: #333;
 }
 
+.voting-expiration div {
+  font-size: 0.8rem;
+  color: #666;
+}
+
 /* マジョリティ説明部分 */
 .votes-results-legends {
   margin-top: 20px;
@@ -651,4 +655,46 @@
   .yes-power, .no-power {
     margin: 5px 0;
   }
+}
+
+/* 数値のスムーズなアニメーション用 */
+.vote-percentage, .voting-power .yes, .voting-power .no {
+  display: inline-block;
+  will-change: contents;
+  transform: translateZ(0);
+}
+
+/* アニメーション時の数値の一貫性を保つための調整 */
+.animated-percentage {
+  min-width: 80px;
+  text-align: center;
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* 票数のアニメーション表示の調整 */
+.voting-power span {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* 所属寺院でない場合のメッセージ用スタイル */
+.not-your-temple-message {
+  margin-top: 12px;
+  text-align: center;
+  color: #ff5722;
+  font-size: 0.9rem;
+  background-color: rgba(255, 87, 34, 0.1);
+  padding: 8px 12px;
+  border-radius: 4px;
+  border-left: 3px solid #ff5722;
+}
+
+/* 戻るボタンコンテナ - ページ下部用 */
+.back-button-container {
+  margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  padding: 0 5px; /* 左右に余白を追加 */
 }

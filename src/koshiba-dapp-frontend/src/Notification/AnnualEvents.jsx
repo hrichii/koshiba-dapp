@@ -12,11 +12,6 @@ function AnnualEvents() {
         一年を通じて様々な行事を行っておりますので、ぜひご参加ください。
       </p>
       
-      <div className="image-container">
-        <img src={eventImage} alt="寺院行事のイメージ" />
-        <p className="image-caption">当寺院の年中行事の様子</p>
-      </div>
-      
       <h2>年間行事カレンダー（2023年度）</h2>
       <p>
         以下の行事は、Rank C以上の檀家様がご参加いただける行事です。

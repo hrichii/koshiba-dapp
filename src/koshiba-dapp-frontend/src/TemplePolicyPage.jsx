@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { AuthClient } from "@dfinity/auth-client";
 import "./PolicyPage.css";
 // バックエンドのモジュールをインポート
@@ -100,12 +100,17 @@ function Countdown({ deadlineAt }) {
   return <span>{timeRemaining}</span>;
 }
 
-function PolicyPage() {
+function TemplePolicyPage() {
   const navigate = useNavigate();
+  const { id } = useParams(); // URLパラメータから寺院IDを取得
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const templeIdFromQuery = queryParams.get('templeId'); // クエリパラメータからも寺院IDを取得
   
   // 状態変数
   const [user, setUser] = useState(null);
   const [events, setEvents] = useState([]);
+  const [temple, setTemple] = useState(null); // 寺院情報
   // 認証チェック中
   const [isCheckingAuth, setIsCheckingAuth] = useState(true);
   // データ読み込み中
@@ -116,6 +121,8 @@ function PolicyPage() {
   const [showAccountModal, setShowAccountModal] = useState(false);
   // Principal ID
   const [principalId, setPrincipalId] = useState("");
+  // ユーザーの所属寺院と表示寺院が一致するか
+  const [isUserTemple, setIsUserTemple] = useState(false);
   
   // 認証状態のチェック
   useEffect(() => {
@@ -160,6 +167,26 @@ function PolicyPage() {
     setError(null);
     
     try {
+      // URLパラメータとクエリパラメータの両方をチェックして寺院IDを決定
+      const templeId = id || templeIdFromQuery;
+      
+      if (!templeId) {
+        throw new Error("寺院IDが指定されていません");
+      }
+      
+      // 寺院情報を取得
+      const templeData = await koshiba_dapp_backend.getTemple(Number(templeId));
+      console.log("Temple data:", templeData);
+      
+      if (!templeData) {
+        throw new Error("指定された寺院が見つかりません");
+      }
+      
+      // 配列の場合は最初の要素を取得
+      const processdTempleData = Array.isArray(templeData) ? templeData[0] : templeData;
+      
+      setTemple(processdTempleData);
+      
       // ユーザー情報を取得
       let userData = await koshiba_dapp_backend.getMe();
       console.log("User data:", userData);
@@ -174,27 +201,6 @@ function PolicyPage() {
       }
       
       if (userData) {
-        let temple_name = "所属寺院なし";
-        
-        // templeプロパティが配列として存在する場合
-        if (Array.isArray(userData.temple) && userData.temple.length > 0) {
-          // temple_idが0の場合は「所属寺院なし」のままにする
-          if (userData.temple[0].id !== 0) {
-            temple_name = userData.temple[0].name || "不明";
-            console.log("Temple data from user object:", userData.temple[0]);
-          }
-        }
-        // temple_idが存在する場合は、従来通り寺院情報を取得
-        else if (userData.temple_id !== undefined && userData.temple_id !== 0) {
-          try {
-            const templeData = await koshiba_dapp_backend.get_temple(userData.temple_id);
-            console.log("Temple data from API:", templeData);
-            temple_name = templeData ? templeData.name : "不明";
-          } catch (templeError) {
-            console.error("Failed to fetch temple data:", templeError);
-          }
-        }
-        
         // 檀家グレードに応じた投票権を設定
         let vote_count = userData.vote_count || 0;
         
@@ -225,15 +231,19 @@ function PolicyPage() {
         // ユーザー情報をセット
         setUser({
           ...userData,
-          temple_name: temple_name,
+          temple_name: processdTempleData.name,
           vote_count: vote_count
         });
+        
+        // ユーザーの所属寺院と表示寺院が一致するか確認
+        setIsUserTemple(userData.templeId === processdTempleData.id);
       } else {
         setUser(null);
+        setIsUserTemple(false);
       }
       
-      // イベント情報を取得
-      const eventsData = await koshiba_dapp_backend.getMyEventList();
+      // 寺院IDに紐づく運営方針情報を取得
+      const eventsData = await koshiba_dapp_backend.getEventListByTempleId(Number(templeId));
       console.log("Events data:", eventsData);
       
       // イベントデータを処理
@@ -241,15 +251,6 @@ function PolicyPage() {
         ? eventsData.map(event => {
             // 各イベントを処理
             const processedEvent = processEventData(event);
-            
-            // イベントの投票情報がある場合、your_voteプロパティを適切に設定
-            // ※バックエンドから返されたデータにすでに含まれている場合はそのまま使用
-            if (processedEvent.your_vote === undefined) {
-              console.log(`Event ${processedEvent.event_id} has no your_vote information.`);
-            } else {
-              console.log(`Event ${processedEvent.event_id} has your_vote:`, processedEvent.your_vote);
-            }
-            
             return processedEvent;
           }) 
         : [];
@@ -258,8 +259,8 @@ function PolicyPage() {
       
     } catch (error) {
       console.error("Data fetch error:", error);
-      setError("データの取得に失敗しました");
-      setUser(null);
+      setError(error.message || "データの取得に失敗しました");
+      setTemple(null);
     } finally {
       setIsLoading(false);
     }
@@ -397,6 +398,23 @@ function PolicyPage() {
     }
   };
 
+  // 戻るボタンのハンドラ
+  const handleGoBack = () => {
+    navigate(-1); // 前のページに戻る
+  };
+
+  // ローディング表示
+  if (isLoading) {
+    return (
+      <div className="container">
+        <div className="loading-container">
+          <div className="loading-circle"></div>
+          <p>読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container">
       {error && <p className="error-message">{error}</p>}
@@ -443,9 +461,7 @@ function PolicyPage() {
 
       {/* 見出し */}
       <h3 className="policy-title">
-        {user && user.temple_name ? 
-          `${user.temple_name}の運営方針` : 
-          "お寺の運営方針"}
+        {temple ? `${temple.name}の運営方針` : "お寺の運営方針"}
       </h3>
 
       {/* イベントをまとめるコンテナ */}
@@ -595,17 +611,24 @@ function PolicyPage() {
                     <button
                       className="vote-button agree-btn"
                       onClick={() => handleVote(event.event_id, { Agree: null })}
-                      disabled={!user || user.vote_count <= 0 || hasVoted}
+                      disabled={!user || user.vote_count <= 0 || hasVoted || !isUserTemple}
                     >
                       賛成
                     </button>
                     <button
                       className="vote-button disagree-btn"
                       onClick={() => handleVote(event.event_id, { Disagree: null })}
-                      disabled={!user || user.vote_count <= 0 || hasVoted}
+                      disabled={!user || user.vote_count <= 0 || hasVoted || !isUserTemple}
                     >
                       反対
                     </button>
+                  </div>
+                )}
+                
+                {/* 所属寺院でない場合のメッセージ表示 */}
+                {!hasVoted && !isUserTemple && (
+                  <div className="not-your-temple-message">
+                    <p>※ 所属寺院でないため投票できません</p>
                   </div>
                 )}
               </div>
@@ -615,8 +638,15 @@ function PolicyPage() {
           <p className="no-events">現在、投票できるイベントはありません</p>
         )}
       </div>
+      
+      {/* 戻るボタンをページ下部に配置 */}
+      <div className="back-button-container">
+        <button onClick={handleGoBack} className="back-button">
+          ← 戻る
+        </button>
+      </div>
     </div>
   );
 }
 
-export default PolicyPage;
+export default TemplePolicyPage; 
