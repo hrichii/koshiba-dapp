@@ -1,7 +1,7 @@
 echo "---------------お寺の更新---------------"
 echo "\n"
-dfx canister call koshiba-dapp-backend updateTempleDebug '(1, "浅草寺", "1110032", "東京都", "台東区", "浅草2-3-1", null, "https://upload.wikimedia.org/wikipedia/commons/8/8d/Asakusa_Senso-ji_2021-12_ac_%282%29.jpg", "浅草寺（せんそうじ）は、東京都台東区浅草二丁目にある都内最古の寺です。")' --output json
-dfx canister call koshiba-dapp-backend updateTempleDebug '(2, "清水寺", "6050862", "京都府", "京都市東山区", "清水1丁目294", null, "https://upload.wikimedia.org/wikipedia/commons/a/ae/Kiyomizu-dera%2C_Kyoto%2C_November_2016_-02.jpg", "清水寺（きよみずでら）は、京都府京都市東山区にある寺院で、世界遺産に登録されています。")' --output json
+dfx canister call koshiba-dapp-backend updateTempleDebug '(1, "浅草寺", "1110032", "東京都", "台東区", "浅草2-3-1", null, "https://hrichii.github.io/koshiba-image/asakusa.jpg", "浅草寺（せんそうじ）は、東京都台東区浅草二丁目にある都内最古の寺です。")' --output json
+dfx canister call koshiba-dapp-backend updateTempleDebug '(2, "清水寺", "6050862", "京都府", "京都市東山区", "清水1丁目294", null, "https://hrichii.github.io/koshiba-image/kiyomizu.jpg", "清水寺（きよみずでら）は、京都府京都市東山区にある寺院で、世界遺産に登録されています。")' --output json
 echo "\n"
 echo "---------------ユーザーの更新---------------"
 echo "\n"
