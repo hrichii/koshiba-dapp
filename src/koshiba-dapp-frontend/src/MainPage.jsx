@@ -41,7 +41,8 @@ function AnimatedNumber({ value, duration = 1500, suffix = "" }) {
     return () => cancelAnimationFrame(animationFrameId);
   }, [value, duration]);
 
-  const displayValue = Math.floor(currentValue);
+  // 表示用の値を計算（3桁区切りを適用）
+  const displayValue = Math.floor(currentValue).toLocaleString();
 
   return (
     <span>

@@ -3,6 +3,48 @@ import { useParams, useNavigate, Link } from "react-router-dom";
 import { koshiba_dapp_backend } from "../../declarations/koshiba-dapp-backend";
 import "./TempleDetailPage.css";
 
+/**
+ * 数字を 0 から value までアニメーションしながら表示するコンポーネント
+ * @param {number} value - 最終的な数値
+ * @param {number} duration - アニメーション時間 (ms)
+ * @param {string} suffix - 単位（例: "票"）
+ */
+function AnimatedNumber({ value, duration = 1500, suffix = "" }) {
+  const [currentValue, setCurrentValue] = useState(0);
+
+  useEffect(() => {
+    let startTime;
+    let animationFrameId;
+
+    function animate(timestamp) {
+      if (!startTime) {
+        startTime = timestamp;
+      }
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const newValue = progress * value;
+      setCurrentValue(newValue);
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(animate);
+      }
+    }
+
+    animationFrameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [value, duration]);
+
+  // 表示用の値を計算（3桁区切りを適用）
+  const displayValue = Math.floor(currentValue).toLocaleString();
+
+  return (
+    <span>
+      {displayValue}
+      {suffix}
+    </span>
+  );
+}
+
 function TempleDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -423,12 +465,27 @@ function TempleDetailPage() {
                                         <div className="payment-item-header">
                                             <h4 className="payment-item-title">{payment.title}</h4>
                                             <div className="payment-item-amount">
-                                                <span className={`payment-status ${getPaymentStatusClass(payment.status)}`}>
+                                                <span className={`payment-amount ${getPaymentStatusClass(payment.status)}`}>
                                                     {typeof payment.status === 'object' && 'Expenses' in payment.status ? "-" : "+"}
-                                                    {formatAmount(payment.amount)}円
+                                                    <AnimatedNumber 
+                                                        value={payment.amount} 
+                                                        duration={1000}
+                                                        suffix="円"
+                                                    />
                                                 </span>
                                             </div>
                                         </div>
+                                        <p className="payment-date">
+                                            {payment.created_at ? 
+                                                new Date(payment.created_at).toLocaleString('ja-JP', {
+                                                    year: 'numeric',
+                                                    month: '2-digit',
+                                                    day: '2-digit',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                }) : 
+                                                "日時不明"}
+                                        </p>
                                     </div>
                                 ))
                             ) : (
