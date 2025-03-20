@@ -208,28 +208,12 @@ function TempleDetailPage() {
                 throw new Error("ユーザー情報が見つかりません。ログインしてください。");
             }
             
-            // ユーザー情報のデフォルト値を設定
-            const lastName = user.last_name || "";
-            const firstName = user.first_name || "";
-            
-            // gradeを正しい形式に設定
-            // ユーザーの現在のgradeを維持する
-            const grade = user.grade || { Student: null };
-            
             console.log("更新情報:", {
-                last_name: lastName,
-                first_name: firstName,
-                grade: grade,
                 temple_id: temple.id
             });
             
-            // バックエンドAPIを呼び出して所属寺院を更新（個別のパラメータとして渡す）
-            await koshiba_dapp_backend.updateMe(
-                lastName,
-                firstName,
-                grade,
-                temple.id
-            );
+            // バックエンドAPIを呼び出して所属寺院を更新（temple_idだけを渡す）
+            await koshiba_dapp_backend.updateMyTemple(temple.id);
             
             // 成功メッセージを表示
             setSuccessMessage(

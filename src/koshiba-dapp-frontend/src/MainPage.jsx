@@ -317,15 +317,9 @@ function MainPage() {
               vote_count = 25;
               break;
             case 'A':
-              vote_count = 15;
-              break;
-            case 'B':
               vote_count = 10;
               break;
-            case 'C':
-              vote_count = 5;
-              break;
-            case 'D':
+            case 'B':
               vote_count = 3;
               break;
             default:

@@ -195,7 +195,7 @@ function RegisterPage() {
         
         // グレード一覧を取得（実際はバックエンドから取得する想定）
         // ここでは仮でバックエンドコードと同じグレードリストを作成
-        const grades = ['S', 'A', 'B', 'C', 'D'];
+        const grades = ['S', 'A', 'B'];
         
         // グレード情報を生成
         const gradeInfo = grades.map(g => {
@@ -209,18 +209,10 @@ function RegisterPage() {
               voteCount = 25;
               break;
             case 'A':
-              payment = 30000;
-              voteCount = 15;
-              break;
-            case 'B':
               payment = 10000;
               voteCount = 10;
               break;
-            case 'C':
-              payment = 5000;
-              voteCount = 5;
-              break;
-            case 'D':
+            case 'B':
               payment = 3000;
               voteCount = 3;
               break;
@@ -238,10 +230,7 @@ function RegisterPage() {
           };
         });
         
-        // 「D」「B」「S」グレードのみをフィルタリング
-        const filteredGrades = gradeInfo.filter(g => ['S', 'B', 'D'].includes(g.grade));
-        
-        setGradeList(filteredGrades); // S→Dの順で表示
+        setGradeList(gradeInfo);
         
       } catch (err) {
         console.error("Error during initialization:", err);
@@ -260,12 +249,8 @@ function RegisterPage() {
       case 'S':
         return "最高ランクの檀家会員。寺院との強い絆を結び、特別な儀式や行事に参加できる特権があります。";
       case 'A':
-        return "上位ランクの檀家会員。寺院の重要な行事に優先的に参加でき、多くの特典が得られます。";
+        return "中堅ランクの檀家会員。寺院の重要な行事に参加でき、多くの特典が得られます。";
       case 'B':
-        return "中堅ランクの檀家会員。一般的な寺院行事への参加と基本的な特典が得られます。";
-      case 'C':
-        return "基本ランクの檀家会員。寺院の定期的な行事に参加できます。";
-      case 'D':
         return "入門ランクの檀家会員。寺院との関係を始めたばかりの方向けのプランです。";
       default:
         return "";
@@ -291,25 +276,11 @@ function RegisterPage() {
       case 'A':
         return [
           ...getGradeFeatures('B'),
-          "専用駐車場の利用",
-          "重要法要への優先招待",
-          "住職との個別面談（月1回）"
-        ];
-      case 'B':
-        return [
-          ...getGradeFeatures('C'),
           "仏具の割引購入",
           "特別法要への招待",
           "寺院イベントの優先参加"
         ];
-      case 'C':
-        return [
-          ...getGradeFeatures('D'),
-          "お焚き上げサービス",
-          "年中行事への参加",
-          "納骨堂の利用"
-        ];
-      case 'D':
+      case 'B':
         return [
           ...baseFeatures
         ];
