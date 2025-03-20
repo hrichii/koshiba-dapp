@@ -781,7 +781,8 @@ hr {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 40px; /* 「詳細はこちら」のための余白 */
+  margin: 20px 0 40px 0; /* top/bottomのマージンを明示的に設定 */
+  padding: 0;
 }
 
 .policy-event-item {
@@ -854,7 +855,8 @@ hr {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  margin-bottom: 40px; /* 「詳細はこちら」のための余白 */
+  margin: 20px 0 40px 0; /* top/bottomのマージンを明示的に設定 */
+  padding: 0;
 }
 
 .payment-item {
@@ -1132,5 +1134,17 @@ hr {
   
   .payment-item {
     padding-bottom: 0;
+  }
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .dashboard-card {
+    padding: 12px;
+  }
+  
+  .policy-event-list,
+  .payment-list {
+    margin: 15px 0 30px 0;
   }
 }
