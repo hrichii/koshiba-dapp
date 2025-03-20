@@ -48,8 +48,8 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: #fff;
-  border: 1px solid #ddd;
+  background-color: #888;
+  border: 1px solid #777;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -298,7 +298,7 @@
 /* レスポンシブデザイン */
 @media (max-width: 768px) {
   .container {
-    padding: 10px 2px;
+    padding: 60px 2px 10px;
   }
   
   .payment-title {
@@ -318,7 +318,7 @@
 
 @media (max-width: 480px) {
   .container {
-    padding: 10px 2px;
+    padding: 60px 2px 10px;
   }
   
   .category-filter-container {

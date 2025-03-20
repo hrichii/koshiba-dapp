@@ -320,13 +320,6 @@ function PaymentPage() {
         </div>
       )}
 
-      {/* 見出し */}
-      <h3 className="payment-title">
-        {user && user.temple_name ? 
-          `${user.temple_name}の運営収支` : 
-          "お寺の運営収支"}
-      </h3>
-
       {/* カテゴリフィルター */}
       <div className="category-filter-container">
         <button 

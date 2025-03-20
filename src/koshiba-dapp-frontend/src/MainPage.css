@@ -122,7 +122,7 @@ body {
   .container {
     max-width: 100%;
     margin: 0;
-    padding: 0 2px; /* 左右のパディングを2pxに縮小 */
+    padding: 60px 2px 10px; /* 上部パディングを60pxに統一、左右パディングを2pxに */
     box-sizing: border-box;
   }
   
@@ -518,8 +518,8 @@ hr {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background-color: var(--main-color);
-  border: none;
+  background-color: #888; /* 灰色に変更 */
+  border: 1px solid #777;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1087,4 +1087,50 @@ hr {
   font-size: 0.9rem;
   color: #555;
   line-height: 1.4;
+}
+
+/* 支払いの金額表示スタイル */
+.payment-amount {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #777;
+  white-space: nowrap;
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.payment-amount.payment-status-expenses {
+  color: #ff3b30;
+}
+
+.payment-amount.payment-status-income {
+  color: #34c759;
+}
+
+/* 支払い日時のスタイル */
+.payment-date {
+  margin: 5px 0 0 0;
+  font-size: 0.9rem;
+  color: #777;
+  font-weight: normal;
+}
+
+/* payment-itemに必要な追加スタイル（既存のスタイルを拡張） */
+.payment-item {
+  padding-bottom: 30px; /* 金額表示用の余白を追加 */
+}
+
+/* レスポンシブ対応 */
+@media (max-width: 480px) {
+  .payment-amount {
+    position: static;
+    font-size: 1.2rem;
+    text-align: right;
+    margin-top: 10px;
+  }
+  
+  .payment-item {
+    padding-bottom: 0;
+  }
 }

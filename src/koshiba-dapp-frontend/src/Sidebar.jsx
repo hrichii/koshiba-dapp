@@ -15,6 +15,8 @@ import IconAccount from "./img/account.png";
 // 折りたたみアイコンを追加
 import IconLeftArrow from "./img/left_arrow.png";
 import IconRightArrow from "./img/right_arrow.png";
+// GitHubアイコン
+import IconGithub from "./img/github-white.png"; // 白いGitHubアイコンに変更
 
 function Sidebar({ isOpen: propIsOpen }) {
     const [showModal, setShowModal] = useState(false);
@@ -194,6 +196,17 @@ function Sidebar({ isOpen: propIsOpen }) {
                             </div>
                         </Link>
                     </li>
+                    
+                    {/* 区切り線 */}
+                    <li className="sidebar-divider"></li>
+                    
+                    {/* 所属のお寺のセクション */}
+                    <li>
+                        <div className="sidebar-nav-item no-hover">
+                            <span className="nav-text temple-section">所属のお寺 ＞</span>
+                        </div>
+                    </li>
+                    
                     <li>
                         <Link 
                             to="/policy" 
@@ -228,6 +241,23 @@ function Sidebar({ isOpen: propIsOpen }) {
                         </Link>
                     </li>
                 </ul>
+                
+                {/* GitHubリンク */}
+                <a 
+                    href="https://github.com/hrichii/koshiba-dapp#" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="github-link"
+                >
+                    <img src={IconGithub} alt="GitHub" className="github-icon" />
+                    <span>Source Code</span>
+                </a>
+                
+                {/* 100% on-chain INTERNET COMPUTER テキスト */}
+                <div className="sidebar-footer-text">
+                    100% on-chain
+                    <span className="sidebar-footer-text-small">INTERNET COMPUTER</span>
+                </div>
                 
                 {/* サイドバー折りたたみボタン - 下部に配置 */}
                 <button 

@@ -125,16 +125,15 @@
   background-color: var(--bg-white);
   border-radius: var(--radius-large);
   box-shadow: var(--shadow-large);
-  padding: 30px;
+  padding: 30px 25px;
   width: 95%;
   position: relative;
   overflow: hidden;
   animation: fadeIn 0.5s ease, slideUp 0.5s ease;
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   margin: 0 auto;
-  left: 0 !important;
-  transform: none !important;
   box-sizing: border-box;
+  text-align: center;
 }
 
 .register-card::before {
@@ -145,12 +144,6 @@
   width: 100%;
   height: 5px;
   background: linear-gradient(90deg, var(--main-color), var(--main-color-light));
-}
-
-@media (min-width: 768px) {
-  .register-card {
-    padding: 40px;
-  }
 }
 
 @keyframes fadeIn {
@@ -230,8 +223,10 @@
   width: 100%;
   animation: fadeIn 0.5s ease;
   max-height: none;
-  overflow-y: visible;
-  padding-right: 5px;
+  overflow-x: hidden;
+  padding: 0;
+  box-sizing: border-box;
+  text-align: left;
 }
 
 /* ページタイトル */
@@ -239,7 +234,7 @@
   font-size: 22px;
   color: var(--text-dark);
   margin-bottom: 25px;
-  text-align: center;
+  text-align: left;
   font-weight: 600;
 }
 
@@ -263,6 +258,7 @@
 /* 入力フィールド */
 .input-field {
   margin-bottom: 24px;
+  text-align: left;
 }
 
 .input-field label {
@@ -271,6 +267,7 @@
   margin-bottom: 8px;
   color: var(--text-dark);
   font-size: 15px;
+  text-align: left;
 }
 
 .input-field input,
@@ -316,6 +313,7 @@
   margin-top: 6px;
   margin-bottom: 0;
   padding-left: 2px;
+  text-align: left;
 }
 
 /* グレードカード */
@@ -590,7 +588,7 @@
 
 /* フッター */
 .register-footer {
-  text-align: center;
+  text-align: left;
   margin-top: 25px;
   padding-top: 15px;
   border-top: 1px solid #f0f0f0;
@@ -601,6 +599,7 @@
   font-size: 14px;
   color: #888;
   letter-spacing: 0.3px;
+  text-align: left;
 }
 
 /* エラーメッセージ */
@@ -617,7 +616,7 @@
 
 /* グレード選択の注釈 */
 .grade-note {
-  text-align: center;
+  text-align: left;
   color: #666;
   margin-bottom: 20px;
   font-size: 15px;
@@ -653,16 +652,17 @@
 
 @media (max-width: 768px) {
   .register-container {
-    padding: 0;
+    padding: 20px;
     max-width: 100%;
+    height: 100vh;
   }
   
   .register-card {
-    padding: 20px 2px; /* 左右のパディングを2pxに縮小 */
-    border-radius: 0;
-    box-shadow: none;
+    padding: 25px 20px;
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-large);
     width: 100%;
-    max-width: 100%;
+    max-width: 420px;
   }
   
   .register-header h1 {
@@ -674,6 +674,16 @@
     font-size: 14px;
   }
   
+  .register-page-content {
+    width: 100%;
+    padding: 0;
+  }
+  
+  .input-field {
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  
   .input-field label {
     font-size: 14px;
   }
@@ -682,6 +692,8 @@
   .input-field select {
     padding: 10px;
     font-size: 14px;
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .logo {
@@ -695,6 +707,7 @@
     align-items: center;
     max-width: 100%;
     padding: 0;
+    margin: 10px 0;
   }
   
   .grade-card {
@@ -702,15 +715,23 @@
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    padding: 15px;
   }
   
   .name-fields {
     flex-direction: column;
     gap: 15px;
+    width: 100%;
   }
   
   .half-width {
     width: 100%;
+  }
+  
+  /* 郵便番号フィールドのモバイル対応 */
+  .input-field div[style*="display: flex"] {
+    width: 100%;
+    box-sizing: border-box;
   }
   
   .button-group {
@@ -725,6 +746,26 @@
     width: 100%;
     margin: 0;
     padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .register-container {
+    padding: 15px;
+  }
+  
+  .register-card {
+    padding: 20px 15px;
+    border-radius: var(--radius-medium);
+  }
+  
+  .register-header h1 {
+    font-size: 24px;
+  }
+  
+  .logo {
+    width: 70px;
+    height: 70px;
   }
 }
 

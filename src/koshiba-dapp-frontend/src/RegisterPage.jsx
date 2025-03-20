@@ -81,13 +81,20 @@ function RegisterPage() {
   // 認証チェックと寺院データの取得
   useEffect(() => {
     const checkAuthAndFetchData = async () => {
+      setIsLoading(true); // 必ず最初にローディング状態に設定
+      setError(""); // エラーメッセージをクリア
+      
       try {
+        console.log("Starting authentication check and data fetching...");
+        
         // 認証状態の確認
         const authClient = await AuthClient.create();
         const authenticated = await authClient.isAuthenticated();
+        console.log("Authentication status:", authenticated);
         
         if (!authenticated) {
           // 未認証の場合はログインページにリダイレクト
+          console.log("User not authenticated, redirecting to login page");
           navigate("/", { 
             state: { errorMessage: "ログインが必要です。Internet Identityでログインしてください。" } 
           });
@@ -105,13 +112,80 @@ function RegisterPage() {
         setIdentityInfo(principalId);
         
         // ユーザー情報の確認
-        //const userData = await koshiba_dapp_backend.getMe();
-        const userData = null;
-        // すでにユーザー登録がある場合はメインページへリダイレクト
-        if (userData) {
-          console.log("User already registered:", userData);
-          navigate("/home");
-          return;
+        try {
+          console.log("Fetching user data...");
+          const userData = await koshiba_dapp_backend.getMe();
+          console.log("User data from backend (raw):", JSON.stringify(userData));
+          
+          // ユーザーデータの検証
+          if (userData) {
+            // バックエンドからの応答が配列の場合の処理
+            let processedUserData = userData;
+            if (Array.isArray(userData)) {
+              console.log("User data is an array - attempting to extract user data");
+              if (userData.length > 0) {
+                processedUserData = userData[0];
+              } else {
+                console.log("Empty array returned - user not found");
+                processedUserData = null;
+              }
+            }
+            
+            console.log("Processed user data:", JSON.stringify(processedUserData));
+            
+            // ユーザー登録済みの詳細条件を確認
+            const isLastNameSet = processedUserData && processedUserData.last_name && processedUserData.last_name.trim() !== '';
+            const isFirstNameSet = processedUserData && processedUserData.first_name && processedUserData.first_name.trim() !== '';
+            
+            // grade情報の検証（オブジェクト形式またはプロパティ形式どちらでも対応）
+            let isGradeSet = false;
+            let gradeValue = null;
+            
+            if (processedUserData && processedUserData.grade) {
+              if (typeof processedUserData.grade === 'object') {
+                // オブジェクト形式 (例: { "S": null })
+                const gradeKeys = Object.keys(processedUserData.grade);
+                isGradeSet = gradeKeys.length > 0;
+                if (isGradeSet) {
+                  gradeValue = gradeKeys[0]; // 最初のキー（例: "S"）
+                }
+              } else if (typeof processedUserData.grade === 'string') {
+                // 文字列形式 (例: "S")
+                isGradeSet = processedUserData.grade.trim() !== '';
+                gradeValue = processedUserData.grade;
+              }
+            }
+            
+            console.log("Registration check details:", {
+              isLastNameSet,
+              isFirstNameSet,
+              isGradeSet,
+              gradeValue,
+              gradeType: processedUserData?.grade ? typeof processedUserData.grade : 'undefined'
+            });
+            
+            // ユーザーが登録済みの場合（名前やグレードが設定されている場合）
+            if (isLastNameSet && isFirstNameSet && isGradeSet) {
+              console.log("User is already registered - redirecting to home page");
+              // 遅延をさらに長くして確実にリダイレクトさせる
+              setTimeout(() => {
+                navigate("/home");
+              }, 300); 
+              return;
+            } else {
+              console.log("User exists but not fully registered:", {
+                lastName: processedUserData?.last_name || '未設定',
+                firstName: processedUserData?.first_name || '未設定',
+                grade: gradeValue || '未設定'
+              });
+            }
+          } else {
+            console.log("No user data found - new user");
+          }
+        } catch (error) {
+          console.error("Failed to fetch user data:", error);
+          console.error("Error details:", error.message || error);
+          // エラーが発生しても続行し、ユーザー登録フローに進む
         }
         
         // 寺院一覧を取得
@@ -165,9 +239,9 @@ function RegisterPage() {
         });
         
         // 「D」「B」「S」グレードのみをフィルタリング
-        const filteredGrades = gradeInfo.filter(g => ['D', 'B', 'S'].includes(g.grade));
+        const filteredGrades = gradeInfo.filter(g => ['S', 'B', 'D'].includes(g.grade));
         
-        setGradeList(filteredGrades.reverse()); // D→Sの順に表示するため反転
+        setGradeList(filteredGrades); // S→Dの順で表示
         
       } catch (err) {
         console.error("Error during initialization:", err);

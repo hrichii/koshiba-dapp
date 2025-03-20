@@ -341,7 +341,7 @@
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
   .search-temple-page {
-    padding: 20px 2px; /* 左右のパディングを2pxに縮小 */
+    padding: 60px 2px 20px; /* 上部パディングを60pxに統一、左右パディングを2pxに */
   }
   
   .page-title {
@@ -390,7 +390,7 @@
 
 @media (max-width: 480px) {
   .search-temple-page {
-    padding: 15px 2px; /* 左右のパディングを2pxに縮小 */
+    padding: 60px 2px 15px; /* 上部パディングを60pxに統一、左右のパディングを2pxに統一 */
   }
   
   .temple-container {

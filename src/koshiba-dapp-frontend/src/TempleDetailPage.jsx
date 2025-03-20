@@ -179,12 +179,13 @@ function TempleDetailPage() {
             return;
         }
         
-        // 既に別の寺院に所属している場合は確認ダイアログを表示
+        // 既に別の寺院に所属している場合、または所属寺院がない場合は確認ダイアログを表示
         if (currentTemple && currentTemple.id !== temple.id) {
+            // 所属寺院が異なる場合は変更確認
             setShowConfirmation(true);
         } else if (!currentTemple) {
-            // 所属寺院がない場合は直接設定
-            updateTemple();
+            // 所属寺院がない場合も確認ダイアログを表示
+            setShowConfirmation(true);
         } else {
             // 同じ寺院の場合は何もしない（ボタンは非表示または非活性になっているはず）
             setError("すでにこの寺院に所属しています。");
@@ -212,8 +213,8 @@ function TempleDetailPage() {
             const firstName = user.first_name || "";
             
             // gradeを正しい形式に設定
-            // Rustの列挙型に合わせて、{ Student: null } の形式を使用
-            const grade = { Student: null };
+            // ユーザーの現在のgradeを維持する
+            const grade = user.grade || { Student: null };
             
             console.log("更新情報:", {
                 last_name: lastName,
@@ -231,7 +232,11 @@ function TempleDetailPage() {
             );
             
             // 成功メッセージを表示
-            setSuccessMessage(`${temple.name}が所属寺院として設定されました`);
+            setSuccessMessage(
+                currentTemple 
+                    ? `${temple.name}に所属寺院を変更しました` 
+                    : `${temple.name}を所属寺院として設定しました`
+            );
             
             // ユーザー情報と所属寺院情報を更新
             const updatedUser = await koshiba_dapp_backend.getMe();
@@ -361,10 +366,16 @@ function TempleDetailPage() {
                     <div className="confirmation-dialog">
                         <div className="confirmation-content">
                             <h3>所属寺院の変更</h3>
-                            <p>現在の所属寺院「{currentTemple?.name || '不明'}」から「{temple.name}」に変更しますか？</p>
+                            {currentTemple ? (
+                                <p>現在の所属寺院「{currentTemple?.name || '不明'}」から「{temple.name}」に変更しますか？</p>
+                            ) : (
+                                <p>「{temple.name}」を所属寺院として設定しますか？</p>
+                            )}
                             <div className="confirmation-buttons">
                                 <button className="cancel-button" onClick={cancelChange}>キャンセル</button>
-                                <button className="confirm-button" onClick={updateTemple}>変更する</button>
+                                <button className="confirm-button" onClick={updateTemple}>
+                                    {currentTemple ? "変更する" : "設定する"}
+                                </button>
                             </div>
                         </div>
                     </div>

@@ -44,11 +44,11 @@
     width: var(--sidebar-collapsed-width);
 }
 
-/* サイドバー折りたたみボタン - サイズを大きく修正 */
+/* サイドバー折りたたみボタン - サイドバー内の下部に配置 */
 .collapse-toggle {
     position: absolute;
-    bottom: 30px;
-    right: 10px;
+    right: 10px; /* サイドバーの内側に配置 */
+    bottom: 15px; /* 下部に配置 */
     width: 36px; /* サイズを大きく */
     height: 36px; /* サイズを大きく */
     border-radius: 50%;
@@ -60,6 +60,7 @@
     cursor: pointer;
     transition: all var(--transition-fast);
     z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .collapse-toggle:hover {
@@ -161,20 +162,11 @@
     display: none;
 }
 
-.logo:hover {
-    transform: scale(1.05);
-    box-shadow: var(--shadow-medium);
-}
-
 .logo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.5s ease;
-}
-
-.logo:hover img {
-    transform: scale(1.1);
 }
 
 /* ナビゲーションリンク - 固定位置を確保するために修正 */
@@ -654,6 +646,34 @@
         transition: color var(--transition-fast);
     }
     
+    /* モバイル用区切り線 */
+    .mobile-nav-divider {
+        position: absolute;
+        bottom: 55px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40%;
+        height: 1px;
+        background-color: rgba(0, 0, 0, 0.1);
+        z-index: 910;
+    }
+    
+    /* リンクなし項目のスタイル */
+    .mobile-nav-item.non-clickable {
+        pointer-events: none;
+        color: #555;
+        font-weight: 600;
+        background-color: rgba(0, 185, 0, 0.05);
+        border-left: none;
+        border-right: none;
+    }
+    
+    .mobile-section-label {
+        font-size: 0.6rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
     /* アクティブな項目のスタイル - メルカリ風 */
     .mobile-nav-item.active {
         color: #000;
@@ -774,4 +794,127 @@ body.dark-mode .mobile-theme-toggle {
 
 .theme-toggle span {
   font-size: 0.95rem;
+}
+
+/* GitHub リンク用スタイル */
+.github-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+    margin-bottom: 8px;
+    padding: 10px 15px;
+    color: white;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    width: 85%;
+    max-width: 170px;
+    box-sizing: border-box;
+    background-color: #4CAF50; /* より明るい緑色に変更 */
+    border-radius: 30px; /* 角丸 */
+    align-self: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.github-icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+}
+
+/* 100% on-chain INTERNET COMPUTER テキスト */
+.sidebar-footer-text {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.8rem;
+    margin-bottom: 60px; /* 折りたたみボタン用のスペースを確保 */
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    width: 100%;
+    padding: 0 10px;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 1;
+}
+
+.sidebar-footer-text-small {
+    font-size: 0.7rem;
+    opacity: 0.9;
+    display: block;
+    font-weight: 800;
+    margin-top: 3px;
+    letter-spacing: 1px;
+}
+
+/* 折りたたまれたサイドバーでは非表示 */
+.sidebar.collapsed .github-link,
+.sidebar.collapsed .sidebar-footer-text {
+    display: none;
+}
+
+@media (max-width: 991px) {
+  .github-link,
+  .sidebar-footer-text {
+    display: none;
+  }
+}
+
+/* サイドバーの区切り線 */
+.sidebar-divider {
+    height: 1px;
+    background-color: rgba(255, 255, 255, 0.3);
+    margin: 8px 25px;
+    width: calc(100% - 50px); /* 両側から余白を増やして短くする */
+    display: block; /* 確実に表示されるようにする */
+}
+
+/* 折りたたみ時の区切り線のスタイル */
+.sidebar.collapsed .sidebar-divider {
+    width: calc(100% - 30px);
+    margin: 8px 15px;
+}
+
+/* サイドバーのセクションタイトル */
+.sidebar-section-title {
+    padding: 10px 15px 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* リンクがない項目のスタイル */
+.sidebar-nav-item.no-link {
+    cursor: default;
+    padding-left: 10px;
+}
+
+.sidebar-nav-item.no-link .nav-text {
+    font-size: 13px;
+    opacity: 0.85;
+    letter-spacing: 0.5px;
+}
+
+/* 折りたたみ時のセクションタイトル非表示 */
+.sidebar.collapsed .sidebar-section-title {
+    display: none;
+}
+
+/* リンクがない項目で、ホバー無効のスタイル */
+.sidebar-nav-item.no-hover {
+    cursor: default;
+    padding: 12px 10px; /* 他のナビアイテムと同じパディングを維持 */
+}
+
+/* 「所属のお寺」テキストのスタイル */
+.nav-text.temple-section {
+    color: var(--text-light);
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+/* 折りたたみ時の「所属のお寺」非表示 */
+.sidebar.collapsed .nav-text.temple-section {
+    display: none;
 }

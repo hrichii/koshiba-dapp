@@ -441,13 +441,6 @@ function PolicyPage() {
         </div>
       )}
 
-      {/* 見出し */}
-      <h3 className="policy-title">
-        {user && user.temple_name ? 
-          `${user.temple_name}の運営方針` : 
-          "お寺の運営方針"}
-      </h3>
-
       {/* イベントをまとめるコンテナ */}
       <div className="policy-container">
         {events.length > 0 ? (

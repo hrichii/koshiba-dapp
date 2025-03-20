@@ -896,7 +896,11 @@ function MainPage() {
       <div className="dashboard-grid horizontal">
         {/* 運営方針セクション */}
         <div className="dashboard-card policy-card">
-          <h3 className="dashboard-card-title">運営方針</h3>
+          <h3 className="dashboard-card-title">
+            {user && user.temple_name && user.temple_name !== "所属寺院なし" ? 
+                user.temple_name + "の運営方針" : 
+                "所属寺院なし"}
+          </h3>
           
           <div className="policy-event-list">
             {events.length > 0 ? (
@@ -920,7 +924,11 @@ function MainPage() {
         
         {/* 運営収支セクション */}
         <div className="dashboard-card payment-card">
-          <h3 className="dashboard-card-title">運営収支</h3>
+          <h3 className="dashboard-card-title">
+            {user && user.temple_name && user.temple_name !== "所属寺院なし" ? 
+                user.temple_name + "の運営収支" : 
+                "所属寺院なし"}
+          </h3>
           
           <div className="payment-list">
             {payments.length > 0 ? (
@@ -929,12 +937,27 @@ function MainPage() {
                   <div className="payment-item-header">
                     <h4 className="payment-item-title">{payment.title}</h4>
                     <div className="payment-item-amount">
-                      <span className={`payment-status ${getPaymentStatusClass(payment.status)}`}>
+                      <span className={`payment-amount ${getPaymentStatusClass(payment.status)}`}>
                         {typeof payment.status === 'object' && 'Expenses' in payment.status ? "-" : "+"}
-                        {formatAmount(payment.amount)}円
+                        <AnimatedNumber 
+                          value={payment.amount} 
+                          duration={1000}
+                          suffix="円"
+                        />
                       </span>
                     </div>
                   </div>
+                  <p className="payment-date">
+                    {payment.created_at ? 
+                      new Date(payment.created_at).toLocaleString('ja-JP', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      }) : 
+                      "日時不明"}
+                  </p>
                 </div>
               ))
             ) : (
