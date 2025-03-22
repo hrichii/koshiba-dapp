@@ -5,7 +5,6 @@ use time::OffsetDateTime;
 
 use crate::entities::payment_entity::PaymentEntity;
 use crate::models::payment_status::PaymentBalanceStatus;
-use crate::utils::offset_date_time_ext::OffsetDateTimeExt;
 
 type Memory = VirtualMemory<DefaultMemoryImpl>;
 
@@ -18,6 +17,7 @@ pub trait PaymentRepository {
         content: String,
         amount: u32,
         status: PaymentBalanceStatus,
+        created_at: OffsetDateTime,
     ) -> PaymentEntity;
     fn fetch(&self, id: u32) -> Option<PaymentEntity>;
     fn fetch_all(&self) -> Vec<PaymentEntity>;
@@ -47,10 +47,10 @@ impl PaymentRepository for StablePaymentRepository {
         content: String,
         amount: u32,
         status: PaymentBalanceStatus,
+        created_at: OffsetDateTime,
     ) -> PaymentEntity {
         let nullable_old_entity = self.fetch(id);
-        let mut created_at_millisec: i128 =
-            OffsetDateTime::ic_now().unix_timestamp_nanos() / 1_000_000;
+        let mut created_at_millisec: i128 = created_at.unix_timestamp_nanos() / 1_000_000;
         if let Some(old_entity) = nullable_old_entity {
             created_at_millisec = old_entity.created_at_millisec;
         }
