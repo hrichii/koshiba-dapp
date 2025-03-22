@@ -301,8 +301,12 @@ fn update_payment_debug(
     content: String,
     amount: u32,
     status: PaymentBalanceStatus,
+    created_at: String,
 ) -> PaymentDto {
-    let payment = payment_service().save(id, temple_id, title, content, amount, status);
+    let parsed_created_at: OffsetDateTime =
+        OffsetDateTime::parse(&created_at, &Rfc3339).unwrap_or_else(|_| OffsetDateTime::ic_now());
+    let payment =
+        payment_service().save(id, temple_id, title, content, amount, status, parsed_created_at);
     PaymentDto::from_payment(payment)
 }
 

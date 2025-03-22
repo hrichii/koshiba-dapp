@@ -1,3 +1,5 @@
+use time::OffsetDateTime;
+
 use crate::{
     models::{payment::Payment, payment_status::PaymentBalanceStatus, temple::Temple},
     repositories::{payment_repository::PaymentRepository, temple_repository::TempleRepository},
@@ -53,9 +55,10 @@ impl PaymentService {
         content: String,
         amount: u32,
         status: PaymentBalanceStatus,
+        created_at: OffsetDateTime,
     ) -> Payment {
         let payment_entity =
-            self.payment_repository.save(id, temple_id, title, content, amount, status);
+            self.payment_repository.save(id, temple_id, title, content, amount, status, created_at);
         let temple = self
             .temple_repository
             .fetch(payment_entity.temple_id)
