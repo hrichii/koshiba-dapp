@@ -139,8 +139,8 @@ function OfferingPage() {
   // ローディング中の表示
   if (isLoading) {
     return (
-      <div className="offering-loading">
-        <div className="loading-circle"></div>
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
         <p>読み込み中...</p>
       </div>
     );

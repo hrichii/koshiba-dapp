@@ -305,29 +305,7 @@
   background-color: var(--main-color-dark);
 }
 
-/* ローディング表示 */
-.temple-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: calc(100vh - 120px);
-}
-
-.loading-circle {
-  width: 50px;
-  height: 50px;
-  border: 5px solid rgba(0, 185, 0, 0.2);
-  border-top: 5px solid var(--main-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 20px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+/* ローディング関連のスタイルはApp.cssの共通スタイルを使用するため削除 */
 
 /* 運営方針と運営収支セクション */
 .temple-policy-section,
@@ -382,6 +360,8 @@
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   position: relative;
   overflow: hidden;
+  position: relative;
+  padding-bottom: 40px;
 }
 
 .policy-event-header {
@@ -444,18 +424,15 @@
 
 .payment-item-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 5px;
 }
 
 .payment-item-title {
   font-size: 1rem;
-  margin: 0;
+  margin: 0 0 5px 0;
   font-weight: 500;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 65%;
 }
 
 .payment-item-amount {
@@ -481,11 +458,12 @@
   color: #34c759;
 }
 
-/* 日付表示 */
+/* 支払い日時表示スタイル */
 .payment-date {
-  margin: 5px 0 0 0;
+  margin: 0 0 8px 0;
   font-size: 0.9rem;
   color: #777;
+  text-align: left;
 }
 
 /* データがない場合のメッセージ */
@@ -536,8 +514,9 @@
   }
   
   .confirmation-content {
+    max-height: 80vh;
+    overflow-y: auto;
     padding: 20px;
-    width: 90%;
   }
   
   .confirmation-buttons {
@@ -579,6 +558,12 @@
   /* 説明文 */
   .temple-description {
     padding: 0 5px;
+  }
+  
+  .confirmation-dialog {
+    align-items: flex-start;
+    padding-top: 50px;
+    overflow-y: hidden;
   }
 }
 
@@ -631,4 +616,277 @@
   grid-template-columns: 1fr;
   gap: 20px;
   margin-top: 20px;
+}
+
+/* 運営方針の投票ステータスバー */
+.policy-event-item {
+  position: relative;
+  padding-bottom: 40px;
+}
+
+.voting-stats {
+  display: grid;
+  grid-template-areas:
+    "yes-percent . no-percent"
+    "progressbar progressbar progressbar";
+  grid-template-columns: 1fr 1fr 1fr;
+  margin: 10px 0 5px 0;
+  position: relative;
+}
+
+.voting-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.yes-column {
+  grid-area: yes-percent;
+  color: #4CAF50;
+  align-items: flex-start;
+}
+
+.no-column {
+  grid-area: no-percent;
+  color: #F44336;
+  align-items: flex-end;
+}
+
+.vote-label {
+  font-size: 0.8rem;
+  margin: 0 0 3px 0;
+  font-weight: 600;
+}
+
+.vote-percentage {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0 0 5px 0;
+}
+
+.voting-progress-container {
+  grid-area: progressbar;
+  height: 20px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+  margin: 10px 0;
+  --standard-majority: 50%;
+}
+
+.progressbar {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  border-radius: 10px;
+}
+
+.voting-progress-bar {
+  height: 100%;
+  transition: width 1.5s ease-out;
+  will-change: width;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.yes-bar {
+  background-color: #4CAF50;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 0;
+  z-index: 2;
+  animation: barGrow 1.5s ease-out forwards;
+}
+
+.no-bar {
+  background-color: #F44336;
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 0;
+  z-index: 2;
+  animation: barGrow 1.5s ease-out forwards;
+}
+
+@keyframes barGrow {
+  from { width: 0; }
+  to { width: var(--final-width, 0%); }
+}
+
+/* 期限表示 */
+.deadline-display {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 0.8rem;
+  color: #666;
+  background-color: #f0f0f0;
+  padding: 3px 8px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.deadline-display svg {
+  margin-right: 5px;
+  fill: #666;
+}
+
+.deadline-urgent {
+  color: #F44336;
+  font-weight: bold;
+}
+
+/* 運営収支グラフ（円グラフバージョン） */
+.finance-chart-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.pie-chart-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 120px;
+  max-width: 150px;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.pie-chart-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.month-label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.pie-chart-container {
+  position: relative;
+  width: 100%;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.pie-chart {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #f5f5f5;
+}
+
+.income-slice, .expenses-slice {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  transform-origin: center;
+}
+
+.income-slice {
+  z-index: 2;
+}
+
+.expenses-slice {
+  z-index: 1;
+}
+
+.empty-chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background-color: #f5f5f5;
+  color: #999;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.chart-amounts {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  font-size: 0.75rem;
+  gap: 0.25rem;
+}
+
+.income-amount, .expenses-amount {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.amount-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.income-dot {
+  background-color: #4CAF50;
+}
+
+.expenses-dot {
+  background-color: #F44336;
+}
+
+.no-data-text {
+  text-align: center;
+  color: #999;
+  font-size: 0.75rem;
+}
+
+/* モバイル用のスタイル調整 */
+@media (max-width: 600px) {
+  .finance-chart-container {
+    justify-content: center;
+  }
+  
+  .pie-chart-wrapper {
+    min-width: 90px;
+    padding: 8px;
+  }
+  
+  .pie-chart {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .empty-chart {
+    width: 60px;
+    height: 60px;
+    font-size: 0.7rem;
+  }
+  
+  .chart-amounts {
+    font-size: 0.7rem;
+  }
 } 

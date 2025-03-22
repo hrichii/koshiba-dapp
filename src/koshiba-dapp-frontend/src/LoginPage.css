@@ -21,20 +21,32 @@
   --transition-slow: 0.5s ease;
 }
 
+/* グローバルスタイルを追加 */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 /* 全体 */
 .login-page {
   position: relative;
   width: 100%;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
   font-family: 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Noto Sans JP', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  display: flex;
+  flex-direction: column;
 }
 
 /* 背景動画のラッパ要素 */
 .video-wrapper {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -69,8 +81,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
+  min-height: 100vh;
   padding: 20px;
+  box-sizing: border-box;
+  width: 100%;
 }
 
 /* ログインカード */
@@ -84,8 +98,9 @@
   text-align: center;
   animation: fadeIn 0.8s ease, slideUp 0.8s ease;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  overflow: hidden;
+  overflow: visible;
   position: relative;
+  margin: 20px 0;
 }
 
 .login-card::before {
@@ -312,46 +327,12 @@
 
 /* ローディング表示 */
 .loading-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0.95);
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  backdrop-filter: blur(5px);
+  margin: 0 auto;
+  text-align: center;
+  padding: 100px 0;
 }
 
-.loading-container p {
-  font-size: 1.1rem;
-  color: var(--main-color);
-  position: relative;
-  padding-left: 35px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-}
-
-.loading-container p::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 22px;
-  height: 22px;
-  margin-top: -11px;
-  border: 3px solid var(--main-color);
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+/* ローディング関連のスタイルはApp.cssの共通スタイルを使用するため削除 */
 
 /* ログアウトボタン */
 .logout-button {
@@ -387,6 +368,7 @@
 @media (max-width: 480px) {
   .login-card {
     padding: 25px 20px;
+    margin: 20px auto;
   }
   
   .login-header h1 {
@@ -412,5 +394,17 @@
   
   .background-video {
     display: none;
+  }
+}
+
+/* モバイル対応の調整 */
+@media (max-width: 768px) {
+  .login-container {
+    align-items: flex-start;
+    padding-top: 40px;
+  }
+  
+  .login-card {
+    margin: 0 auto 40px auto;
   }
 }

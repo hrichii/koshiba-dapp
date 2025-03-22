@@ -28,6 +28,32 @@ function Sidebar({ isOpen: propIsOpen }) {
     const navigate = useNavigate();
     const location = useLocation();
 
+    // 追加：寺院詳細ページへのナビゲーション関数
+    const handleNavigateToTemple = (templeId) => {
+        if (!templeId) {
+            console.error("寺院IDが見つかりません");
+            return;
+        }
+        
+        console.log(`寺院ID: ${templeId} の詳細ページに遷移します`);
+        
+        try {
+            // URLに遷移
+            window.location.href = `/temple/${templeId}`;
+            console.log("ページ遷移を実行しました");
+        } catch (error) {
+            console.error("ナビゲーションエラー:", error);
+            
+            // フォールバック: React Routerのnavigate関数を使用
+            try {
+                navigate(`/temple/${templeId}`);
+                console.log("React Routerでのナビゲーション完了");
+            } catch (routerError) {
+                console.error("React Routerナビゲーションでもエラー:", routerError);
+            }
+        }
+    };
+
     // get_user() を呼び出してユーザー情報を取得
     useEffect(() => {
         async function fetchUser() {
@@ -53,6 +79,19 @@ function Sidebar({ isOpen: propIsOpen }) {
                 }
                 
                 console.log("Sidebar - Processed user data:", processedData);
+                // templeIdをデバッグ（BigIntエラーを回避）
+                if (processedData) {
+                    console.log("Sidebar - User templeId:", processedData.templeId);
+                    console.log("Sidebar - User temple:", processedData.temple);
+                    console.log("Sidebar - User temple_id:", processedData.temple_id);
+                    
+                    // ユーザーデータからtemple情報を取得して整理
+                    if (processedData.temple && Array.isArray(processedData.temple) && processedData.temple.length > 0) {
+                        console.log("Sidebar - Found temple array, first temple ID:", processedData.temple[0].id);
+                    }
+                }
+                
+                // ユーザー情報をセット
                 setUser(processedData);
                 
                 // Principal IDを取得
@@ -64,7 +103,7 @@ function Sidebar({ isOpen: propIsOpen }) {
                 }
             } catch (error) {
                 console.error("ユーザー情報取得中にエラーが発生しました:", error);
-                setUser(null);
+                // エラーが発生してもユーザー情報をnullにはしない
             } finally {
                 setIsLoading(false);
             }
@@ -72,9 +111,19 @@ function Sidebar({ isOpen: propIsOpen }) {
         fetchUser();
     }, []);
 
-    // 現在のパスに基づいてアクティブなリンクを判定
+    // 現在のパスに基づいてアクティブなリンクを判定（強化版）
     const isActive = (path) => {
-        return location.pathname === path;
+        // 完全一致の場合
+        if (location.pathname === path) {
+            return true;
+        }
+        
+        // 寺院詳細ページのパターンマッチング
+        if (path === 'temple' && location.pathname.startsWith('/temple/')) {
+            return true;
+        }
+        
+        return false;
     };
 
     const handleDeleteUser = async () => {
@@ -200,11 +249,32 @@ function Sidebar({ isOpen: propIsOpen }) {
                     {/* 区切り線 */}
                     <li className="sidebar-divider"></li>
                     
-                    {/* 所属のお寺のセクション */}
+                    {/* 所属のお寺のセクション - クリック可能に変更、配列形式に対応 */}
                     <li>
-                        <div className="sidebar-nav-item no-hover">
-                            <span className="nav-text temple-section">所属のお寺 ＞</span>
-                        </div>
+                        {user && user.temple && Array.isArray(user.temple) && user.temple.length > 0 ? (
+                            <div 
+                                className="sidebar-nav-item"
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => {
+                                    // デバッグ情報
+                                    console.log("Temple link clicked");
+                                    console.log("Temple array:", user.temple);
+                                    
+                                    // temple配列から最初の要素のIDを取得
+                                    const templeId = user.temple[0].id;
+                                    console.log("Temple ID used:", templeId);
+                                    
+                                    // 手動でナビゲーション実行
+                                    handleNavigateToTemple(templeId);
+                                }}
+                            >
+                                <span className="nav-text temple-section">所属のお寺 ＞</span>
+                            </div>
+                        ) : (
+                            <div className="sidebar-nav-item no-hover">
+                                <span className="nav-text temple-section">所属のお寺 ＞</span>
+                            </div>
+                        )}
                     </li>
                     
                     <li>

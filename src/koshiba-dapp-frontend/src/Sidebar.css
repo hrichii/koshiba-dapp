@@ -620,7 +620,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 65px;
+    height: 50px; /* 65pxから50pxに縮小 */
     background-color: white;
     box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.08);
     z-index: 900;
@@ -641,15 +641,15 @@
         justify-content: center;
         color: #777;
         text-decoration: none;
-        font-size: 0.65rem;
-        padding: 8px 0;
+        font-size: 0.6rem; /* フォントサイズも少し小さく */
+        padding: 6px 0; /* パディングを調整 */
         transition: color var(--transition-fast);
     }
     
     /* モバイル用区切り線 */
     .mobile-nav-divider {
         position: absolute;
-        bottom: 55px;
+        bottom: 42px; /* 位置を調整 */
         left: 50%;
         transform: translateX(-50%);
         width: 40%;
@@ -693,11 +693,11 @@
     
     /* アイコン */
     .mobile-nav-icon {
-        width: 28px;
-        height: 28px;
+        width: 22px; /* 28pxから22pxに縮小 */
+        height: 22px; /* 28pxから22pxに縮小 */
         object-fit: contain;
         display: block;
-        margin-bottom: 4px;
+        margin-bottom: 3px; /* マージンも調整 */
         padding: 2px;
         transition: all 0.2s ease;
         filter: grayscale(100%);
@@ -705,7 +705,7 @@
     
     /* モバイルでの余白追加 */
     body {
-        padding-bottom: 65px;
+        padding-bottom: 50px; /* 65pxから50pxに変更 */
     }
     
     /* サイドバーを非表示に */
@@ -912,6 +912,17 @@ body.dark-mode .mobile-theme-toggle {
     font-weight: 700;
     font-size: 0.95rem;
     letter-spacing: 0.5px;
+    cursor: pointer; /* カーソルをポインターに変更して、クリック可能なことを示す */
+    padding-left: 36px; /* アイコンの幅分だけパディングを調整 */
+    margin-left: 0; /* マージンをリセット */
+    display: block;
+}
+
+/* リンクスタイルの修正 - 寺院リンク */
+.temple-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
 }
 
 /* 折りたたみ時の「所属のお寺」非表示 */

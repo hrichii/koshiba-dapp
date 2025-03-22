@@ -7,13 +7,7 @@
   position: relative;
 }
 
-.loading-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  font-size: 1.2rem;
-}
+/* ローディング表示のスタイルはApp.cssの共通スタイルを使用するため削除 */
 
 .error-message {
   color: #ff3b30;
@@ -384,6 +378,20 @@
   .account-icon-button {
     top: 15px;
     right: 15px;
+  }
+  
+  .account-modal {
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 15px;
+    margin: auto;
+    position: relative;
+  }
+  
+  .account-modal-overlay {
+    align-items: flex-start;
+    padding-top: 50px;
+    overflow-y: hidden;
   }
 }
 

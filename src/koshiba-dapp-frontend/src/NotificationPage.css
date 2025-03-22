@@ -165,38 +165,6 @@
   margin: 0;
 }
 
-/* ローディング表示 */
-.loading-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  height: 200px;
-  background-color: var(--bg-white);
-  width: 100%;
-}
-
-.loader {
-  width: 24px;
-  height: 24px;
-  border: 2px solid #eee;
-  border-radius: 50%;
-  border-top-color: var(--main-color);
-  animation: spin 1s linear infinite;
-  margin-bottom: 12px;
-}
-
-.loading-container p {
-  color: var(--text-medium);
-  font-size: 0.9rem;
-  margin: 0;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 /* エラーメッセージ */
 .error-message {
   color: #e74c3c;

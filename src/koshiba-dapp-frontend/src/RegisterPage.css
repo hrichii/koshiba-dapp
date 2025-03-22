@@ -21,23 +21,34 @@
   --transition-slow: 0.5s ease;
 }
 
+/* グローバルスタイルを追加 */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
 /* 全体のページスタイル */
 .register-page {
   position: relative;
   min-height: 100vh;
   width: 100%;
   overflow-x: hidden;
+  overflow-y: auto;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* center -> flex-start に変更 */
   font-family: 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Noto Sans JP', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  padding: 20px 0; /* 上下にパディングを追加 */
 }
 
 /* 背景動画コンテナ */
 .video-wrapper {
-  position: fixed;
+  position: fixed; /* スクロールしても背景が固定されるように */
   top: 0;
   left: 0;
   width: 100%;
@@ -66,52 +77,18 @@
 
 /* ローディング表示 */
 .loading-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 100%;
-  background-color: rgba(255, 255, 255, 0.95);
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1000;
-  backdrop-filter: blur(5px);
+  margin: 0 auto;
+  text-align: center;
+  padding: 100px 0;
 }
 
-.loading-container p {
-  font-size: 1.1rem;
-  color: var(--main-color);
-  position: relative;
-  padding-left: 35px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-}
-
-.loading-container p::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 22px;
-  height: 22px;
-  margin-top: -11px;
-  border: 3px solid var(--main-color);
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
+/* ローディング関連のスタイルはApp.cssの共通スタイルを使用するため削除 */
 
 /* 登録コンテナ */
 .register-container {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start; /* center -> flex-start に変更 */
   min-height: 100vh;
   width: 100%;
   padding: 20px;
@@ -128,10 +105,10 @@
   padding: 30px 25px;
   width: 95%;
   position: relative;
-  overflow: hidden;
+  overflow: visible; /* overflow: hidden を解除 */
   animation: fadeIn 0.5s ease, slideUp 0.5s ease;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  margin: 0 auto;
+  margin: 20px auto; /* 上下のマージンを追加 */
   box-sizing: border-box;
   text-align: center;
 }
@@ -222,8 +199,9 @@
 .register-page-content {
   width: 100%;
   animation: fadeIn 0.5s ease;
-  max-height: none;
+  max-height: none; /* max-heightの制限を解除 */
   overflow-x: hidden;
+  overflow-y: visible; /* 縦方向のスクロールを許可 */
   padding: 0;
   box-sizing: border-box;
   text-align: left;
@@ -327,6 +305,7 @@
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
+  overflow-y: visible; /* 縦スクロールを許可 */
 }
 
 .grade-card {
@@ -440,11 +419,11 @@
   font-size: 14px;
   color: #666;
   line-height: 1.5;
-  height: 60px; /* 説明文の高さを固定 */
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+  min-height: 60px; /* height -> min-height に変更 */
+  overflow: visible; /* hidden -> visible に変更 */
+  display: block; /* -webkit-box -> block に変更 */
+  -webkit-line-clamp: unset; /* 3行制限を解除 */
+  -webkit-box-orient: unset; /* vertical設定を解除 */
 }
 
 /* グレード価格 */
@@ -505,7 +484,7 @@
   margin-top: 25px;
   padding: 10px 0;
   background-color: rgba(255, 255, 255, 0.95);
-  position: sticky;
+  position: relative; /* sticky -> relative に変更 */
   bottom: 0;
   justify-content: space-between;
   z-index: 5;
@@ -639,6 +618,7 @@
     gap: 20px;
     max-width: 100%;
     padding: 0 5px;
+    overflow-y: visible; /* スクロールを許可 */
   }
   
   .grade-card {
@@ -651,10 +631,15 @@
 }
 
 @media (max-width: 768px) {
+  .register-page {
+    padding: 10px 0; /* パディングを調整 */
+  }
+  
   .register-container {
-    padding: 20px;
+    padding: 10px;
     max-width: 100%;
-    height: 100vh;
+    height: auto;
+    min-height: auto; /* 100vh -> auto に変更してスクロールを妨げないように */
   }
   
   .register-card {
@@ -663,6 +648,7 @@
     box-shadow: var(--shadow-large);
     width: 100%;
     max-width: 420px;
+    margin: 10px auto 30px auto; /* マージンを追加 */
   }
   
   .register-header h1 {
@@ -708,6 +694,7 @@
     max-width: 100%;
     padding: 0;
     margin: 10px 0;
+    overflow-y: visible; /* スクロールを許可 */
   }
   
   .grade-card {
@@ -814,7 +801,7 @@
   margin-bottom: 25px;
   padding-bottom: 25px;
   border-bottom: 1px solid #eee;
-  height: 160px; /* ヘッダーの高さを増加 */
+  min-height: 160px; /* height -> min-height に変更 */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -842,10 +829,12 @@
   display: flex;
   gap: 10px;
   width: 100%;
+  flex-wrap: wrap; /* 画面幅が狭い場合に折り返し可能に */
 }
 
 .birth-selector {
   flex: 1;
+  min-width: 90px; /* 最小幅を設定して小さすぎないようにする */
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -881,5 +870,7 @@
   .birth-selector {
     width: 100%;
     padding: 10px;
+    flex: none; /* モバイルでは flex 設定を解除 */
+    min-width: auto; /* 最小幅の制限を解除 */
   }
 } 

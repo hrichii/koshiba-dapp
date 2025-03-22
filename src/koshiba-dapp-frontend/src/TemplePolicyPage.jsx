@@ -406,11 +406,9 @@ function TemplePolicyPage() {
   // ローディング表示
   if (isLoading) {
     return (
-      <div className="container">
-        <div className="loading-container">
-          <div className="loading-circle"></div>
-          <p>読み込み中...</p>
-        </div>
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>読み込み中...</p>
       </div>
     );
   }

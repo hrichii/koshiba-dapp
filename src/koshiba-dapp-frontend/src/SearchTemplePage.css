@@ -310,32 +310,7 @@
 }
 
 .map-message p {
-  color: #666;
-  margin-bottom: 10px;
-}
-
-/* ローディング表示 */
-.temple-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: calc(100vh - 120px);
-}
-
-.loading-circle {
-  width: 50px;
-  height: 50px;
-  border: 5px solid rgba(0, 185, 0, 0.2);
-  border-top: 5px solid var(--main-color);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 20px;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  margin: 0;
 }
 
 /* レスポンシブ対応 */

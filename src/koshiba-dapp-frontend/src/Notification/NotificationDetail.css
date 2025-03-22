@@ -310,41 +310,6 @@
   background-color: var(--main-color-dark);
 }
 
-/* ローディング表示 */
-.loading-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 300px;
-  width: 100%;
-}
-
-.loading-container p {
-  font-size: 1.1rem;
-  color: var(--main-color);
-  position: relative;
-  padding-left: 35px;
-}
-
-.loading-container p::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 22px;
-  height: 22px;
-  margin-top: -11px;
-  border: 3px solid var(--main-color);
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
 /* エラーメッセージ */
 .error-message {
   color: #e74c3c;

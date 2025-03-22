@@ -45,6 +45,179 @@ function AnimatedNumber({ value, duration = 1500, suffix = "" }) {
   );
 }
 
+// 残り時間を計算・表示するコンポーネント
+function DeadlineDisplay({ deadline_at }) {
+    const calculateRemainingDays = () => {
+        if (!deadline_at) return { days: 0, isUrgent: false };
+        
+        const deadlineDate = new Date(deadline_at);
+        const currentDate = new Date();
+        
+        // 日付の差分を計算（ミリ秒）
+        const diffMs = deadlineDate - currentDate;
+        
+        // 日数に変換
+        const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        
+        // 残り3日以内は緊急とみなす
+        const isUrgent = diffDays <= 3 && diffDays >= 0;
+        
+        return { days: diffDays, isUrgent };
+    };
+    
+    const { days, isUrgent } = calculateRemainingDays();
+    
+    // 期限切れの場合
+    if (days < 0) {
+        return (
+            <div className="deadline-display">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                </svg>
+                <span>期限終了</span>
+            </div>
+        );
+    }
+    
+    return (
+        <div className={`deadline-display ${isUrgent ? 'deadline-urgent' : ''}`}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+            </svg>
+            <span>残り{days}日</span>
+        </div>
+    );
+}
+
+// 運営収支グラフコンポーネント（円グラフバージョン）
+function FinanceChart({ payments = [] }) {
+    // 直近3ヶ月のデータを集計
+    const calculateMonthlyData = () => {
+        const currentDate = new Date();
+        const monthNames = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+        const monthlyData = [];
+        
+        // 過去3ヶ月の月を取得
+        for (let i = 2; i >= 0; i--) {
+            const monthDate = new Date(currentDate);
+            monthDate.setMonth(currentDate.getMonth() - i);
+            
+            const monthName = monthNames[monthDate.getMonth()];
+            const year = monthDate.getFullYear();
+            const month = monthDate.getMonth();
+            
+            let income = 0;
+            let expenses = 0;
+            
+            // その月のデータを集計
+            payments.forEach(payment => {
+                if (!payment.created_at) return;
+                
+                const paymentDate = new Date(payment.created_at);
+                if (paymentDate.getFullYear() === year && paymentDate.getMonth() === month) {
+                    if (typeof payment.status === 'object') {
+                        if ('Income' in payment.status) {
+                            income += payment.amount || 0;
+                        } else if ('Expenses' in payment.status) {
+                            expenses += payment.amount || 0;
+                        }
+                    } else if (typeof payment.status === 'string') {
+                        if (payment.status === "Income") {
+                            income += payment.amount || 0;
+                        } else if (payment.status === "Expenses") {
+                            expenses += payment.amount || 0;
+                        }
+                    }
+                }
+            });
+            
+            monthlyData.push({
+                month: monthName,
+                income: income,
+                expenses: expenses
+            });
+        }
+        
+        return monthlyData;
+    };
+    
+    const monthlyData = calculateMonthlyData();
+    
+    // 金額をフォーマット
+    const formatAmount = (amount) => {
+        if (amount >= 10000) {
+            return `${Math.floor(amount / 10000)}万円`;
+        }
+        return `${amount.toLocaleString()}円`;
+    };
+    
+    return (
+        <div className="finance-chart-container">
+            {monthlyData.map((data, index) => (
+                <div key={index} className="pie-chart-wrapper">
+                    <div className="month-label">{data.month}</div>
+                    
+                    {(data.income > 0 || data.expenses > 0) ? (
+                        <>
+                            <div className="pie-chart-container">
+                                <div className="pie-chart">
+                                    <div 
+                                        className="income-slice" 
+                                        style={{
+                                            transform: `rotate(0deg)`,
+                                            background: `conic-gradient(#4CAF50 0deg, #4CAF50 ${data.income / (data.income + data.expenses) * 360}deg, transparent ${data.income / (data.income + data.expenses) * 360}deg)`
+                                        }}
+                                    ></div>
+                                    <div 
+                                        className="expenses-slice" 
+                                        style={{
+                                            transform: `rotate(${data.income / (data.income + data.expenses) * 360}deg)`,
+                                            background: `conic-gradient(#F44336 0deg, #F44336 ${data.expenses / (data.income + data.expenses) * 360}deg, transparent ${data.expenses / (data.income + data.expenses) * 360}deg)`
+                                        }}
+                                    ></div>
+                                </div>
+                            </div>
+                            <div className="chart-amounts">
+                                <div className="income-amount">
+                                    <span className="amount-dot income-dot"></span>
+                                    <span>
+                                        {data.income >= 10000 ? (
+                                            <AnimatedNumber value={Math.floor(data.income / 10000)} duration={1500} suffix="万円" />
+                                        ) : (
+                                            <AnimatedNumber value={data.income} duration={1500} suffix="円" />
+                                        )}
+                                    </span>
+                                </div>
+                                <div className="expenses-amount">
+                                    <span className="amount-dot expenses-dot"></span>
+                                    <span>
+                                        {data.expenses >= 10000 ? (
+                                            <AnimatedNumber value={Math.floor(data.expenses / 10000)} duration={1500} suffix="万円" />
+                                        ) : (
+                                            <AnimatedNumber value={data.expenses} duration={1500} suffix="円" />
+                                        )}
+                                    </span>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="pie-chart-container">
+                                <div className="empty-chart">
+                                    <span>データなし</span>
+                                </div>
+                            </div>
+                            <div className="chart-amounts">
+                                <span className="no-data-text">収支記録なし</span>
+                            </div>
+                        </>
+                    )}
+                </div>
+            ))}
+        </div>
+    );
+}
+
 function TempleDetailPage() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -323,11 +496,45 @@ function TempleDetailPage() {
         return amount.toLocaleString();
     };
 
+    // 投票データを正しく処理するヘルパー関数
+    const processVoteData = (event) => {
+        // ベースとなるイベントデータ
+        const processedEvent = { ...event };
+        
+        // agree_countとdisagree_countがない場合は0を設定
+        if (processedEvent.agree_count === undefined) processedEvent.agree_count = 0;
+        if (processedEvent.disagree_count === undefined) processedEvent.disagree_count = 0;
+        
+        // voteプロパティが存在する場合はそこから値を取得
+        if (processedEvent.vote) {
+            // agree, disagreeが直接プロパティとして存在する場合
+            if (processedEvent.vote.agree !== undefined) {
+                processedEvent.agree_count = processedEvent.vote.agree;
+            }
+            if (processedEvent.vote.disagree !== undefined) {
+                processedEvent.disagree_count = processedEvent.vote.disagree;
+            }
+            
+            // totalが存在する場合はそれを使用
+            if (processedEvent.vote.total !== undefined) {
+                processedEvent.total_count = processedEvent.vote.total;
+            } else {
+                // 存在しない場合はagreeとdisagreeの合計を使用
+                processedEvent.total_count = processedEvent.agree_count + processedEvent.disagree_count;
+            }
+        } else {
+            // voteプロパティがない場合はagree_countとdisagree_countから計算
+            processedEvent.total_count = processedEvent.agree_count + processedEvent.disagree_count;
+        }
+        
+        return processedEvent;
+    };
+
     // ローディング表示
     if (isLoading) {
         return (
-            <div className="temple-loading">
-                <div className="loading-circle"></div>
+            <div className="loading-container">
+                <div className="loading-spinner"></div>
                 <p>読み込み中...</p>
             </div>
         );
@@ -436,13 +643,54 @@ function TempleDetailPage() {
                     <div className="dashboard-card policy-card">
                         <div className="policy-event-list">
                             {events.length > 0 ? (
-                                events.slice(0, 3).map((event) => (
-                                    <div key={event.event_id} className="policy-event-item">
-                                        <div className="policy-event-header">
-                                            <h4 className="policy-event-title">{event.title}</h4>
+                                events.slice(0, 3).map((event) => {
+                                    // イベントデータ処理
+                                    const processedEvent = processVoteData(event);
+                                    
+                                    // 賛成・反対の票数や割合を計算
+                                    const totalVotes = processedEvent.total_count || 0;
+                                    const agreePercent = totalVotes > 0 ? Math.round((processedEvent.agree_count || 0) / totalVotes * 100) : 0;
+                                    const disagreePercent = totalVotes > 0 ? Math.round((processedEvent.disagree_count || 0) / totalVotes * 100) : 0;
+                                    
+                                    // CSSカスタムプロパティを使用して幅を設定
+                                    const yesBarStyle = { "--final-width": `${agreePercent}%` };
+                                    const noBarStyle = { "--final-width": `${disagreePercent}%` };
+                                    
+                                    return (
+                                        <div key={event.event_id} className="policy-event-item">
+                                            <div className="policy-event-header">
+                                                <h4 className="policy-event-title">{event.title}</h4>
+                                            </div>
+                                            
+                                            {/* 投票状況表示 */}
+                                            <div className="voting-stats">
+                                                <div className="voting-column yes-column">
+                                                    <div className="vote-label">賛成</div>
+                                                    <div className="vote-percentage">
+                                                      <AnimatedNumber value={agreePercent} duration={1500} suffix="%" />
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="voting-column no-column">
+                                                    <div className="vote-label">反対</div>
+                                                    <div className="vote-percentage">
+                                                      <AnimatedNumber value={disagreePercent} duration={1500} suffix="%" />
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="voting-progress-container">
+                                                    <div className="progressbar">
+                                                        <div className="yes-bar" style={yesBarStyle}></div>
+                                                        <div className="no-bar" style={noBarStyle}></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            {/* 期限表示 */}
+                                            <DeadlineDisplay deadline_at={event.deadline_at} />
                                         </div>
-                                    </div>
-                                ))
+                                    );
+                                })
                             ) : (
                                 <p className="no-data-message">現在投票できる議案はありません</p>
                             )}
@@ -458,36 +706,38 @@ function TempleDetailPage() {
                 <div className="temple-payment-section">
                     <h2 className="section-title">運営収支</h2>
                     <div className="dashboard-card payment-card">
+                        {/* 収支グラフ */}
+                        <FinanceChart payments={payments} />
+                        
                         <div className="payment-list">
                             {payments.length > 0 ? (
-                                payments.slice(0, 3).map((payment) => (
-                                    <div key={payment.payment_id} className="payment-item">
-                                        <div className="payment-item-header">
-                                            <h4 className="payment-item-title">{payment.title}</h4>
-                                            <div className="payment-item-amount">
-                                                <span className={`payment-amount ${getPaymentStatusClass(payment.status)}`}>
-                                                    {typeof payment.status === 'object' && 'Expenses' in payment.status ? "-" : "+"}
-                                                    <AnimatedNumber 
-                                                        value={payment.amount} 
-                                                        duration={1000}
-                                                        suffix="円"
-                                                    />
-                                                </span>
+                                payments.slice(0, 5).map((payment, index) => {
+                                    const statusClass = getPaymentStatusClass(payment.status);
+                                    
+                                    // 日付のフォーマット
+                                    const formattedDate = payment.created_at 
+                                      ? new Date(payment.created_at).toLocaleString('ja-JP', {
+                                          year: 'numeric',
+                                          month: '2-digit',
+                                          day: '2-digit',
+                                          hour: '2-digit',
+                                          minute: '2-digit'
+                                        })
+                                      : "日時不明";
+                                    
+                                    return (
+                                        <div key={index} className="payment-item">
+                                            <div className="payment-item-header">
+                                                <h4 className="payment-item-title">{payment.title}</h4>
+                                                <p className="payment-date">{formattedDate}</p>
+                                            </div>
+                                            <div className={`payment-amount ${statusClass}`}>
+                                                {statusClass === "payment-status-income" ? "+" : "-"}
+                                                <AnimatedNumber value={payment.amount || 0} duration={1500} suffix="円" />
                                             </div>
                                         </div>
-                                        <p className="payment-date">
-                                            {payment.created_at ? 
-                                                new Date(payment.created_at).toLocaleString('ja-JP', {
-                                                    year: 'numeric',
-                                                    month: '2-digit',
-                                                    day: '2-digit',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
-                                                }) : 
-                                                "日時不明"}
-                                        </p>
-                                    </div>
-                                ))
+                                    );
+                                })
                             ) : (
                                 <p className="no-data-message">収支情報はありません</p>
                             )}

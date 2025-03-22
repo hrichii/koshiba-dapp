@@ -6,6 +6,48 @@ import "./PaymentPage.css";
 
 import IconAccount from "./img/account.png";
 
+/**
+ * 数字を 0 から value までアニメーションしながら表示するコンポーネント
+ * @param {number} value - 最終的な数値
+ * @param {number} duration - アニメーション時間 (ms)
+ * @param {string} suffix - 単位（例: "円"）
+ */
+function AnimatedNumber({ value, duration = 1500, suffix = "" }) {
+  const [currentValue, setCurrentValue] = useState(0);
+
+  useEffect(() => {
+    let startTime;
+    let animationFrameId;
+
+    function animate(timestamp) {
+      if (!startTime) {
+        startTime = timestamp;
+      }
+      const elapsed = timestamp - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const newValue = progress * value;
+      setCurrentValue(newValue);
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(animate);
+      }
+    }
+
+    animationFrameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [value, duration]);
+
+  // 表示用の値を計算（3桁区切りを適用）
+  const displayValue = Math.floor(currentValue).toLocaleString();
+
+  return (
+    <span>
+      {displayValue}
+      {suffix}
+    </span>
+  );
+}
+
 function PaymentPage() {
   const navigate = useNavigate();
   
@@ -267,11 +309,9 @@ function PaymentPage() {
   // ローディング表示
   if (isLoading) {
     return (
-      <div className="container">
-        <div className="loading-container">
-          <div className="loading-circle"></div>
-          <p>読み込み中...</p>
-        </div>
+      <div className="loading-container">
+        <div className="loading-spinner"></div>
+        <p>読み込み中...</p>
       </div>
     );
   }
@@ -359,11 +399,6 @@ function PaymentPage() {
                 })
               : "日時不明";
             
-            // 金額を3桁区切りで表示
-            const formattedAmount = payment.amount 
-              ? payment.amount.toLocaleString()
-              : "0";
-            
             return (
               <div key={index} className={`payment-card ${statusInfo.class}`}>
                 <div className="payment-item-content">
@@ -371,7 +406,8 @@ function PaymentPage() {
                   <p className="payment-date">{formattedDate}</p>
                   <p className="payment-description">{payment.content || "詳細情報なし"}</p>
                   <div className={`payment-amount ${statusInfo.class}`}>
-                    {statusInfo.class === "income" ? "+" : "-"}{formattedAmount}円
+                    {statusInfo.class === "income" ? "+" : "-"}
+                    <AnimatedNumber value={payment.amount || 0} duration={1500} suffix="円" />
                   </div>
                 </div>
               </div>

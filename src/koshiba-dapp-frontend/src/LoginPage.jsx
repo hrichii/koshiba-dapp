@@ -5,7 +5,7 @@ import { Actor } from "@dfinity/agent";
 import { koshiba_dapp_backend } from "../../declarations/koshiba-dapp-backend";
 
 import "./LoginPage.css";
-import bgVideo from "./img/LoginPage _background.mp4";
+import bgVideo from "./img/LoginMovie.mp4";
 import Image_logo from "./img/logo.jpg";
 
 function LoginPage() {
@@ -21,6 +21,8 @@ function LoginPage() {
     useEffect(() => {
         if (location.state && location.state.errorMessage) {
             setLoginError(location.state.errorMessage);
+            // エラーメッセージが表示されたらトップへスクロール
+            window.scrollTo(0, 0);
         }
     }, [location]);
 
@@ -81,6 +83,8 @@ function LoginPage() {
                 setLoginError("認証の初期化に失敗しました。");
             } finally {
                 setIsCheckingAuth(false);
+                // 初期化完了時にページトップにスクロール
+                window.scrollTo(0, 0);
             }
         };
         
@@ -91,6 +95,8 @@ function LoginPage() {
     const handleLogin = async () => {
         if (!authClient) {
             setLoginError("認証クライアントが初期化されていません。");
+            // エラー時にトップへスクロール
+            window.scrollTo(0, 0);
             return;
         }
         
@@ -149,15 +155,21 @@ function LoginPage() {
                             processedUserData.first_name && 
                             processedUserData.grade) {
                             console.log("有効なユーザーデータが見つかりました - ホームページにリダイレクトします");
+                            // ページ遷移前にスクロール位置をリセット
+                            window.scrollTo(0, 0);
                             navigate("/home");
                         } else {
                             console.log("有効なユーザーデータが見つかりませんでした - 登録ページにリダイレクトします");
+                            // ページ遷移前にスクロール位置をリセット
+                            window.scrollTo(0, 0);
                             navigate("/register");
                         }
                     } catch (error) {
                         console.error("ログイン後のユーザー情報取得に失敗しました:", error);
                         const errorDetail = error.message || (typeof error === 'object' ? JSON.stringify(error) : '不明なエラー');
                         setLoginError(`ログイン後のユーザー情報取得に失敗しました: ${errorDetail}`);
+                        // エラー時にトップへスクロール
+                        window.scrollTo(0, 0);
                     }
                 },
                 onError: (error) => {
@@ -178,12 +190,16 @@ function LoginPage() {
                     }
                     
                     setLoginError(errorMessage);
+                    // エラー時にトップへスクロール
+                    window.scrollTo(0, 0);
                 },
             });
         } catch (error) {
             console.error("ログイン処理中に例外が発生しました:", error);
             const errorDetail = error.message || (typeof error === 'object' ? JSON.stringify(error) : '不明なエラー');
             setLoginError(`ログイン処理中に予期せぬエラーが発生しました: ${errorDetail}`);
+            // エラー時にトップへスクロール
+            window.scrollTo(0, 0);
         }
     };
 
@@ -231,15 +247,21 @@ function LoginPage() {
                 processedUserData.first_name && 
                 processedUserData.grade) {
                 console.log("有効なユーザーデータが見つかりました - ホームページにリダイレクトします");
+                // ページ遷移前にスクロール位置をリセット
+                window.scrollTo(0, 0);
                 navigate("/home");
             } else {
                 console.log("有効なユーザーデータが見つかりませんでした - 登録ページにリダイレクトします");
+                // ページ遷移前にスクロール位置をリセット
+                window.scrollTo(0, 0);
                 navigate("/register");
             }
         } catch (error) {
             console.error("ユーザー情報の取得に失敗しました:", error);
             const errorDetail = error.message || (typeof error === 'object' ? JSON.stringify(error) : '不明なエラー');
             setLoginError(`ユーザー情報の取得に失敗しました: ${errorDetail}`);
+            // エラー時にトップへスクロール
+            window.scrollTo(0, 0);
         }
     };
 
@@ -247,6 +269,7 @@ function LoginPage() {
     if (isCheckingAuth) {
         return (
             <div className="loading-container">
+                <div className="loading-spinner"></div>
                 <p>認証状態を確認中...</p>
             </div>
         );
@@ -291,7 +314,7 @@ function LoginPage() {
                         <p className="login-status">
                             {isAuthenticated 
                                 ? "認証済み - アプリへ進むには「続ける」をクリックしてください" 
-                                : "安全なブロックチェーン認証でログインします"
+                                : "安全な分散型クラウド認証でログインします"
                             }
                         </p>
                     </div>

@@ -83,6 +83,16 @@ function SearchTemplePage() {
         setFilteredTemples(filtered);
     };
 
+    // ローディング表示
+    if (isLoading) {
+        return (
+            <div className="loading-container">
+                <div className="loading-spinner"></div>
+                <p>読み込み中...</p>
+            </div>
+        );
+    }
+
     return (
         <div className="search-temple-page">
             {/* エラーメッセージ */}

@@ -1,6 +1,6 @@
 // App.jsx
-import React, { useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import "./ThemeStyles.css"; // テーマスタイルをインポート
 import LoginPage from "./LoginPage";
 import MainPage from "./MainPage";
@@ -30,12 +30,26 @@ import "./App.css"; // 全体レイアウト用
 import Sidebar from "./Sidebar"; // ★ Sidebarをインポート
 import NotificationDetail from "./Notification/NotificationDetail";
 
+// ページ遷移時に画面トップにスクロールするコンポーネント
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
+
 function App() {
   // useState追加: サイドバーの表示状態を管理
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <Router>
+      {/* ページ遷移時に画面トップにスクロールするコンポーネントを追加 */}
+      <ScrollToTop />
+      
       <Routes>
         {/* ログインページ（サイドバーなし） */}
         <Route path="/" element={<LoginPage />} />

@@ -559,8 +559,8 @@ function PolicyPage() {
                   <div className="votes-results-legends">
                     <ol>
                       <li>
-                        <h4>標準多数決</h4>
-                        <p>期限までに賛成が50%を超えた場合に決定されます。</p>
+                        <h4>多数決</h4>
+                        <p>投票期限後、賛成が50%を超えた場合に施行されます。</p>
                       </li>
                     </ol>
                   </div>

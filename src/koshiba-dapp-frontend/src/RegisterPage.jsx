@@ -4,7 +4,7 @@ import { AuthClient } from "@dfinity/auth-client";
 import { koshiba_dapp_backend } from "../../declarations/koshiba-dapp-backend";
 import "./RegisterPage.css";
 import Image_logo from "./img/logo.jpg";
-import bgVideo from "./img/LoginPage _background.mp4";
+import bgVideo from "./img/LoginMovie.mp4";
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -247,11 +247,11 @@ function RegisterPage() {
   const getGradeDescription = (grade) => {
     switch(grade) {
       case 'S':
-        return "最高ランクの檀家会員。寺院との強い絆を結び、特別な儀式や行事に参加できる特権があります。";
+        return "最上級の檀家会員。寺院との強い絆を結び、特別な儀式や行事に参加できる特権があります。";
       case 'A':
-        return "中堅ランクの檀家会員。寺院の重要な行事に参加でき、多くの特典が得られます。";
+        return "上級の檀家会員。寺院の重要な行事に参加でき、多くの特典が得られます。";
       case 'B':
-        return "入門ランクの檀家会員。寺院との関係を始めたばかりの方向けのプランです。";
+        return "標準の檀家会員。寺院との関係を始めたばかりの方向けのプランです。";
       default:
         return "";
     }
@@ -313,11 +313,17 @@ function RegisterPage() {
     
     setError("");
     setCurrentPage(2); // 2ページ目に移動
+    
+    // ページの先頭に自動スクロール
+    window.scrollTo(0, 0);
   };
 
   // 前のページへ戻る
   const handlePrevPage = () => {
     setCurrentPage(1);
+    
+    // ページの先頭に自動スクロール
+    window.scrollTo(0, 0);
   };
 
   // グレード選択の処理
@@ -341,6 +347,8 @@ function RegisterPage() {
     if (!grade) {
       setError("檀家グレードを選択してください");
       setIsSubmitting(false);
+      // エラーメッセージの位置にスクロール
+      window.scrollTo(0, 0);
       return;
     }
     
@@ -425,6 +433,8 @@ function RegisterPage() {
 
   // キャンセル処理
   const handleCancel = () => {
+    // ログインページに戻る前にスクロール位置をリセット
+    window.scrollTo(0, 0);
     navigate("/");
   };
 
@@ -490,7 +500,8 @@ function RegisterPage() {
   if (isLoading) {
     return (
       <div className="loading-container">
-        <p>データを読み込み中...</p>
+        <div className="loading-spinner"></div>
+        <p>読み込み中...</p>
       </div>
     );
   }
@@ -530,7 +541,6 @@ function RegisterPage() {
                     readOnly
                     className="readonly-field"
                   />
-                  <p className="field-note">※Principal ID</p>
                 </div>
                 
                 <div className="name-fields">
@@ -561,7 +571,7 @@ function RegisterPage() {
                 
                 {/* 生年月日のプルダウンを表示 */}
                 {renderBirthDateSelectors()}
-                
+                <p className="field-note">※β版のため登録はされません</p> 
                 <div className="input-field">
                   <label htmlFor="postalCode">郵便番号</label>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -616,7 +626,7 @@ function RegisterPage() {
                       </option>
                     ))}
                   </select>
-                  <p className="field-note">※所属寺院の選択は任意です</p>
+                  <p className="field-note">※所属寺院の選択は後から変更できます。</p>
                 </div>
                 
                 <div className="button-group">
@@ -642,7 +652,6 @@ function RegisterPage() {
           {currentPage === 2 && (
             <div className="register-page-content">
               <h2 className="page-title">檀家グレードを選択してください</h2>
-              <p className="grade-note">※グレードは後から選択することもできます。</p>
               
               <div className="grade-cards">
                 {gradeList.map((gradeInfo) => (
@@ -701,7 +710,6 @@ function RegisterPage() {
           )}
           
           <div className="register-footer">
-            <p className="small-text">登録情報は後からアカウント設定で変更できます</p>
           </div>
         </div>
       </div>
