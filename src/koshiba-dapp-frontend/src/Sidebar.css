@@ -186,7 +186,7 @@
 }
 
 .nav-links li {
-    margin: 5px 0;
+    margin: 0;
     padding: 0;
     width: 100%;
 }
@@ -217,6 +217,7 @@
 .sidebar-nav-item {
     display: flex;
     align-items: center;
+    padding: 0;
     gap: 12px;
     transition: padding var(--transition-normal);
     width: 100%;
@@ -914,6 +915,8 @@ body.dark-mode .mobile-theme-toggle {
     letter-spacing: 0.5px;
     cursor: pointer; /* カーソルをポインターに変更して、クリック可能なことを示す */
     padding-left: 36px; /* アイコンの幅分だけパディングを調整 */
+    padding-top: 12px;
+    padding-bottom: 12px;
     margin-left: 0; /* マージンをリセット */
     display: block;
 }

@@ -5,6 +5,8 @@ import { koshiba_dapp_backend } from "../../declarations/koshiba-dapp-backend";
 import "./RegisterPage.css";
 import Image_logo from "./img/logo.jpg";
 import bgVideo from "./img/LoginMovie.mp4";
+// 動画の最初のフレームと同様のイメージを使用する想定
+import videoPoster from "./img/LoginPicture.jpg";
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -23,6 +25,8 @@ function RegisterPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [identityInfo, setIdentityInfo] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  // 動画の読み込み状態を管理するステートを追加
+  const [isVideoLoaded, setIsVideoLoaded] = useState(false);
   
   // 生年月日を年・月・日に分けて管理（プルダウン用）
   const [birthYear, setBirthYear] = useState("");
@@ -510,7 +514,31 @@ function RegisterPage() {
     <div className="register-page">
       {/* 背景動画 */}
       <div className="video-wrapper">
-        <video className="background-video" autoPlay loop muted>
+        {/* 静止画を常に表示しておく */}
+        <div 
+          className="video-poster" 
+          style={{
+            backgroundImage: `url(${videoPoster})`,
+            opacity: isVideoLoaded ? 0 : 1, // 動画が読み込まれたら徐々に消す
+            transition: 'opacity 1.2s ease-in-out' // トランジション時間を長めに設定
+          }}
+        />
+        <video 
+          className="background-video" 
+          autoPlay 
+          loop 
+          muted
+          poster={videoPoster}
+          preload="auto"
+          onLoadedData={() => {
+            // 少し遅延を入れて動画再生が安定してから切り替える
+            setTimeout(() => setIsVideoLoaded(true), 100);
+          }}
+          style={{ 
+            opacity: isVideoLoaded ? 1 : 0,
+            transition: 'opacity 1.2s ease-in-out' // トランジション時間を長めに設定
+          }}
+        >
           <source src={bgVideo} type="video/mp4" />
           Your browser does not support the video tag.
         </video>

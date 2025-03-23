@@ -14,6 +14,7 @@
   --shadow-small: 0 2px 8px rgba(0, 0, 0, 0.05);
   --shadow-medium: 0 5px 15px rgba(0, 0, 0, 0.08);
   --shadow-large: 0 10px 30px rgba(0, 0, 0, 0.12);
+  --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.05);
   --radius-small: 8px;
   --radius-medium: 12px;
   --radius-large: 16px;
@@ -267,9 +268,9 @@ body {
 }
 
 .detail-item:hover {
-  background-color: #f9f9f9;
-  box-shadow: var(--shadow-small);
-  transform: none;
+  background-color: #f5f5f5;
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-3px);
 }
 
 /* アイコン付きの行 */
@@ -752,15 +753,19 @@ hr {
 }
 
 .policy-event-item {
+  position: relative;
+  background-color: white;
+  border-radius: 12px;
   padding: 16px;
-  border-radius: 10px;
-  background-color: #fff;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  position: relative;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow-light);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   overflow: hidden;
-  position: relative;
-  padding-bottom: 40px;
+}
+
+.policy-event-item:hover {
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-3px);
 }
 
 .policy-event-header {
@@ -828,13 +833,17 @@ hr {
 }
 
 .payment-item {
-  padding: 16px;
-  border-radius: 10px;
-  background-color: #fff;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  position: relative;
-  overflow: hidden;
+  background-color: white;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-light);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.payment-item:hover {
+  box-shadow: var(--shadow-medium);
+  transform: translateY(-3px);
 }
 
 .payment-item-header {
@@ -1241,58 +1250,61 @@ hr {
   font-weight: bold;
 }
 
-/* 運営収支グラフ（円グラフバージョン） */
+/* 運営収支グラフ（アニメーション付き円グラフバージョン） */
 .finance-chart-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   flex-wrap: wrap;
   gap: 1rem;
-  margin-top: 1rem;
+  margin: 1.5rem 0;
 }
 
-.pie-chart-wrapper {
+.enhanced-pie-chart-wrapper {
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 1;
-  min-width: 120px;
-  max-width: 150px;
+  width: 100%;
+  max-width: 280px;
   background-color: #fff;
-  border-radius: 12px;
-  padding: 12px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.pie-chart-wrapper:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+.enhanced-pie-chart-wrapper:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
 .month-label {
   font-weight: 600;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
   color: #333;
-  font-size: 0.9rem;
+  font-size: 1.1rem;
+  text-align: center;
 }
 
 .pie-chart-container {
   position: relative;
   width: 100%;
-  height: 100px;
+  height: 180px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.2rem;
 }
 
 .pie-chart {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
   overflow: hidden;
   background-color: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .income-slice, .expenses-slice {
@@ -1302,26 +1314,54 @@ hr {
   top: 0;
   left: 0;
   transform-origin: center;
+  transition: all 0.1s linear;
 }
 
 .income-slice {
   z-index: 2;
+  background-color: #4CAF50;
 }
 
 .expenses-slice {
   z-index: 1;
+  background-color: #F44336;
+}
+
+.balance-display {
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: white;
+  z-index: 3;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.positive-balance {
+  color: #4CAF50;
+  font-weight: bold;
+  font-size: 0.9rem;
+}
+
+.negative-balance {
+  color: #F44336;
+  font-weight: bold;
+  font-size: 0.9rem;
 }
 
 .empty-chart {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 80px;
-  height: 80px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
   background-color: #f5f5f5;
   color: #999;
-  font-size: 0.8rem;
+  font-size: 1rem;
   text-align: center;
 }
 
@@ -1329,19 +1369,22 @@ hr {
   display: flex;
   flex-direction: column;
   width: 100%;
-  font-size: 0.75rem;
-  gap: 0.25rem;
+  font-size: 0.9rem;
+  gap: 0.5rem;
 }
 
 .income-amount, .expenses-amount {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 8px;
+  background-color: #f9f9f9;
 }
 
 .amount-dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   display: inline-block;
 }
@@ -1354,35 +1397,161 @@ hr {
   background-color: #F44336;
 }
 
+.amount-label {
+  font-weight: 500;
+  color: #555;
+}
+
+.amount-value {
+  margin-left: auto;
+  font-weight: 600;
+}
+
 .no-data-text {
   text-align: center;
   color: #999;
-  font-size: 0.75rem;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
 }
 
 /* モバイル用のスタイル調整 */
 @media (max-width: 600px) {
-  .finance-chart-container {
-    justify-content: center;
+  .enhanced-pie-chart-wrapper {
+    padding: 1rem;
+    max-width: 240px;
   }
   
-  .pie-chart-wrapper {
-    min-width: 90px;
-    padding: 8px;
+  .pie-chart-container {
+    height: 150px;
   }
   
   .pie-chart {
-    width: 60px;
-    height: 60px;
+    width: 130px;
+    height: 130px;
+  }
+  
+  .balance-display {
+    width: 100px;
+    height: 100px;
   }
   
   .empty-chart {
-    width: 60px;
-    height: 60px;
-    font-size: 0.7rem;
+    width: 130px;
+    height: 130px;
+  }
+  
+  .month-label {
+    font-size: 1rem;
   }
   
   .chart-amounts {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
   }
+}
+
+/* アカウント削除確認モーダル */
+.delete-confirm-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100; /* アカウントモーダルより上に表示 */
+}
+
+.delete-confirm-modal {
+  background-color: white;
+  border-radius: 12px;
+  padding: 30px;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  animation: popIn 0.3s ease-out forwards;
+  text-align: center;
+}
+
+.delete-confirm-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.cancel-button, .delete-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 30px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-button {
+  background-color: #888;
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: #777;
+}
+
+.delete-button {
+  background-color: #FF4136;
+  color: white;
+}
+
+.delete-button:hover {
+  background-color: #E03026;
+}
+
+/* モバイル向け調整 */
+@media (max-width: 767px) {
+  .delete-confirm-modal {
+    padding: 20px;
+    width: 95%;
+  }
+  
+  .delete-confirm-buttons {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .cancel-button, .delete-button {
+    width: 100%;
+    padding: 14px;
+  }
+}
+
+/* コンテンツ領域のみを対象とするローディング表示 */
+.content-loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 70vh;
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.content-loading-container .loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(0, 185, 0, 0.2);
+  border-top: 5px solid var(--main-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+.content-loading-container p {
+  font-size: 1.1rem;
+  color: var(--main-color);
+  font-weight: 500;
+  letter-spacing: 0.5px;
 }

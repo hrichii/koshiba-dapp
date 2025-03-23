@@ -391,6 +391,64 @@ function PolicyPage() {
     }
   };
 
+  // ローディング表示
+  if (isLoading) {
+    return (
+      <div className="container">
+        {error && <p className="error-message">{error}</p>}
+
+        {/* アカウントアイコンボタン */}
+        <button 
+          className={`account-icon-button ${showAccountModal ? 'active' : ''}`}
+          onClick={() => setShowAccountModal(!showAccountModal)}
+        >
+          <img src={IconAccount} alt="アカウント" />
+        </button>
+        
+        {/* アカウントモーダル */}
+        {showAccountModal && (
+          <div className="account-modal-overlay" onClick={() => setShowAccountModal(false)}>
+            <div className="account-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="account-modal-header">
+                <h3 className="account-modal-title">
+                  {user && user.last_name && user.first_name ? 
+                    `${user.last_name} ${user.first_name}` : 
+                    "ゲストユーザー"}
+                </h3>
+              </div>
+              
+              <div className="principal-id-container">
+                <p className="principal-id-label">Principal ID</p>
+                <p className="principal-id">{principalId || "読み込み中..."}</p>
+              </div>
+              
+              <div className="account-modal-actions">
+                <button 
+                  className="modal-action-button logout"
+                  onClick={handleLogout}
+                >
+                  <span>ログアウト</span>
+                </button>
+                
+                <button 
+                  className="modal-action-button delete"
+                  onClick={handleDeleteUser}
+                >
+                  <span>アカウント削除</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="content-loading-container">
+          <div className="loading-spinner"></div>
+          <p>読み込み中...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="container">
       {error && <p className="error-message">{error}</p>}

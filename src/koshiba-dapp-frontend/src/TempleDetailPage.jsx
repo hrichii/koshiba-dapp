@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { koshiba_dapp_backend } from "../../declarations/koshiba-dapp-backend";
 import "./TempleDetailPage.css";
@@ -89,133 +89,175 @@ function DeadlineDisplay({ deadline_at }) {
     );
 }
 
-// 運営収支グラフコンポーネント（円グラフバージョン）
+// 運営収支グラフコンポーネント（アニメーション付き円グラフバージョン）
 function FinanceChart({ payments = [] }) {
-    // 直近3ヶ月のデータを集計
-    const calculateMonthlyData = () => {
-        const currentDate = new Date();
-        const monthNames = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
-        const monthlyData = [];
-        
-        // 過去3ヶ月の月を取得
-        for (let i = 2; i >= 0; i--) {
-            const monthDate = new Date(currentDate);
-            monthDate.setMonth(currentDate.getMonth() - i);
-            
-            const monthName = monthNames[monthDate.getMonth()];
-            const year = monthDate.getFullYear();
-            const month = monthDate.getMonth();
-            
-            let income = 0;
-            let expenses = 0;
-            
-            // その月のデータを集計
-            payments.forEach(payment => {
-                if (!payment.created_at) return;
-                
-                const paymentDate = new Date(payment.created_at);
-                if (paymentDate.getFullYear() === year && paymentDate.getMonth() === month) {
-                    if (typeof payment.status === 'object') {
-                        if ('Income' in payment.status) {
-                            income += payment.amount || 0;
-                        } else if ('Expenses' in payment.status) {
-                            expenses += payment.amount || 0;
-                        }
-                    } else if (typeof payment.status === 'string') {
-                        if (payment.status === "Income") {
-                            income += payment.amount || 0;
-                        } else if (payment.status === "Expenses") {
-                            expenses += payment.amount || 0;
-                        }
-                    }
-                }
-            });
-            
-            monthlyData.push({
-                month: monthName,
-                income: income,
-                expenses: expenses
-            });
+  // 今月のデータに焦点を当てる
+  const calculateMonthlyData = () => {
+    const currentDate = new Date();
+    const monthNames = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
+    
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const monthName = monthNames[month];
+    
+    let income = 0;
+    let expenses = 0;
+    
+    // 今月のデータを集計
+    payments.forEach(payment => {
+      if (!payment.created_at) return;
+      
+      const paymentDate = new Date(payment.created_at);
+      if (paymentDate.getFullYear() === year && paymentDate.getMonth() === month) {
+        if (typeof payment.status === 'object') {
+          if ('Income' in payment.status) {
+            income += payment.amount || 0;
+          } else if ('Expenses' in payment.status) {
+            expenses += payment.amount || 0;
+          }
+        } else if (typeof payment.status === 'string') {
+          if (payment.status === "Income") {
+            income += payment.amount || 0;
+          } else if (payment.status === "Expenses") {
+            expenses += payment.amount || 0;
+          }
         }
+      }
+    });
+    
+    return {
+      month: monthName,
+      income: income,
+      expenses: expenses,
+      total: income - expenses
+    };
+  };
+  
+  const monthData = calculateMonthlyData();
+  const [animationStarted, setAnimationStarted] = useState(false);
+  const [incomeAngle, setIncomeAngle] = useState(0);
+  const [expensesAngle, setExpensesAngle] = useState(0);
+  
+  // アニメーション用のref
+  const incomeRef = useRef(0);
+  const expensesRef = useRef(0);
+  
+  // 収支合計額
+  const total = monthData.income + monthData.expenses;
+  
+  // 最終的なアングル値を計算
+  const finalIncomeAngle = total > 0 ? (monthData.income / total) * 360 : 0;
+  const finalExpensesAngle = total > 0 ? (monthData.expenses / total) * 360 : 0;
+  
+  // アニメーション効果
+  useEffect(() => {
+    if (!animationStarted && total > 0) {
+      setAnimationStarted(true);
+      
+      const startTime = Date.now();
+      const duration = 1500; // 1.5秒間
+      
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
         
-        return monthlyData;
-    };
-    
-    const monthlyData = calculateMonthlyData();
-    
-    // 金額をフォーマット
-    const formatAmount = (amount) => {
-        if (amount >= 10000) {
-            return `${Math.floor(amount / 10000)}万円`;
+        // イージング関数を適用したアニメーション（easeOutExpo）
+        const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+        
+        incomeRef.current = easeProgress * finalIncomeAngle;
+        expensesRef.current = easeProgress * finalExpensesAngle;
+        
+        setIncomeAngle(incomeRef.current);
+        setExpensesAngle(expensesRef.current);
+        
+        if (progress < 1) {
+          requestAnimationFrame(animate);
         }
-        return `${amount.toLocaleString()}円`;
-    };
-    
-    return (
-        <div className="finance-chart-container">
-            {monthlyData.map((data, index) => (
-                <div key={index} className="pie-chart-wrapper">
-                    <div className="month-label">{data.month}</div>
-                    
-                    {(data.income > 0 || data.expenses > 0) ? (
-                        <>
-                            <div className="pie-chart-container">
-                                <div className="pie-chart">
-                                    <div 
-                                        className="income-slice" 
-                                        style={{
-                                            transform: `rotate(0deg)`,
-                                            background: `conic-gradient(#4CAF50 0deg, #4CAF50 ${data.income / (data.income + data.expenses) * 360}deg, transparent ${data.income / (data.income + data.expenses) * 360}deg)`
-                                        }}
-                                    ></div>
-                                    <div 
-                                        className="expenses-slice" 
-                                        style={{
-                                            transform: `rotate(${data.income / (data.income + data.expenses) * 360}deg)`,
-                                            background: `conic-gradient(#F44336 0deg, #F44336 ${data.expenses / (data.income + data.expenses) * 360}deg, transparent ${data.expenses / (data.income + data.expenses) * 360}deg)`
-                                        }}
-                                    ></div>
-                                </div>
-                            </div>
-                            <div className="chart-amounts">
-                                <div className="income-amount">
-                                    <span className="amount-dot income-dot"></span>
-                                    <span>
-                                        {data.income >= 10000 ? (
-                                            <AnimatedNumber value={Math.floor(data.income / 10000)} duration={1500} suffix="万円" />
-                                        ) : (
-                                            <AnimatedNumber value={data.income} duration={1500} suffix="円" />
-                                        )}
-                                    </span>
-                                </div>
-                                <div className="expenses-amount">
-                                    <span className="amount-dot expenses-dot"></span>
-                                    <span>
-                                        {data.expenses >= 10000 ? (
-                                            <AnimatedNumber value={Math.floor(data.expenses / 10000)} duration={1500} suffix="万円" />
-                                        ) : (
-                                            <AnimatedNumber value={data.expenses} duration={1500} suffix="円" />
-                                        )}
-                                    </span>
-                                </div>
-                            </div>
-                        </>
-                    ) : (
-                        <>
-                            <div className="pie-chart-container">
-                                <div className="empty-chart">
-                                    <span>データなし</span>
-                                </div>
-                            </div>
-                            <div className="chart-amounts">
-                                <span className="no-data-text">収支記録なし</span>
-                            </div>
-                        </>
-                    )}
+      };
+      
+      requestAnimationFrame(animate);
+    }
+  }, [animationStarted, finalIncomeAngle, finalExpensesAngle, total]);
+  
+  // 金額をフォーマット
+  const formatAmount = (amount) => {
+    if (amount >= 10000) {
+      return `${Math.floor(amount / 10000)}万円`;
+    }
+    return `${amount.toLocaleString()}円`;
+  };
+  
+  return (
+    <div className="finance-chart-container">
+      <div className="enhanced-pie-chart-wrapper">
+        <div className="month-label">{monthData.month}の収支状況</div>
+        
+        {total > 0 ? (
+          <>
+            <div className="pie-chart-container">
+              <div className="pie-chart">
+                <div 
+                  className="income-slice" 
+                  style={{
+                    transform: `rotate(0deg)`,
+                    background: `conic-gradient(#4CAF50 0deg, #4CAF50 ${incomeAngle}deg, transparent ${incomeAngle}deg)`
+                  }}
+                ></div>
+                <div 
+                  className="expenses-slice" 
+                  style={{
+                    transform: `rotate(${incomeAngle}deg)`,
+                    background: `conic-gradient(#F44336 0deg, #F44336 ${expensesAngle}deg, transparent ${expensesAngle}deg)`
+                  }}
+                ></div>
+                <div className="balance-display">
+                  <span className={monthData.total >= 0 ? "positive-balance" : "negative-balance"}>
+                    {monthData.total >= 0 ? "+" : ""}
+                    <AnimatedNumber value={Math.abs(monthData.total)} duration={1500} suffix="円" />
+                  </span>
                 </div>
-            ))}
-        </div>
-    );
+              </div>
+            </div>
+            <div className="chart-amounts">
+              <div className="income-amount">
+                <span className="amount-dot income-dot"></span>
+                <span className="amount-label">収入:</span>
+                <span className="amount-value">
+                  {monthData.income >= 10000 ? (
+                    <AnimatedNumber value={Math.floor(monthData.income / 10000)} duration={1500} suffix="万円" />
+                  ) : (
+                    <AnimatedNumber value={monthData.income} duration={1500} suffix="円" />
+                  )}
+                </span>
+              </div>
+              <div className="expenses-amount">
+                <span className="amount-dot expenses-dot"></span>
+                <span className="amount-label">支出:</span>
+                <span className="amount-value">
+                  {monthData.expenses >= 10000 ? (
+                    <AnimatedNumber value={Math.floor(monthData.expenses / 10000)} duration={1500} suffix="万円" />
+                  ) : (
+                    <AnimatedNumber value={monthData.expenses} duration={1500} suffix="円" />
+                  )}
+                </span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="pie-chart-container">
+              <div className="empty-chart">
+                <span>データなし</span>
+              </div>
+            </div>
+            <div className="chart-amounts">
+              <span className="no-data-text">収支記録なし</span>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function TempleDetailPage() {
@@ -533,9 +575,19 @@ function TempleDetailPage() {
     // ローディング表示
     if (isLoading) {
         return (
-            <div className="loading-container">
-                <div className="loading-spinner"></div>
-                <p>読み込み中...</p>
+            <div className="temple-detail-page">
+                <div className="temple-detail-container">
+                    <div className="back-button-container">
+                        <button className="back-button" onClick={goBackToSearch}>
+                            ← 戻る
+                        </button>
+                    </div>
+                    
+                    <div className="content-loading-container">
+                        <div className="loading-spinner"></div>
+                        <p>読み込み中...</p>
+                    </div>
+                </div>
             </div>
         );
     }

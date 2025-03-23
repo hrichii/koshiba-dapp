@@ -86,9 +86,17 @@ function SearchTemplePage() {
     // ローディング表示
     if (isLoading) {
         return (
-            <div className="loading-container">
-                <div className="loading-spinner"></div>
-                <p>読み込み中...</p>
+            <div className="search-temple-page">
+                {/* エラーメッセージ */}
+                {error && <div className="error-message">{error}</div>}
+                
+                {/* 成功メッセージ */}
+                {successMessage && <div className="success-message">{successMessage}</div>}
+                
+                <div className="content-loading-container">
+                    <div className="loading-spinner"></div>
+                    <p>読み込み中...</p>
+                </div>
             </div>
         );
     }

@@ -16,7 +16,7 @@ import IconAccount from "./img/account.png";
 import IconLeftArrow from "./img/left_arrow.png";
 import IconRightArrow from "./img/right_arrow.png";
 // GitHubアイコン
-import IconGithub from "./img/github-white.png"; // 白いGitHubアイコンに変更
+import IconGithub from "./img/github.png"; // 白いGitHubアイコンに変更
 
 function Sidebar({ isOpen: propIsOpen }) {
     const [showModal, setShowModal] = useState(false);
@@ -37,21 +37,9 @@ function Sidebar({ isOpen: propIsOpen }) {
         
         console.log(`寺院ID: ${templeId} の詳細ページに遷移します`);
         
-        try {
-            // URLに遷移
-            window.location.href = `/temple/${templeId}`;
-            console.log("ページ遷移を実行しました");
-        } catch (error) {
-            console.error("ナビゲーションエラー:", error);
-            
-            // フォールバック: React Routerのnavigate関数を使用
-            try {
-                navigate(`/temple/${templeId}`);
-                console.log("React Routerでのナビゲーション完了");
-            } catch (routerError) {
-                console.error("React Routerナビゲーションでもエラー:", routerError);
-            }
-        }
+        // React Routerのnavigate関数のみを使用
+        navigate(`/temple/${templeId}`);
+        console.log("React Routerでのナビゲーション完了");
     };
 
     // get_user() を呼び出してユーザー情報を取得

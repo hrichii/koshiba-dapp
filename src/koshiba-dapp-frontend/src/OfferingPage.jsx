@@ -139,9 +139,17 @@ function OfferingPage() {
   // ローディング中の表示
   if (isLoading) {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>読み込み中...</p>
+      <div className="offering-page">
+        {/* 背景要素 */}
+        <div className="offering-background">
+          <img src={templeBackground} alt="寺院背景" className="background-image" />
+          <div className="background-overlay"></div>
+        </div>
+        
+        <div className="content-loading-container">
+          <div className="loading-spinner"></div>
+          <p>読み込み中...</p>
+        </div>
       </div>
     );
   }

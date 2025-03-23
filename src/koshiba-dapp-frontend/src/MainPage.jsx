@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { AuthClient } from "@dfinity/auth-client";
 import "./MainPage.css";
@@ -248,59 +248,95 @@ function DeadlineDisplayCompact({ deadline_at }) {
   );
 }
 
-// 運営収支グラフコンポーネント（円グラフバージョン）
+// 運営収支グラフコンポーネント（アニメーション付き円グラフバージョン）
 function FinanceChart({ payments = [] }) {
-  // 直近3ヶ月のデータを集計
+  // 今月のデータに焦点を当てる
   const calculateMonthlyData = () => {
     const currentDate = new Date();
     const monthNames = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
-    const monthlyData = [];
     
-    // 過去3ヶ月の月を取得
-    for (let i = 2; i >= 0; i--) {
-      const monthDate = new Date(currentDate);
-      monthDate.setMonth(currentDate.getMonth() - i);
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth();
+    const monthName = monthNames[month];
+    
+    let income = 0;
+    let expenses = 0;
+    
+    // 今月のデータを集計
+    payments.forEach(payment => {
+      if (!payment.created_at) return;
       
-      const monthName = monthNames[monthDate.getMonth()];
-      const year = monthDate.getFullYear();
-      const month = monthDate.getMonth();
-      
-      let income = 0;
-      let expenses = 0;
-      
-      // その月のデータを集計
-      payments.forEach(payment => {
-        if (!payment.created_at) return;
-        
-        const paymentDate = new Date(payment.created_at);
-        if (paymentDate.getFullYear() === year && paymentDate.getMonth() === month) {
-          if (typeof payment.status === 'object') {
-            if ('Income' in payment.status) {
-              income += payment.amount || 0;
-            } else if ('Expenses' in payment.status) {
-              expenses += payment.amount || 0;
-            }
-          } else if (typeof payment.status === 'string') {
-            if (payment.status === "Income") {
-              income += payment.amount || 0;
-            } else if (payment.status === "Expenses") {
-              expenses += payment.amount || 0;
-            }
+      const paymentDate = new Date(payment.created_at);
+      if (paymentDate.getFullYear() === year && paymentDate.getMonth() === month) {
+        if (typeof payment.status === 'object') {
+          if ('Income' in payment.status) {
+            income += payment.amount || 0;
+          } else if ('Expenses' in payment.status) {
+            expenses += payment.amount || 0;
+          }
+        } else if (typeof payment.status === 'string') {
+          if (payment.status === "Income") {
+            income += payment.amount || 0;
+          } else if (payment.status === "Expenses") {
+            expenses += payment.amount || 0;
           }
         }
-      });
-      
-      monthlyData.push({
-        month: monthName,
-        income: income,
-        expenses: expenses
-      });
-    }
+      }
+    });
     
-    return monthlyData;
+    return {
+      month: monthName,
+      income: income,
+      expenses: expenses,
+      total: income - expenses
+    };
   };
   
-  const monthlyData = calculateMonthlyData();
+  const monthData = calculateMonthlyData();
+  const [animationStarted, setAnimationStarted] = useState(false);
+  const [incomeAngle, setIncomeAngle] = useState(0);
+  const [expensesAngle, setExpensesAngle] = useState(0);
+  
+  // アニメーション用のref
+  const incomeRef = useRef(0);
+  const expensesRef = useRef(0);
+  
+  // 収支合計額
+  const total = monthData.income + monthData.expenses;
+  
+  // 最終的なアングル値を計算
+  const finalIncomeAngle = total > 0 ? (monthData.income / total) * 360 : 0;
+  const finalExpensesAngle = total > 0 ? (monthData.expenses / total) * 360 : 0;
+  
+  // アニメーション効果
+  useEffect(() => {
+    if (!animationStarted && total > 0) {
+      setAnimationStarted(true);
+      
+      const startTime = Date.now();
+      const duration = 1500; // 1.5秒間
+      
+      const animate = () => {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // イージング関数を適用したアニメーション（easeOutExpo）
+        const easeProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+        
+        incomeRef.current = easeProgress * finalIncomeAngle;
+        expensesRef.current = easeProgress * finalExpensesAngle;
+        
+        setIncomeAngle(incomeRef.current);
+        setExpensesAngle(expensesRef.current);
+        
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+      
+      requestAnimationFrame(animate);
+    }
+  }, [animationStarted, finalIncomeAngle, finalExpensesAngle, total]);
   
   // 金額をフォーマット
   const formatAmount = (amount) => {
@@ -312,67 +348,73 @@ function FinanceChart({ payments = [] }) {
   
   return (
     <div className="finance-chart-container">
-      {monthlyData.map((data, index) => (
-        <div key={index} className="pie-chart-wrapper">
-          <div className="month-label">{data.month}</div>
-          
-          {(data.income > 0 || data.expenses > 0) ? (
-            <>
-              <div className="pie-chart-container">
-                <div className="pie-chart">
-                  <div 
-                    className="income-slice" 
-                    style={{
-                      transform: `rotate(0deg)`,
-                      background: `conic-gradient(#4CAF50 0deg, #4CAF50 ${data.income / (data.income + data.expenses) * 360}deg, transparent ${data.income / (data.income + data.expenses) * 360}deg)`
-                    }}
-                  ></div>
-                  <div 
-                    className="expenses-slice" 
-                    style={{
-                      transform: `rotate(${data.income / (data.income + data.expenses) * 360}deg)`,
-                      background: `conic-gradient(#F44336 0deg, #F44336 ${data.expenses / (data.income + data.expenses) * 360}deg, transparent ${data.expenses / (data.income + data.expenses) * 360}deg)`
-                    }}
-                  ></div>
-                </div>
-              </div>
-              <div className="chart-amounts">
-                <div className="income-amount">
-                  <span className="amount-dot income-dot"></span>
-                  <span>
-                    {data.income >= 10000 ? (
-                      <AnimatedNumber value={Math.floor(data.income / 10000)} duration={1500} suffix="万円" />
-                    ) : (
-                      <AnimatedNumber value={data.income} duration={1500} suffix="円" />
-                    )}
-                  </span>
-                </div>
-                <div className="expenses-amount">
-                  <span className="amount-dot expenses-dot"></span>
-                  <span>
-                    {data.expenses >= 10000 ? (
-                      <AnimatedNumber value={Math.floor(data.expenses / 10000)} duration={1500} suffix="万円" />
-                    ) : (
-                      <AnimatedNumber value={data.expenses} duration={1500} suffix="円" />
-                    )}
+      <div className="enhanced-pie-chart-wrapper">
+        <div className="month-label">{monthData.month}の収支状況</div>
+        
+        {total > 0 ? (
+          <>
+            <div className="pie-chart-container">
+              <div className="pie-chart">
+                <div 
+                  className="income-slice" 
+                  style={{
+                    transform: `rotate(0deg)`,
+                    background: `conic-gradient(#4CAF50 0deg, #4CAF50 ${incomeAngle}deg, transparent ${incomeAngle}deg)`
+                  }}
+                ></div>
+                <div 
+                  className="expenses-slice" 
+                  style={{
+                    transform: `rotate(${incomeAngle}deg)`,
+                    background: `conic-gradient(#F44336 0deg, #F44336 ${expensesAngle}deg, transparent ${expensesAngle}deg)`
+                  }}
+                ></div>
+                <div className="balance-display">
+                  <span className={monthData.total >= 0 ? "positive-balance" : "negative-balance"}>
+                    {monthData.total >= 0 ? "+" : ""}
+                    <AnimatedNumber value={Math.abs(monthData.total)} duration={1500} suffix="円" />
                   </span>
                 </div>
               </div>
-            </>
-          ) : (
-            <>
-              <div className="pie-chart-container">
-                <div className="empty-chart">
-                  <span>データなし</span>
-                </div>
+            </div>
+            <div className="chart-amounts">
+              <div className="income-amount">
+                <span className="amount-dot income-dot"></span>
+                <span className="amount-label">収入:</span>
+                <span className="amount-value">
+                  {monthData.income >= 10000 ? (
+                    <AnimatedNumber value={Math.floor(monthData.income / 10000)} duration={1500} suffix="万円" />
+                  ) : (
+                    <AnimatedNumber value={monthData.income} duration={1500} suffix="円" />
+                  )}
+                </span>
               </div>
-              <div className="chart-amounts">
-                <span className="no-data-text">収支記録なし</span>
+              <div className="expenses-amount">
+                <span className="amount-dot expenses-dot"></span>
+                <span className="amount-label">支出:</span>
+                <span className="amount-value">
+                  {monthData.expenses >= 10000 ? (
+                    <AnimatedNumber value={Math.floor(monthData.expenses / 10000)} duration={1500} suffix="万円" />
+                  ) : (
+                    <AnimatedNumber value={monthData.expenses} duration={1500} suffix="円" />
+                  )}
+                </span>
               </div>
-            </>
-          )}
-        </div>
-      ))}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="pie-chart-container">
+              <div className="empty-chart">
+                <span>データなし</span>
+              </div>
+            </div>
+            <div className="chart-amounts">
+              <span className="no-data-text">収支記録なし</span>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }
@@ -394,6 +436,8 @@ function MainPage() {
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   // アカウントモーダルの表示状態
   const [showAccountModal, setShowAccountModal] = useState(false);
+  // アカウント削除確認モーダルの表示状態
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   // Principal ID
   const [principalId, setPrincipalId] = useState("");
   // お知らせデータ
@@ -686,6 +730,16 @@ function MainPage() {
   
   // アカウント削除処理
   const handleDeleteUser = async () => {
+    try {
+      // 削除確認モーダルを表示
+      setShowDeleteConfirmModal(true);
+    } catch (error) {
+      console.error("ユーザー削除処理中にエラーが発生しました:", error);
+    }
+  };
+
+  // 削除確認後の実際の削除処理
+  const confirmDeleteUser = async () => {
     try {
       await koshiba_dapp_backend.deleteMe();
       // ユーザー削除後、ログイン画面へ遷移
@@ -995,9 +1049,57 @@ function MainPage() {
   // ローディング表示
   if (isLoading) {
     return (
-      <div className="loading-container">
-        <div className="loading-spinner"></div>
-        <p>読み込み中...</p>
+      <div className="container">
+        {error && <p className="error-message">{error}</p>}
+
+        {/* アカウントアイコンボタン */}
+        <button 
+          className={`account-icon-button ${showAccountModal ? 'active' : ''}`}
+          onClick={() => setShowAccountModal(!showAccountModal)}
+        >
+          <img src={IconAccount} alt="アカウント" />
+        </button>
+        
+        {/* アカウントモーダル */}
+        {showAccountModal && (
+          <div className="account-modal-overlay" onClick={() => setShowAccountModal(false)}>
+            <div className="account-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="account-modal-header">
+                <h3 className="account-modal-title">
+                  {user && user.last_name && user.first_name ? 
+                    `${user.last_name} ${user.first_name}` : 
+                    "ゲストユーザー"}
+                </h3>
+              </div>
+              
+              <div className="principal-id-container">
+                <p className="principal-id-label">Principal ID</p>
+                <p className="principal-id">{principalId || "読み込み中..."}</p>
+              </div>
+              
+              <div className="account-modal-actions">
+                <button 
+                  className="modal-action-button logout"
+                  onClick={handleLogout}
+                >
+                  <span>ログアウト</span>
+                </button>
+                
+                <button 
+                  className="modal-action-button delete"
+                  onClick={handleDeleteUser}
+                >
+                  <span>アカウント削除</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="content-loading-container">
+          <div className="loading-spinner"></div>
+          <p>読み込み中...</p>
+        </div>
       </div>
     );
   }
@@ -1019,7 +1121,11 @@ function MainPage() {
         <div className="account-modal-overlay" onClick={() => setShowAccountModal(false)}>
           <div className="account-modal" onClick={(e) => e.stopPropagation()}>
             <div className="account-modal-header">
-              <h3 className="account-modal-title">アカウント情報</h3>
+              <h3 className="account-modal-title">
+                {user && user.last_name && user.first_name ? 
+                  `${user.last_name} ${user.first_name}` : 
+                  "ゲストユーザー"}
+              </h3>
             </div>
             
             <div className="principal-id-container">
@@ -1040,6 +1146,34 @@ function MainPage() {
                 onClick={handleDeleteUser}
               >
                 <span>アカウント削除</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* アカウント削除確認モーダル */}
+      {showDeleteConfirmModal && (
+        <div className="delete-confirm-modal-overlay">
+          <div className="delete-confirm-modal">
+            <h2 style={{ color: "#ff4136", marginBottom: "20px" }}>アカウント削除の確認</h2>
+            <p style={{ marginBottom: "10px" }}>本当にアカウントを削除しますか？</p>
+            <p style={{ marginBottom: "30px" }}>この操作は元に戻すことができません。</p>
+            
+            <div className="delete-confirm-buttons">
+              <button
+                type="button"
+                className="cancel-button"
+                onClick={() => setShowDeleteConfirmModal(false)}
+              >
+                キャンセル
+              </button>
+              <button
+                type="button"
+                className="delete-button"
+                onClick={confirmDeleteUser}
+              >
+                削除する
               </button>
             </div>
           </div>

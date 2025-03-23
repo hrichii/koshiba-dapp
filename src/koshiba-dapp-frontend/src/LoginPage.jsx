@@ -7,6 +7,7 @@ import { koshiba_dapp_backend } from "../../declarations/koshiba-dapp-backend";
 import "./LoginPage.css";
 import bgVideo from "./img/LoginMovie.mp4";
 import Image_logo from "./img/logo.jpg";
+import videoPoster from "./img/LoginPicture.jpg";
 
 function LoginPage() {
     const navigate = useNavigate();
@@ -16,6 +17,7 @@ function LoginPage() {
     const [loginError, setLoginError] = useState("");
     const [identityProvider, setIdentityProvider] = useState(null);
     const [isCheckingAuth, setIsCheckingAuth] = useState(true);
+    const [isVideoLoaded, setIsVideoLoaded] = useState(false);
     
     // リダイレクト元からのエラーメッセージがあれば表示
     useEffect(() => {
@@ -278,7 +280,31 @@ function LoginPage() {
     return (
         <div className="login-page">
             <div className="video-wrapper">
-                <video className="background-video" autoPlay loop muted>
+                {/* 静止画を常に表示しておく */}
+                <div 
+                    className="video-poster" 
+                    style={{
+                        backgroundImage: `url(${videoPoster})`,
+                        opacity: isVideoLoaded ? 0 : 1, // 動画が読み込まれたら徐々に消す
+                        transition: 'opacity 1.2s ease-in-out' // トランジション時間を長めに設定
+                    }}
+                />
+                <video 
+                    className="background-video" 
+                    autoPlay 
+                    loop 
+                    muted
+                    poster={videoPoster}
+                    preload="auto"
+                    onLoadedData={() => {
+                        // 少し遅延を入れて動画再生が安定してから切り替える
+                        setTimeout(() => setIsVideoLoaded(true), 100);
+                    }}
+                    style={{ 
+                        opacity: isVideoLoaded ? 1 : 0,
+                        transition: 'opacity 1.2s ease-in-out' // トランジション時間を長めに設定
+                    }}
+                >
                     <source src={bgVideo} type="video/mp4" />
                     お使いのブラウザはビデオタグをサポートしていません。
                 </video>
@@ -289,10 +315,10 @@ function LoginPage() {
                 <div className="login-card">
                     <div className="login-header">
                         <img className="logo" src={Image_logo} alt="ロゴ" />
-                        <h1>ようこそ</h1>
+                        <h1>Dankan</h1>
                         <p className="login-subtitle">アプリケーションにログインしてください</p>
                     </div>
-
+                    <p className="version-tag">Version：β</p>
                     {loginError && <p className="error-message">{loginError}</p>}
 
                     <div className="login-options">

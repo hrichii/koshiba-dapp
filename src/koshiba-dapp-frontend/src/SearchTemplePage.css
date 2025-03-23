@@ -190,13 +190,8 @@
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   height: 100%;
-}
-
-.temple-card:hover {
-  transform: none;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* 寺院画像 */
@@ -210,10 +205,11 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.5s ease;
 }
 
 .temple-card:hover .temple-image img {
-  transform: none;
+  transform: scale(1.1);
 }
 
 /* 寺院情報 */
