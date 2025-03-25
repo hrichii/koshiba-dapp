@@ -236,7 +236,26 @@ function TemplePolicyPage() {
         });
         
         // ユーザーの所属寺院と表示寺院が一致するか確認
-        setIsUserTemple(userData.templeId === processdTempleData.id);
+        // ユーザーがtemplプロパティを持つ場合（配列の場合）
+        if (Array.isArray(userData.temple) && userData.temple.length > 0) {
+          console.log("ユーザーのtemple情報:", userData.temple[0]);
+          console.log(`所属寺院チェック: ユーザー寺院ID=${userData.temple[0].id}, 表示寺院ID=${processdTempleData.id}`);
+          setIsUserTemple(userData.temple[0].id === processdTempleData.id);
+        } 
+        // temple_idプロパティを持つ場合
+        else if (userData.temple_id !== undefined) {
+          console.log(`所属寺院チェック: ユーザーtemple_id=${userData.temple_id}, 表示寺院ID=${processdTempleData.id}`);
+          setIsUserTemple(userData.temple_id === processdTempleData.id);
+        }
+        // templeIdプロパティを持つ場合（別の命名規則）
+        else if (userData.templeId !== undefined) {
+          console.log(`所属寺院チェック: ユーザーtempleId=${userData.templeId}, 表示寺院ID=${processdTempleData.id}`);
+          setIsUserTemple(userData.templeId === processdTempleData.id);
+        }
+        else {
+          console.log("所属寺院情報が見つかりません");
+          setIsUserTemple(false);
+        }
       } else {
         setUser(null);
         setIsUserTemple(false);
