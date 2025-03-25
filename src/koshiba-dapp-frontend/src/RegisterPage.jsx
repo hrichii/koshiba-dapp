@@ -680,6 +680,7 @@ function RegisterPage() {
           {currentPage === 2 && (
             <div className="register-page-content">
               <h2 className="page-title">檀家グレードを選択してください</h2>
+              <p className="field-note" style={{ marginBottom: '20px', textAlign: 'center' }}>※β版のため支払いは発生しません</p>
               
               <div className="grade-cards">
                 {gradeList.map((gradeInfo) => (

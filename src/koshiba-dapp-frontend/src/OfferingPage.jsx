@@ -172,6 +172,7 @@ function OfferingPage() {
           <p className="subtitle">{templeName}への感謝の気持ち</p>
           <p className="subtitle">御布施は読経や戒名授与などの謝礼として、僧侶の生活を支えるための大切なものです。</p>
           <p className="subtitle">皆様の心のこもったご支援に深く感謝申し上げます。</p>
+          <p className="subtitle" style={{ color: "#B71C1C", fontWeight: "bold", marginTop: "10px" }}>※β版のため支払いは発生しません</p>
         </div>
         
         {error && <div className="error-message">{error}</div>}
